@@ -1,0 +1,43 @@
+========================================
+  NEDEN BEYAZ EKRAN / .length HATASI?
+========================================
+
+php artisan serve  →  Sadece PHP sunucusunu çalıştırır.
+                      Tarayıcıda gördüğünüz sayfa, "daha önce
+                      derlenmiş" JavaScript dosyalarını kullanır.
+
+Kod değişiklikleri  →  resources/js  içinde (React/TypeScript).
+                      Bunlar otomatik derlenmez. Tarayıcı eski
+                      derlenmiş dosyayı (public/build/...) yükler;
+                      bu yüzden hata devam eder.
+
+========================================
+  NE YAPMALI?
+========================================
+
+1) Frontend'i derleyin (bir kez veya her kod değişikliğinden sonra):
+
+   Proje klasöründe (public_html\public_html) PowerShell açın:
+
+   npm run build
+
+   Bu komut resources/js'deki tüm değişiklikleri derleyip
+   public/build içine yazar. 1–2 dakika sürebilir.
+
+2) Sonra sunucuyu çalıştırın:
+
+   & "C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe" artisan serve
+
+3) Tarayıcıda sayfayı sert yenileyin: Ctrl + Shift + R
+
+========================================
+  ÖZET
+========================================
+
+  php artisan serve     = Backend (PHP) çalışır.
+  npm run build         = Frontend (React/JS) derlenir.
+
+  İkisi de gerekli. Önce "npm run build", sonra "artisan serve".
+  Kodda değişiklik yaptıktan sonra tekrar "npm run build" yapın.
+
+========================================

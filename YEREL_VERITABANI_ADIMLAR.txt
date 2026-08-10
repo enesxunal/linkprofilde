@@ -1,0 +1,55 @@
+========================================
+  LARAGON'DA VERİTABANI – ADIM ADIM
+========================================
+
+.env dosyası Laragon için güncellendi:
+  - Kullanıcı: root
+  - Şifre: (boş)
+  - Veritabanı adı: linkprofilde
+
+----------------------------------------
+ADIM 1: Veritabanını oluştur
+----------------------------------------
+
+1) Laragon penceresinde "MySQL" yazısına sağ tıkla.
+2) "Create database" veya "Veritabanı oluştur" seç (HeidiSQL açılıyorsa: File > Create new > Database).
+   VEYA
+   Laragon'da "Root" butonuna tıkla > "MySQL" veya "HeidiSQL" aç, sonra:
+   - Yeni veritabanı oluştur
+   - Adı: linkprofilde
+   - Kaydet / Create
+
+Alternatif (komut satırı):
+   Laragon'da "Terminal" açıp şunu yaz:
+   mysql -u root -e "CREATE DATABASE linkprofilde;"
+
+----------------------------------------
+ADIM 2: Tabloları kur (migration)
+----------------------------------------
+
+PowerShell'de proje klasöründe (zaten oradaydın):
+
+   cd "c:\Users\Enes\Desktop\3 Kare Ajans\Cursor Projeleri\Linkprofilde\public_html\public_html"
+
+   & "C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe" artisan config:clear
+
+   & "C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe" artisan migrate
+
+   (Eğer "Kurulum yapılmamış" gibi bir uyarı çıkarsa, önce storage/app/public içine "installed" adında boş bir dosya oluşturman gerekebilir.)
+
+----------------------------------------
+ADIM 3: Sunucuyu tekrar başlat
+----------------------------------------
+
+Önce çalışan sunucuyu durdur (PowerShell'de Ctrl+C), sonra tekrar:
+
+   & "C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe" artisan serve
+
+Tarayıcıda http://127.0.0.1:8000 aç.
+
+========================================
+NOT: Canlı sitede (linkprofilde.com) eski .env
+     kullanılıyor; orada değişiklik yapmadık.
+     Sadece kendi bilgisayarında .env Laragon
+     için güncellendi.
+========================================
