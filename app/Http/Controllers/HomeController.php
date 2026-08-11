@@ -8,6 +8,7 @@ use App\Models\AppSetting;
 use App\Models\CustomPage;
 use App\Models\PricingPlan;
 use App\Models\Testimonial;
+use App\Support\SafeUrl;
 use Illuminate\Http\Request;
 
 
@@ -99,6 +100,11 @@ class HomeController extends Controller
             if ($oneList['content'] == '' && $oneList['icon'] == '' && $oneList['url'] == '') {
                 break;
             } else {
+                $safeUrl = SafeUrl::href(is_string($oneList['url']) ? $oneList['url'] : null);
+                if ($safeUrl === null) {
+                    return back()->with('error', 'Geçersiz bağlantı adresi.');
+                }
+                $oneList['url'] = $safeUrl === '' ? null : $safeUrl;
                 array_push($allList, $oneList);
                 $oneList = ['content' => '', 'icon' => '', 'url' => ''];
             }

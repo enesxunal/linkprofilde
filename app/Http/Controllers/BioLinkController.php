@@ -18,6 +18,9 @@ use App\Rules\CheckLinkName;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
 use App\Jobs\UpdateVisitLocationJob;
+use App\Support\SafeTheme;
+use App\Support\SafeUrl;
+use Illuminate\Validation\ValidationException;
 
 class BioLinkController extends Controller
 {
@@ -185,12 +188,17 @@ class BioLinkController extends Controller
         }
 
         try {
-            $link->socials = $req->socials;
-            $link->social_color = $req->social_color;
+            $link->socials = $this->sanitizedSocials($req->socials);
+            $color = SafeTheme::hex(is_string($req->social_color) ? $req->social_color : null);
+            $link->social_color = $color ?? '#101828';
             $link->save();
 
             $updatedLink = AppHelper::get_link($id);
             return response($updatedLink);
+        } catch (ValidationException $e) {
+            return response([
+                'error' => collect($e->errors())->flatten()->first() ?? 'Geçersiz sosyal bağlantı.',
+            ]);
         } catch (\Throwable $th) {
             return response(['error' => $th->getMessage()]);
         }
@@ -307,18 +315,26 @@ class BioLinkController extends Controller
         }
 
         try {
+            $bgColor = SafeTheme::hex(is_string($req->bg_color) ? $req->bg_color : null) ?? SafeTheme::DEFAULT_BG;
+            $textColor = SafeTheme::hex(is_string($req->text_color) ? $req->text_color : null) ?? SafeTheme::DEFAULT_TEXT;
+            $btnBg = SafeTheme::hex(is_string($req->btn_bg_color) ? $req->btn_bg_color : null) ?? SafeTheme::DEFAULT_BTN_BG;
+            $btnText = SafeTheme::hex(is_string($req->btn_text_color) ? $req->btn_text_color : null) ?? SafeTheme::DEFAULT_BTN_TEXT;
+            $font = SafeTheme::font(is_string($req->font_family) ? $req->font_family : null) ?? SafeTheme::DEFAULT_FONT;
+            $radius = SafeTheme::radius(is_string($req->btn_radius) ? $req->btn_radius : null) ?? SafeTheme::DEFAULT_RADIUS;
+            $btnType = SafeTheme::buttonType(is_string($req->btn_type) ? $req->btn_type : null) ?? 'rounded';
+
             $theme = new CustomTheme();
             $theme->link_id = $id;
-            $theme->background = $req->background;
-            $theme->background_type = $req->background_type;
-            $theme->bg_color = $req->bg_color;
-            $theme->text_color = $req->text_color;
-            $theme->btn_type = $req->btn_type;
-            $theme->btn_transparent = $req->btn_transparent;
-            $theme->btn_radius = $req->btn_radius;
-            $theme->btn_bg_color = $req->btn_bg_color;
-            $theme->btn_text_color = $req->btn_text_color;
-            $theme->font_family = $req->font_family;
+            $theme->background = SafeTheme::colorBackground($bgColor);
+            $theme->background_type = 'color';
+            $theme->bg_color = $bgColor;
+            $theme->text_color = $textColor;
+            $theme->btn_type = $btnType;
+            $theme->btn_transparent = filter_var($req->btn_transparent, FILTER_VALIDATE_BOOLEAN);
+            $theme->btn_radius = $radius;
+            $theme->btn_bg_color = $btnBg;
+            $theme->btn_text_color = $btnText;
+            $theme->font_family = $font;
             $theme->save();
 
             $link->custom_theme_active = TRUE;
@@ -373,9 +389,13 @@ class BioLinkController extends Controller
         try {
             switch ($req->type) {
                 case 'bg_color':
-                    $theme->background = "background-color: $req->bg_color";
+                    $hex = SafeTheme::hex(is_string($req->bg_color) ? $req->bg_color : null);
+                    if ($hex === null) {
+                        return response(['error' => 'Geçersiz renk.']);
+                    }
+                    $theme->background = SafeTheme::colorBackground($hex);
                     $theme->background_type = "color";
-                    $theme->bg_color = $req->bg_color;
+                    $theme->bg_color = $hex;
                     break;
 
                 case 'bg_image':
@@ -392,31 +412,52 @@ class BioLinkController extends Controller
 
                     $imgUrl = AppHelper::image_uploader($req->file('bg_image'));
 
-                    $theme->background = "background-image: url('/$imgUrl')";
+                    $theme->background = SafeTheme::imageBackground($imgUrl);
                     $theme->background_type = "image";
                     $theme->bg_image = $imgUrl;
                     break;
 
                 case 'text_color':
-                    $theme->text_color = $req->text_color;
+                    $hex = SafeTheme::hex(is_string($req->text_color) ? $req->text_color : null);
+                    if ($hex === null) {
+                        return response(['error' => 'Geçersiz renk.']);
+                    }
+                    $theme->text_color = $hex;
                     break;
 
                 case 'button':
-                    $theme->btn_type = $req->btn_type;
-                    $theme->btn_transparent = $req->btn_transparent;
-                    $theme->btn_radius = $req->btn_radius;
+                    $btnType = SafeTheme::buttonType(is_string($req->btn_type) ? $req->btn_type : null);
+                    $radius = SafeTheme::radius(is_string($req->btn_radius) ? $req->btn_radius : null);
+                    if ($btnType === null || $radius === null) {
+                        return response(['error' => 'Geçersiz buton stili.']);
+                    }
+                    $theme->btn_type = $btnType;
+                    $theme->btn_transparent = filter_var($req->btn_transparent, FILTER_VALIDATE_BOOLEAN);
+                    $theme->btn_radius = $radius;
                     break;
 
                 case 'btn_bg_color':
-                    $theme->btn_bg_color = $req->btn_bg_color;
+                    $hex = SafeTheme::hex(is_string($req->btn_bg_color) ? $req->btn_bg_color : null);
+                    if ($hex === null) {
+                        return response(['error' => 'Geçersiz renk.']);
+                    }
+                    $theme->btn_bg_color = $hex;
                     break;
 
                 case 'btn_text_color':
-                    $theme->btn_text_color = $req->btn_text_color;
+                    $hex = SafeTheme::hex(is_string($req->btn_text_color) ? $req->btn_text_color : null);
+                    if ($hex === null) {
+                        return response(['error' => 'Geçersiz renk.']);
+                    }
+                    $theme->btn_text_color = $hex;
                     break;
 
                 case 'font_family':
-                    $theme->font_family = $req->font_family;
+                    $font = SafeTheme::font(is_string($req->font_family) ? $req->font_family : null);
+                    if ($font === null) {
+                        return response(['error' => 'Geçersiz yazı tipi.']);
+                    }
+                    $theme->font_family = $font;
                     break;
 
                 default:
@@ -494,4 +535,63 @@ class BioLinkController extends Controller
         }
     }
     //--------------------------------------------------
+
+    private function sanitizedSocials(mixed $raw): string
+    {
+        $list = $raw;
+        if (is_string($raw)) {
+            $list = json_decode($raw, true);
+        }
+        if (!is_array($list)) {
+            throw ValidationException::withMessages([
+                'socials' => 'Geçersiz sosyal bağlantı verisi.',
+            ]);
+        }
+
+        $out = [];
+        foreach ($list as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $name = isset($item['name']) && is_string($item['name']) ? $item['name'] : '';
+            $link = isset($item['link']) && is_string($item['link']) ? trim($item['link']) : '';
+            $icon = isset($item['icon']) && is_string($item['icon']) ? $item['icon'] : '';
+            if ($name === '' || $link === '') {
+                continue;
+            }
+
+            if ($name === 'email') {
+                $email = preg_replace('/^mailto:/i', '', $link) ?? $link;
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    throw ValidationException::withMessages([
+                        'socials' => 'Geçersiz e-posta adresi.',
+                    ]);
+                }
+                $link = $email;
+            } elseif ($name === 'telephone' || $name === 'whatsapp') {
+                $digits = preg_replace('/[^\d+]/', '', $link) ?? '';
+                if (!preg_match('/^\+?\d{7,20}$/', $digits)) {
+                    throw ValidationException::withMessages([
+                        'socials' => 'Geçersiz telefon numarası.',
+                    ]);
+                }
+            } else {
+                $canonical = SafeUrl::canonicalize($link);
+                if ($canonical === null) {
+                    throw ValidationException::withMessages([
+                        'socials' => 'Geçersiz sosyal medya bağlantısı.',
+                    ]);
+                }
+                $link = $canonical;
+            }
+
+            $out[] = [
+                'name' => $name,
+                'link' => $link,
+                'icon' => $icon,
+            ];
+        }
+
+        return json_encode($out);
+    }
 }

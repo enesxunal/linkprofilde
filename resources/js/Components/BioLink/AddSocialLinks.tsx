@@ -1,4 +1,4 @@
-import { FormEventHandler, useState, Fragment } from "react";
+import { FormEventHandler, useState } from "react";
 import { Button, Dialog } from "@material-tailwind/react";
 import { LinkProps } from "@/types";
 import CirclePlus from "../Icons/CirclePlus";
@@ -7,7 +7,14 @@ import { useForm } from "@inertiajs/react";
 import { socialType, socialsLinks } from "@/utils/data/socials-links";
 import axios from "axios";
 import { error } from "@/utils/toast";
-import { getLink } from "@/utils/utils";
+import {
+   getLink,
+   isSafeHex,
+   safeHttpUrl,
+   safeMailtoHref,
+   safeTelHref,
+   whatsappHref,
+} from "@/utils/utils";
 import Email2 from "../Icons/Email2";
 import Telephone from "../Icons/Telephone";
 import Telegram from "../Icons/Telegram";
@@ -94,59 +101,41 @@ const AddSocialLinks = (props: Props) => {
       socials = JSON.parse(link.socials);
    }
 
-   const socialColor = link.social_color ? link.social_color : "#101828";
+   const socialColor = isSafeHex(link.social_color)
+      ? link.social_color
+      : "#101828";
 
    return (
       <div className="card flex items-center justify-center flex-wrap gap-4 p-6 mb-7">
          {socials.map((item, ind) => {
             const Icon = icons[item.icon];
+            if (!Icon) return null;
+
+            const href =
+               item.name === "email"
+                  ? safeMailtoHref(item.link)
+                  : item.name === "telephone"
+                  ? safeTelHref(item.link)
+                  : item.name === "whatsapp"
+                  ? whatsappHref(item.link)
+                  : safeHttpUrl(item.link);
+
+            if (!href) return null;
+
+            const external =
+               item.name !== "email" && item.name !== "telephone";
 
             return (
-               <Fragment key={ind}>
-                  {item.name === "email" ? (
-                     <a href={("mailto:" + item.link) as any} className="mx-2">
-                        <Icon
-                           className="w-7 h-7"
-                           style={{ color: socialColor }}
-                        />
-                     </a>
-                  ) : item.name === "telephone" ? (
-                     <a href={("tel:" + item.link) as any} className="mx-2">
-                        <Icon
-                           className="w-7 h-7"
-                           style={{ color: socialColor }}
-                        />
-                     </a>
-                  ) : item.name === "whatsapp" ? (
-                     <a
-                        target="_blank"
-                        href={
-                           (() => {
-                              const d = (item.link || "").replace(/\D/g, "");
-                              const num = d.startsWith("0") ? "90" + d.slice(1) : d;
-                              return "https://wa.me/" + num;
-                           })() as any
-                        }
-                        className="mx-2"
-                     >
-                        <Icon
-                           className="w-7 h-7"
-                           style={{ color: socialColor }}
-                        />
-                     </a>
-                  ) : (
-                     <a
-                        target="_blank"
-                        href={item.link as any}
-                        className="mx-2"
-                     >
-                        <Icon
-                           className="w-7 h-7"
-                           style={{ color: socialColor }}
-                        />
-                     </a>
-                  )}
-               </Fragment>
+               <a
+                  key={ind}
+                  href={href}
+                  className="mx-2"
+                  {...(external
+                     ? { target: "_blank", rel: "noopener noreferrer" }
+                     : {})}
+               >
+                  <Icon className="w-7 h-7" style={{ color: socialColor }} />
+               </a>
             );
          })}
 

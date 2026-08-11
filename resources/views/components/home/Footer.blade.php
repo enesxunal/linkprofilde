@@ -45,9 +45,12 @@
                                     $encode = json_encode($list);
                                     $item = json_decode($encode, true);
                                 ?>
-                                <a target="_blank" href="{{ $item['url'] }}">
-                                    @include("components.icons.".$item['icon'], ['class'=>'w-4 h-4 mr-4 text-gray-400'])
-                                </a>
+                                @php $href = \App\Support\SafeUrl::href($item['url'] ?? null); @endphp
+                                @if ($href)
+                                    <a target="_blank" rel="noopener noreferrer" href="{{ $href }}">
+                                        @include("components.icons.".$item['icon'], ['class'=>'w-4 h-4 mr-4 text-gray-400'])
+                                    </a>
+                                @endif
                             @endforeach
                         </div>
                     </div>
@@ -72,11 +75,16 @@
                                 $encode = json_encode($list);
                                 $item = json_decode($encode, true);
                             ?>
-                            <li class="mb-4 last:mb-0">
-                                <a href="{{ $item['url'] }}">
-                                    {{ $item['content'] }}
-                                </a>
-                            </li>
+                                    <li class="mb-4 last:mb-0">
+                                        @php $href = \App\Support\SafeUrl::href($item['url'] ?? null); @endphp
+                                        @if ($href)
+                                            <a href="{{ $href }}" @if(\Illuminate\Support\Str::startsWith($href, ['http://', 'https://'])) target="_blank" rel="noopener noreferrer" @endif>
+                                                {{ $item['content'] }}
+                                            </a>
+                                        @else
+                                            {{ $item['content'] }}
+                                        @endif
+                                    </li>
                         @endforeach
                     </ul>
                 </div>

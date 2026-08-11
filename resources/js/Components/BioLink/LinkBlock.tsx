@@ -7,6 +7,7 @@ import { LinkItemProps } from "@/types";
 import { useState } from "react";
 import icons from "../Icons";
 import RightArrow from "../Icons/RightArrow";
+import { safeEmbedSrc, safeHttpUrl, safeTikTokUrl } from "@/utils/utils";
 
 interface Props {
    item: LinkItemProps;
@@ -18,21 +19,37 @@ const LinkBlock = (props: Props) => {
    const [openAcc, setOpenAcc] = useState(false);
    const handleOpenAcc = () => setOpenAcc((cur) => !cur);
    const Icon = icons[item.item_icon];
+   const linkHref = safeHttpUrl(item.item_link);
+   const embedSrc = safeEmbedSrc(item.item_link);
+   const tiktokUrl = safeTikTokUrl(item.item_link);
 
    return (
       <>
          {item.item_icon === "Link" ? (
-            <a
-               key={item.id}
-               target="_blank"
-               href={item.item_link as any}
-               className="font-medium flex items-center justify-between p-4 my-4"
-               style={buttonStyle}
-            >
-               <Icon className="w-5 h-5" />
-               {item.item_title}
-               <span></span>
-            </a>
+            linkHref ? (
+               <a
+                  key={item.id}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={linkHref}
+                  className="font-medium flex items-center justify-between p-4 my-4"
+                  style={buttonStyle}
+               >
+                  {Icon ? <Icon className="w-5 h-5" /> : <span></span>}
+                  {item.item_title}
+                  <span></span>
+               </a>
+            ) : (
+               <div
+                  key={item.id}
+                  className="font-medium flex items-center justify-between p-4 my-4"
+                  style={buttonStyle}
+               >
+                  {Icon ? <Icon className="w-5 h-5" /> : <span></span>}
+                  {item.item_title}
+                  <span></span>
+               </div>
+            )
          ) : item.item_icon === "Heading" ? (
             <div className="p-4 my-4 text-center">
                {item.item_sub_type === "h1" ? (
@@ -61,7 +78,7 @@ const LinkBlock = (props: Props) => {
                   className="border-b-0 text-md pl-4"
                >
                   <div className="w-full font-medium flex items-center justify-between">
-                     <Icon className="w-5 h-5" />
+                     {Icon ? <Icon className="w-5 h-5" /> : <span></span>}
                      <p>{item.item_title}</p>
                      <RightArrow
                         className={`transition duration-300 ${
@@ -73,8 +90,12 @@ const LinkBlock = (props: Props) => {
                <AccordionBody className="p-3">
                   {item.item_icon === "Image" ? (
                      <>
-                        {item.item_link ? (
-                           <a href={item.item_link} target="_blank">
+                        {linkHref ? (
+                           <a
+                              href={linkHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                           >
                               <img
                                  src={`/${item.content}`}
                                  alt={item.item_title}
@@ -96,29 +117,31 @@ const LinkBlock = (props: Props) => {
                   {item.item_type === "Embed" && item.item_link && (
                      <>
                         {item.item_icon === "TikTok" ? (
-                           <blockquote
-                              cite={item.item_link}
-                              data-video-id={item.item_link
-                                 .split("video")
-                                 .pop()
-                                 ?.slice(1)}
-                              className="tiktok-embed w-full h-auto"
-                           >
-                              <section></section>
-                              <script
-                                 async
-                                 src="https://www.tiktok.com/embed.js"
-                              ></script>
-                           </blockquote>
-                        ) : (
+                           tiktokUrl ? (
+                              <blockquote
+                                 cite={tiktokUrl}
+                                 data-video-id={tiktokUrl
+                                    .split("video")
+                                    .pop()
+                                    ?.slice(1)}
+                                 className="tiktok-embed w-full h-auto"
+                              >
+                                 <section></section>
+                              </blockquote>
+                           ) : null
+                        ) : embedSrc ? (
                            <iframe
                               width="100%"
                               height="200"
-                              allowFullScreen
-                              src={item.item_link}
+                              src={embedSrc}
                               className="rounded"
+                              sandbox="allow-scripts allow-same-origin allow-popups"
+                              referrerPolicy="no-referrer"
+                              allow="fullscreen; encrypted-media"
+                              allowFullScreen
+                              title={item.item_title || "Embed"}
                            ></iframe>
-                        )}
+                        ) : null}
                      </>
                   )}
                </AccordionBody>

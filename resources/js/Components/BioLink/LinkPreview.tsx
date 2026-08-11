@@ -1,10 +1,17 @@
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState } from "react";
 import SimpleBar from "simplebar-react";
 import UserCircle from "../Icons/UserCircle";
 import { LinkProps, PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import LinkBlock from "./LinkBlock";
 import { socialType } from "@/utils/data/socials-links";
+import {
+   isSafeHex,
+   safeHttpUrl,
+   safeMailtoHref,
+   safeTelHref,
+   whatsappHref,
+} from "@/utils/utils";
 import icons from "../Icons";
 const IdCardIcon = icons.IdCard;
 
@@ -31,7 +38,9 @@ const LinkPreview = (props: { link: LinkProps; buttonStyle: any }) => {
       socials = JSON.parse(link.socials);
    }
 
-   const socialColor = link.social_color ? link.social_color : "#101828";
+   const socialColor = isSafeHex(link.social_color)
+      ? link.social_color
+      : "#101828";
 
    const contactPhone = socials.find(
       (s) => s.link && (s.name === "telephone" || s.name === "whatsapp")
@@ -88,59 +97,39 @@ const LinkPreview = (props: { link: LinkProps; buttonStyle: any }) => {
                   <div className="flex items-center justify-center flex-wrap gap-4 mt-2 mb-8">
                      {socials.map((item, ind) => {
                         const Icon = icons[item.icon];
+                        if (!Icon) return null;
+
+                        const href =
+                           item.name === "email"
+                              ? safeMailtoHref(item.link)
+                              : item.name === "telephone"
+                              ? safeTelHref(item.link)
+                              : item.name === "whatsapp"
+                              ? whatsappHref(item.link)
+                              : safeHttpUrl(item.link);
+
+                        if (!href) return null;
+
+                        const external =
+                           item.name !== "email" && item.name !== "telephone";
 
                         return (
-                           <Fragment key={ind}>
-                              {item.name === "email" ? (
-                                 <a
-                                    href={("mailto:" + item.link) as any}
-                                    className="mx-2"
-                                 >
-                                    <Icon
-                                       className="w-6 h-6"
-                                       style={{ color: socialColor }}
-                                    />
-                                 </a>
-                              ) : item.name === "telephone" ? (
-                                 <a
-                                    href={("tel:" + item.link) as any}
-                                    className="mx-2"
-                                 >
-                                    <Icon
-                                       className="w-6 h-6"
-                                       style={{ color: socialColor }}
-                                    />
-                                 </a>
-                              ) : item.name === "whatsapp" ? (
-                                 <a
-                                    target="_blank"
-                                    href={
-                                       (() => {
-                                          const d = (item.link || "").replace(/\D/g, "");
-                                          const num = d.startsWith("0") ? "90" + d.slice(1) : d;
-                                          return "https://wa.me/" + num;
-                                       })() as any
-                                    }
-                                    className="mx-2"
-                                 >
-                                    <Icon
-                                       className="w-6 h-6"
-                                       style={{ color: socialColor }}
-                                    />
-                                 </a>
-                              ) : (
-                                 <a
-                                    target="_blank"
-                                    href={item.link as any}
-                                    className="mx-2"
-                                 >
-                                    <Icon
-                                       className="w-6 h-6"
-                                       style={{ color: socialColor }}
-                                    />
-                                 </a>
-                              )}
-                           </Fragment>
+                           <a
+                              key={ind}
+                              href={href}
+                              className="mx-2"
+                              {...(external
+                                 ? {
+                                      target: "_blank",
+                                      rel: "noopener noreferrer",
+                                   }
+                                 : {})}
+                           >
+                              <Icon
+                                 className="w-6 h-6"
+                                 style={{ color: socialColor }}
+                              />
+                           </a>
                         );
                      })}
                   </div>

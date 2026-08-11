@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\AppHelper;
+use App\Support\BioItemLink;
 use Illuminate\Http\Request;
 use App\Models\LinkItem;
+use Illuminate\Validation\ValidationException;
 
 class BioLinkBlockController extends Controller
 {
@@ -24,13 +26,19 @@ class BioLinkBlockController extends Controller
         }
 
         try {
+            $itemLink = BioItemLink::normalize(
+                is_string($req->item_link) ? $req->item_link : null,
+                is_string($req->item_type) ? $req->item_type : null,
+                is_string($req->item_icon) ? $req->item_icon : null
+            );
+
             $item = new LinkItem;
             $item->link_id = (int) $req->link_id;
             $item->item_position = (int) $req->item_position;
             $item->item_type = $req->item_type;
             $item->item_sub_type = $req->item_sub_type == "null" ? NULL : $req->item_sub_type;
             $item->item_title = $req->item_title;
-            $item->item_link = $req->item_link == "null" ? NULL : $req->item_link;
+            $item->item_link = $itemLink;
             $item->item_icon = $req->item_icon;
 
             if ($req->hasFile('image')) {
@@ -42,6 +50,10 @@ class BioLinkBlockController extends Controller
             $link = AppHelper::get_link($req->link_id);
 
             return response()->json(['success' => true, 'item' => $item, 'link' => $link]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => collect($e->errors())->flatten()->first() ?? 'Geçersiz veri.',
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
         }
@@ -69,10 +81,16 @@ class BioLinkBlockController extends Controller
         }
 
         try {
+            $itemLink = BioItemLink::normalize(
+                is_string($req->item_link) ? $req->item_link : null,
+                is_string($req->item_type) ? $req->item_type : (string) $item->item_type,
+                is_string($req->item_icon) ? $req->item_icon : (string) $item->item_icon
+            );
+
             $item->item_type = $req->item_type;
             $item->item_sub_type = $req->item_sub_type == "null" ? NULL : $req->item_sub_type;
             $item->item_title = $req->item_title;
-            $item->item_link = $req->item_link == "null" ? NULL : $req->item_link;
+            $item->item_link = $itemLink;
 
             if ($req->hasFile('image')) {
                 AppHelper::safeDeleteUpload($item->content);
@@ -87,6 +105,10 @@ class BioLinkBlockController extends Controller
             $link = AppHelper::get_link($req->link_id);
 
             return response()->json(['success' => true, 'link' => $link]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => collect($e->errors())->flatten()->first() ?? 'Geçersiz veri.',
+            ]);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
         }
