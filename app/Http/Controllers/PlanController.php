@@ -179,10 +179,16 @@ class PlanController extends Controller
     // When user select pro plan to basic plan
     public function basic_plan($id)
     {
+        $plan = PricingPlan::where('name', 'BASIC')
+            ->where('status', 'active')
+            ->where('monthly_price', 0)
+            ->where('yearly_price', 0)
+            ->firstOrFail();
+
         try {
             $user = User::where('id', auth()->user()->id)->first();
 
-            $user->pricing_plan_id = $id;
+            $user->pricing_plan_id = $plan->id;
             $user->next_payment = null;
             $user->subscription_id = null;
             $user->recurring = null;
