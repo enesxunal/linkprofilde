@@ -136,31 +136,34 @@ if ($installed) {
 
 
         Route::get('/billing/{id}', [SubscriptionController::class, 'Billing'])->name('billing');
-        // Paypal routes start
-        Route::post('paypal/payment', [PaypalController::class, 'payment'])->name('paypal.payment');
-        Route::get('paypal/success', [PaypalController::class, 'success'])->name('paypal.success');
-        Route::get('paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
+
+        if (!app()->environment('production')) {
+            // Paypal routes start
+            Route::post('paypal/payment', [PaypalController::class, 'payment'])->name('paypal.payment');
+            Route::get('paypal/success', [PaypalController::class, 'success'])->name('paypal.success');
+            Route::get('paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
 
 
-        // Paypal routes start
-        Route::post('stripe/payment', [StripeController::class, 'payment'])->name('stripe.payment');
-        Route::get('stripe/success', [StripeController::class, 'success'])->name('stripe.success');
-        Route::get('stripe/cancel', [StripeController::class, 'cancel'])->name('stripe.cancel');
+            // Paypal routes start
+            Route::post('stripe/payment', [StripeController::class, 'payment'])->name('stripe.payment');
+            Route::get('stripe/success', [StripeController::class, 'success'])->name('stripe.success');
+            Route::get('stripe/cancel', [StripeController::class, 'cancel'])->name('stripe.cancel');
 
 
-        // Razorpay routes start
-        Route::get('razorpay/form', [RazorpayController::class, 'show_form'])->name('razorpay.form');
-        Route::post('razorpay/payment', [RazorpayController::class, 'payment'])->name('razorpay.payment');
+            // Razorpay routes start
+            Route::get('razorpay/form', [RazorpayController::class, 'show_form'])->name('razorpay.form');
+            Route::post('razorpay/payment', [RazorpayController::class, 'payment'])->name('razorpay.payment');
 
 
-        // mollie routes start
-        Route::post('mollie/payment', [MollieController::class, 'payment'])->name('mollie.payment');
-        Route::get('mollie/success', [MollieController::class, 'success'])->name('mollie.success');
+            // mollie routes start
+            Route::post('mollie/payment', [MollieController::class, 'payment'])->name('mollie.payment');
+            Route::get('mollie/success', [MollieController::class, 'success'])->name('mollie.success');
 
 
-        // paystack routes start
-        Route::get('paystack/redirect', [PaystackController::class, 'paystack_redirect'])->name('paystack.redirect');
-        Route::get('paystack/callback', [PaystackController::class, 'verify_transaction'])->name('paystack.callback');
+            // paystack routes start
+            Route::get('paystack/redirect', [PaystackController::class, 'paystack_redirect'])->name('paystack.redirect');
+            Route::get('paystack/callback', [PaystackController::class, 'verify_transaction'])->name('paystack.callback');
+        }
 
         // Tosla ödeme
         Route::post('tosla/payment', [ToslaController::class, 'payment'])->name('tosla.payment');

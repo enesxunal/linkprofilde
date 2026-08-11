@@ -18,6 +18,10 @@ class ToslaController extends Controller
 {
     public function payment(Request $request)
     {
+        if (app()->environment('production')) {
+            abort(404);
+        }
+
         $request->validate([
             'plan_id' => 'required|exists:pricing_plans,id',
             'billing_type' => 'required|in:monthly,yearly',
@@ -54,6 +58,10 @@ class ToslaController extends Controller
      */
     public function form(Request $request)
     {
+        if (app()->environment('production')) {
+            abort(404);
+        }
+
         if (!session()->has('plan_id')) {
             return redirect()->route('plan')->with('error', 'Oturum süresi doldu. Lütfen plan seçimini tekrarlayın.');
         }
@@ -65,6 +73,10 @@ class ToslaController extends Controller
      */
     public function callback(Request $request)
     {
+        if (app()->environment('production')) {
+            abort(404);
+        }
+
         // TODO: Tosla'dan gelen parametreleri doğrula (imza, transaction_id vb.).
         // Şimdilik GET ile test için success'e yönlendiriyoruz.
         return redirect()->route('tosla.success');
@@ -72,6 +84,10 @@ class ToslaController extends Controller
 
     public function success(Request $request)
     {
+        if (app()->environment('production')) {
+            abort(404);
+        }
+
         try {
             $plan_id = session()->get('plan_id');
             $billing_type = session()->get('billing_type');
