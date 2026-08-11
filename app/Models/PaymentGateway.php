@@ -23,4 +23,8 @@ class PaymentGateway extends Model
         'secret',
         'api_pass',
     ];
+
+    protected $casts = [
+        'api_pass' => 'encrypted',
+    ];
 }

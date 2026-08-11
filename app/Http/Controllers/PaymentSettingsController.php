@@ -61,28 +61,31 @@ class PaymentSettingsController extends Controller
 
         $allow_tosla = $request->allow_tosla ? true : false;
         $existing = PaymentGateway::where('name', 'tosla')->first();
-        $apiPass = $request->filled('tosla_api_pass')
-            ? $request->input('tosla_api_pass')
-            : ($existing->api_pass ?? null);
+        $incomingApiPass = $request->input('tosla_api_pass');
+        $hasNewApiPass = is_string($incomingApiPass) && $incomingApiPass !== '';
 
-        if (!$existing && empty($apiPass)) {
+        if (!$existing && !$hasNewApiPass) {
             return back()
                 ->withErrors(['tosla_api_pass' => 'Yeni Tosla kaydı için ApiPass gerekli.'])
                 ->withInput($request->except('tosla_api_pass'));
         }
 
         try {
-            PaymentGateway::updateOrCreate(
-                ['name' => 'tosla'],
-                [
-                    'active' => $allow_tosla,
-                    'client_id' => $request->tosla_client_id,
-                    'api_user' => $request->tosla_api_user,
-                    'api_pass' => $apiPass,
-                    'key' => $request->tosla_client_id,
-                    'secret' => null,
-                ]
-            );
+            if (!$existing) {
+                $existing = new PaymentGateway();
+                $existing->name = 'tosla';
+            }
+
+            $existing->active = $allow_tosla;
+            $existing->client_id = $request->tosla_client_id;
+            $existing->api_user = $request->tosla_api_user;
+            $existing->key = $request->tosla_client_id;
+            $existing->secret = null;
+            if ($hasNewApiPass) {
+                $existing->api_pass = $incomingApiPass;
+            }
+            $existing->save();
+
             return back()->with('success', 'Tosla ayarları başarıyla güncellendi.');
         } catch (\Throwable $th) {
             return back()
