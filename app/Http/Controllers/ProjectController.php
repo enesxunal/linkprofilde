@@ -75,8 +75,13 @@ class ProjectController extends Controller
             'project_name' => ['required', 'string', 'max:50', new XSSPurifier]
         ]);
 
+        $query = Project::where('id', $id)->with('qrcodes');
+        if (!auth()->user()->hasRole('SUPER-ADMIN')) {
+            $query->where('user_id', auth()->id());
+        }
+        $project = $query->firstOrFail();
+
         try {
-            $project = Project::where('id', $id)->with('qrcodes')->first();
             $project->project_name = $req->project_name;
             $project->save();
 
@@ -92,9 +97,13 @@ class ProjectController extends Controller
     // Delete project
     public function delete($id)
     {
-        try {
-            $project = Project::find($id);
+        $query = Project::where('id', $id);
+        if (!auth()->user()->hasRole('SUPER-ADMIN')) {
+            $query->where('user_id', auth()->id());
+        }
+        $project = $query->firstOrFail();
 
+        try {
             if ($project->qrcode_id) {
                 QRCode::where('id', $project->qrcode_id)->delete();
             }
@@ -138,10 +147,20 @@ class ProjectController extends Controller
     // Getting all the qr-code of user or admin
     public function qrcodes($id)
     {
+        $query = Project::where('id', $id);
+        if (!auth()->user()->hasRole('SUPER-ADMIN')) {
+            $query->where('user_id', auth()->id());
+        }
+        $project = $query->firstOrFail();
+
         try {
-            $project = Project::with(['qrcodes' => function ($query) {
+            $project->load(['qrcodes' => function ($query) {
+                if (!auth()->user()->hasRole('SUPER-ADMIN')) {
+                    $query->where('user_id', auth()->id());
+                }
+
                 $query->orderBy('created_at', 'desc');
-            }])->find($id);
+            }]);
 
             return Inertia::render('Projects/QRCodes', compact('project'));
         } catch (\Throwable $th) {

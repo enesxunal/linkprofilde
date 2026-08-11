@@ -112,8 +112,13 @@ class ShortLinkController extends Controller
             'external_url' => ['required', 'min:10', 'max:255', 'url', new XSSPurifier],
         ]);
 
+        $query = Link::where('id', $id)->where('link_type', 'shortlink');
+        if (!auth()->user()->hasRole('SUPER-ADMIN')) {
+            $query->where('user_id', auth()->id());
+        }
+        $link = $query->firstOrFail();
+
         try {
-            $link = Link::find($id);
             $link->link_name = $req->link_name;
             $link->external_url = $req->external_url;
             $link->save();
@@ -130,11 +135,23 @@ class ShortLinkController extends Controller
     // Delete a bio-link
     public function delete($id)
     {
+        $query = Link::where('id', $id)->where('link_type', 'shortlink');
+        if (!auth()->user()->hasRole('SUPER-ADMIN')) {
+            $query->where('user_id', auth()->id());
+        }
+        $link = $query->firstOrFail();
+
         try {
-            $link = Link::find($id);
             LinkItem::where('item_link', $link->url_name)->delete();
             if ($link->qrcode_id) {
-                QRCode::find($link->qrcode_id)->delete();
+                $qrQuery = QRCode::where('id', $link->qrcode_id)
+                    ->where('link_id', $link->id);
+
+                if (!auth()->user()->hasRole('SUPER-ADMIN')) {
+                    $qrQuery->where('user_id', auth()->id());
+                }
+
+                $qrQuery->delete();
             }
             $link->delete();
 
@@ -150,9 +167,15 @@ class ShortLinkController extends Controller
     // Bio-link analytics for tracking bio-link
     public function analytics($id)
     {
+        $query = Link::where('id', $id)->where('link_type', 'shortlink');
+        if (!auth()->user()->hasRole('SUPER-ADMIN')) {
+            $query->where('user_id', auth()->id());
+        }
+        $link = $query->firstOrFail();
+
         try {
             $languages = Language::get();
-            $analytics = ShetabitVisit::where('link_id', $id)->get();
+            $analytics = ShetabitVisit::where('link_id', $link->id)->get();
 
             return Inertia::render('LinkAnalytics', compact('analytics', 'languages'));
         } catch (\Throwable $th) {
@@ -171,18 +194,20 @@ class ShortLinkController extends Controller
             $query = $request->value;
             $page = $request->per_page ? intval($request->per_page) : 10;
 
-            $baseQuery = Link::where('link_type', 'shortlink')
+            $baseQuery = Link::where('link_type', 'shortlink');
+
+            if (!$user->hasRole('SUPER-ADMIN')) {
+                $baseQuery->where('user_id', $user->id);
+            }
+
+            $links = $baseQuery
                 ->where('link_name', 'LIKE', '%' . $query . '%')
                 ->orderBy('created_at', 'desc')
                 ->with('qrcode')
                 ->with('visited')
                 ->paginate($page);
 
-            if ($user->role !== 'admin') {
-                $baseQuery->where('user_id', $user->id);
-            }
-
-            return $baseQuery;
+            return $links;
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()]);
         }
