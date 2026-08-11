@@ -172,6 +172,10 @@ class ToslaController extends Controller
             return redirect()->route('plan')->with('error', 'Ödeme doğrulanamadı.');
         }
 
+        if ($this->callbackValue($request, 'RequestStatus') !== '1') {
+            return redirect()->route('plan')->with('error', 'Ödeme doğrulanamadı.');
+        }
+
         $orderId = $this->callbackValue($request, 'OrderId');
         $callbackThreeDSessionId = $this->callbackValue($request, 'ThreeDSessionId');
         $callbackTransactionId = $this->callbackValue($request, 'TransactionId');
@@ -203,7 +207,7 @@ class ToslaController extends Controller
         }
 
         try {
-            $this->activatePaidPlan($attempt, $inquiry['transaction_id']);
+            $this->activatePaidPlan($attempt);
         } catch (Throwable $th) {
             return redirect()->route('plan')->with('error', 'Ödeme işlenemedi.');
         }
@@ -383,7 +387,7 @@ class ToslaController extends Controller
         $orderId = (string) $this->payloadValue($data, 'OrderId');
         $amount = $this->payloadValue($data, 'Amount');
         $currency = $this->payloadValue($data, 'Currency');
-        $transactionId = (string) $this->payloadValue($data, 'TransactionId');
+        $inquiryTransactionId = $this->payloadValue($data, 'TransactionId');
         $clientId = (string) $this->payloadValue($data, 'ClientId');
 
         if ((int) $code !== 0) {
@@ -410,36 +414,51 @@ class ToslaController extends Controller
             return null;
         }
 
-        if ($transactionId === '') {
-            return null;
-        }
-
         if ($clientId !== $credentials['client_id']) {
             return null;
         }
 
-        if (!hash_equals((string) $attempt->provider_transaction_id, $transactionId)) {
-            return null;
+        if (!$this->inquiryTransactionIdIsAbsent($inquiryTransactionId)) {
+            if (!hash_equals((string) $attempt->provider_transaction_id, (string) $inquiryTransactionId)) {
+                return null;
+            }
         }
 
         return [
-            'transaction_id' => $transactionId,
             'payload' => $data,
         ];
     }
 
-    private function activatePaidPlan(PaymentAttempt $attempt, string $transactionId): void
+    private function inquiryTransactionIdIsAbsent($value): bool
     {
-        DB::transaction(function () use ($attempt, $transactionId) {
+        if ($value === null) {
+            return true;
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (int) $value === 0;
+        }
+
+        $normalized = trim((string) $value);
+
+        return $normalized === '' || $normalized === '0';
+    }
+
+    private function activatePaidPlan(PaymentAttempt $attempt): void
+    {
+        DB::transaction(function () use ($attempt) {
             $locked = PaymentAttempt::where('id', $attempt->id)->lockForUpdate()->first();
             if (!$locked || $locked->status === 'paid') {
                 return;
             }
 
-            $existing = Subscription::where('transaction_id', $transactionId)->first();
-            if ($existing) {
+            $transactionId = (string) $locked->provider_transaction_id;
+            if ($transactionId === '') {
+                throw new \RuntimeException('Missing provider transaction id');
+            }
+
+            if (Subscription::where('transaction_id', $transactionId)->exists()) {
                 $locked->status = 'paid';
-                $locked->provider_transaction_id = $transactionId;
                 $locked->save();
                 return;
             }
@@ -466,7 +485,6 @@ class ToslaController extends Controller
             $user->save();
 
             $locked->status = 'paid';
-            $locked->provider_transaction_id = $transactionId;
             $locked->save();
         });
     }
