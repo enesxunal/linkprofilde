@@ -15,10 +15,8 @@ use App\Models\CustomTheme;
 use App\Models\PricingPlan;
 use App\Models\ShetabitVisit;
 use App\Rules\CheckLinkName;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
-use Intervention\Image\ImageManagerStatic as Image;
 use App\Jobs\UpdateVisitLocationJob;
 
 class BioLinkController extends Controller
@@ -214,18 +212,17 @@ class BioLinkController extends Controller
             $messages = ['link_bio.max' => 'Bio description length must be 1 to 200 characters'];
 
             $this->validate($req, $rules, $messages,);
-            $thumbnail = $req->thumbnail;
 
-            if ($thumbnail != 'null') {
-                $rules = ['thumbnail' => 'image|mimes:jpg,png,jpeg,svg|max:1024'];
+            if ($req->hasFile('thumbnail')) {
+                $rules = ['thumbnail' => AppHelper::imageRules(1024)];
                 $messages = [
                     'thumbnail.max' => 'Image size will be 1MB',
-                    'thumbnail.image' => 'Allow only jpg,png,jpeg,svg type image',
+                    'thumbnail.image' => 'Allow only jpg, png, jpeg type image',
                 ];
 
                 $this->validate($req, $rules, $messages,);
-                if ($link->thumbnail) File::delete(public_path($link->thumbnail));
-                $imgUrl = AppHelper::image_uploader($thumbnail);
+                AppHelper::safeDeleteUpload($link->thumbnail);
+                $imgUrl = AppHelper::image_uploader($req->file('thumbnail'));
 
                 $link->link_name = $req->link_name;
                 $link->short_bio = $req->short_bio;
@@ -255,11 +252,18 @@ class BioLinkController extends Controller
             abort(403, 'Yetkisiz erişim.');
         }
 
+        if ($req->hasFile('branding')) {
+            $req->validate([
+                'branding' => AppHelper::imageRules(2048),
+            ]);
+        }
+
         try {
-            if ($link->branding) File::delete(public_path($link->branding));
-            $imgUrl = AppHelper::image_uploader($req->branding);
-            $link->branding = $imgUrl;
-            $link->save();
+            if ($req->hasFile('branding')) {
+                AppHelper::safeDeleteUpload($link->branding);
+                $link->branding = AppHelper::image_uploader($req->file('branding'));
+                $link->save();
+            }
 
             $updatedLink = AppHelper::get_link($id);
             return response(['success' => true, 'link' => $updatedLink]);
@@ -376,20 +380,17 @@ class BioLinkController extends Controller
 
                 case 'bg_image':
                     $rules = [
-                        'bg_image' => 'image|mimes:jpg,png,jpeg,svg|max:5120',
+                        'bg_image' => AppHelper::imageRules(5120),
                     ];
                     $messages = [
-                        'bg_image.image' => 'Allow only jpg,png,jpeg,svg type image',
+                        'bg_image.image' => 'Allow only jpg, png, jpeg type image',
                         'bg_image.max' => 'Image size will be 5MB',
                     ];
 
                     $this->validate($req, $rules, $messages,);
-                    if ($theme->bg_image) File::delete($theme->bg_image);
+                    AppHelper::safeDeleteUpload($theme->bg_image);
 
-                    $location = public_path('/upload/');
-                    $image = Image::make($req->bg_image);
-                    $image->save($location . time() . $req->bg_image->getClientOriginalName());
-                    $imgUrl = 'upload/' . $image->filename . '.' . $image->extension;
+                    $imgUrl = AppHelper::image_uploader($req->file('bg_image'));
 
                     $theme->background = "background-image: url('/$imgUrl')";
                     $theme->background_type = "image";

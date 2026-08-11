@@ -20,4 +20,5 @@ yarn-error.log
 
 /.zip
 /.idea.zip
-/public/upload/
+/public/upload/*
+!/public/upload/.htaccess

@@ -79,21 +79,18 @@ class AppSettingsController extends Controller
             'copyright' => ['required', 'max:100', new XSSPurifier],
             'description' => ['required', 'max:200', new XSSPurifier],
         ]);
-        if ($request->logo) {
+        if ($request->hasFile('logo')) {
             $request->validate([
-                'logo' => ['image', 'mimes:jpeg,png,jpg,svg', 'max:2048'],
+                'logo' => AppHelper::imageRules(2048),
             ]);
         }
 
         try {
             $app = AppSetting::first();
 
-            if ($request->logo) {
-                if (strpos($app->logo, "asses/icons") !== false) {
-                    File::delete($app->logo);
-                }
-                $imgUrl = AppHelper::image_uploader($request->logo);
-                $app->logo = $imgUrl;
+            if ($request->hasFile('logo')) {
+                AppHelper::safeDeleteUpload($app->logo);
+                $app->logo = AppHelper::image_uploader($request->file('logo'));
             }
 
             $app->title = $request->title;
