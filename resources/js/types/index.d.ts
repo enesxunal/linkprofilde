@@ -246,6 +246,9 @@ export interface PaymentProps extends TableCommon {
    active: boolean;
    key: string;
    secret?: string;
+   client_id?: string;
+   api_user?: string;
+   api_pass?: string;
 }
 
 export interface SocialLoginProps extends TableCommon {

@@ -5,12 +5,13 @@ import { Button } from "@material-tailwind/react";
 import { PaymentProps } from "@/types";
 
 const ToslaSettings = (props: { tosla: PaymentProps }) => {
-   const { active, key: merchantId, secret } = props.tosla;
+   const { active, client_id, api_user } = props.tosla;
 
    const { data, setData, patch, errors, clearErrors } = useForm({
       allow_tosla: active,
-      tosla_merchant_id: merchantId ?? "",
-      tosla_secret_key: secret ?? "",
+      tosla_client_id: client_id ?? "",
+      tosla_api_user: api_user ?? "",
+      tosla_api_pass: "",
    });
 
    const onHandleChange = (
@@ -37,7 +38,7 @@ const ToslaSettings = (props: { tosla: PaymentProps }) => {
                Tosla Ödeme
             </p>
             <p className="text-sm text-gray-500 mt-1">
-               Merchant ID ve Secret Key bilgilerini Tosla panelinden alabilirsiniz.
+               ClientId, ApiUser ve ApiPass bilgilerini Tosla panelinden alabilirsiniz.
             </p>
          </div>
          <form onSubmit={submit} className="p-7">
@@ -54,12 +55,26 @@ const ToslaSettings = (props: { tosla: PaymentProps }) => {
                <Input
                   fullWidth
                   type="text"
-                  name="tosla_merchant_id"
-                  value={data.tosla_merchant_id}
-                  error={errors.tosla_merchant_id}
-                  placeholder="Merchant ID (Mağaza Kimliği)"
+                  name="tosla_client_id"
+                  value={data.tosla_client_id}
+                  error={errors.tosla_client_id}
+                  placeholder="ClientId"
                   onChange={onHandleChange}
-                  label="Merchant ID"
+                  label="ClientId"
+                  flexLabel
+                  required
+               />
+            </div>
+            <div className="mb-7">
+               <Input
+                  fullWidth
+                  type="text"
+                  name="tosla_api_user"
+                  value={data.tosla_api_user}
+                  error={errors.tosla_api_user}
+                  placeholder="ApiUser"
+                  onChange={onHandleChange}
+                  label="ApiUser"
                   flexLabel
                   required
                />
@@ -68,14 +83,13 @@ const ToslaSettings = (props: { tosla: PaymentProps }) => {
                <Input
                   fullWidth
                   type="password"
-                  name="tosla_secret_key"
-                  value={data.tosla_secret_key}
-                  error={errors.tosla_secret_key}
-                  placeholder="Secret Key (Güvenlik Anahtarı)"
+                  name="tosla_api_pass"
+                  value={data.tosla_api_pass}
+                  error={errors.tosla_api_pass}
+                  placeholder="Değiştirmek için yeni ApiPass girin"
                   onChange={onHandleChange}
-                  label="Secret Key"
+                  label="ApiPass"
                   flexLabel
-                  required
                />
             </div>
             <div className="flex items-center mt-6 md:pl-[164px]">

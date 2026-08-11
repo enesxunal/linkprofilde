@@ -46,6 +46,8 @@ if ($installed) {
     Route::get('/', [HomeController::class, 'Home']);
     Route::get('/lang/{locale}', [AppSettingsController::class, 'languageChange']);
 
+    Route::post('/tosla/callback', [ToslaController::class, 'callback'])->name('tosla.callback');
+
     Route::middleware(['auth', 'verified', 'role:SUPER-ADMIN|PREMIUM|STANDARD|BASIC', 'next_payment'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
 
@@ -168,7 +170,6 @@ if ($installed) {
         // Tosla ödeme
         Route::post('tosla/payment', [ToslaController::class, 'payment'])->name('tosla.payment');
         Route::get('tosla/form', [ToslaController::class, 'form'])->name('tosla.form');
-        Route::get('tosla/callback', [ToslaController::class, 'callback'])->name('tosla.callback');
         Route::get('tosla/success', [ToslaController::class, 'success'])->name('tosla.success');
         Route::get('tosla/cancel', [ToslaController::class, 'cancel'])->name('tosla.cancel');
     });
