@@ -8,9 +8,11 @@ use App\Models\SmtpSetting;
 use App\Models\SocialLogin;
 use App\Rules\XSSPurifier;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class AppSettingsController extends Controller
@@ -36,7 +38,7 @@ class AppSettingsController extends Controller
     {
         try {
             $app = AppSetting::first();
-            $smtp = SmtpSetting::first();
+            $smtp = $this->smtpPublicProps(SmtpSetting::first());
             $google = SocialLogin::where('name', 'google')->first();
 
             return Inertia::render('Admin/AppSettings', compact('app', 'smtp', 'google'));
@@ -108,22 +110,40 @@ class AppSettingsController extends Controller
     // SMTP settings for admin
     public function smtp_update(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'host' => 'required|max:50',
             'port' => 'required|max:10',
             'username' => 'required|max:50',
-            'password' => 'required|max:100',
+            'password' => 'nullable|string|max:100',
             'encryption' => 'required|max:10',
             'from_address' => 'required|max:100|email',
             'from_name' => 'required|max:50',
             'admin_email' => 'required|max:50',
         ]);
 
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput($request->except('password'));
+        }
+
+        $smtp = SmtpSetting::first();
+        $incomingPassword = $request->input('password');
+        $hasNewPassword = is_string($incomingPassword) && $incomingPassword !== '';
+
+        if (!$smtp && !$hasNewPassword) {
+            return back()
+                ->withErrors(['password' => 'The password field is required.'])
+                ->withInput($request->except('password'));
+        }
+
+        $mailPassword = $hasNewPassword ? $incomingPassword : (string) $smtp->password;
+
         try {
             config(['mail.mailers.smtp.host' => $request->host]);
             config(['mail.mailers.smtp.port' => (int) $request->port]);
             config(['mail.mailers.smtp.username' => $request->username]);
-            config(['mail.mailers.smtp.password' => $request->password]);
+            config(['mail.mailers.smtp.password' => $mailPassword]);
             config(['mail.mailers.smtp.encryption' => $request->encryption]);
             config(['mail.from.address' => $request->from_address]);
             config(['mail.from.name' => $request->from_name]);
@@ -134,21 +154,44 @@ class AppSettingsController extends Controller
                 $message->from($request->from_address, 'Test');
             });
 
-            $smtp = SmtpSetting::first();
+            if (!$smtp) {
+                $smtp = new SmtpSetting();
+            }
 
             $smtp->host = $request->host;
             $smtp->port = $request->port;
             $smtp->username = $request->username;
-            $smtp->password = $request->password;
             $smtp->encryption = $request->encryption;
             $smtp->sender_email = $request->from_address;
             $smtp->sender_name = $request->from_name;
+            if ($hasNewPassword) {
+                $smtp->password = $incomingPassword;
+            }
             $smtp->save();
 
             return back()->with('success', 'SMTP connection is successfully established');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            Log::warning('SMTP update failed', [
+                'exception' => $th::class,
+            ]);
+
+            return back()
+                ->withInput($request->except('password'))
+                ->with('error', 'SMTP settings could not be saved. Please try again.');
         }
+    }
+
+    private function smtpPublicProps(?SmtpSetting $smtp): array
+    {
+        return [
+            'id' => $smtp->id ?? null,
+            'host' => $smtp->host ?? '',
+            'port' => $smtp->port ?? '',
+            'username' => $smtp->username ?? '',
+            'encryption' => $smtp->encryption ?? '',
+            'sender_email' => $smtp->sender_email ?? '',
+            'sender_name' => $smtp->sender_name ?? '',
+        ];
     }
 
 
