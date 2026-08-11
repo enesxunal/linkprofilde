@@ -1,16 +1,5 @@
 <?php
 
-Route::get('/temizle', function() {
-    Artisan::call('route:clear');
-    Artisan::call('cache:clear');
-    return "Önbellek temizlendi!";
-});
-
-Route::get('/migrate-veritabanini-guncelle', function () {
-    Artisan::call('migrate --force');
-    return "Veritabanı başarıyla güncellendi!";
-});
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PlanController;
@@ -282,7 +271,7 @@ if ($installed) {
 
     // Custom created pages
     Route::get('/app/{page}', [CustomPageController::class, 'pageView'])->name('custom-page.view');
-} else {
+} elseif (!app()->environment('production')) {
 
     Route::prefix('/setup')->group(function () {
         Route::get('/', [InstallerController::class, 'checkServer'])->name('setup');
@@ -304,4 +293,8 @@ if ($installed) {
         Route::post('/verify-purchase', [InstallerController::class, 'verifyPurchase']);
     });
     Route::get('/{url?}', [InstallerController::class, 'backToSetup'])->where('url', '^(?!setup).*$');
+} else {
+    Route::any('/{any?}', function () {
+        abort(503, 'Service temporarily unavailable.');
+    })->where('any', '.*');
 }
