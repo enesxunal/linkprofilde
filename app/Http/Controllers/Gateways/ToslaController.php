@@ -21,10 +21,6 @@ class ToslaController extends Controller
 {
     public function payment(Request $request)
     {
-        if (app()->environment('production')) {
-            abort(404);
-        }
-
         $request->validate([
             'plan_id' => 'required|integer|exists:pricing_plans,id',
             'billing_type' => 'required|in:monthly,yearly',
@@ -140,10 +136,6 @@ class ToslaController extends Controller
 
     public function callback(Request $request)
     {
-        if (app()->environment('production')) {
-            abort(404);
-        }
-
         $credentials = $this->toslaCredentials();
         if (!$credentials) {
             return redirect()->route('plan')->with('error', 'Ödeme doğrulanamadı.');
