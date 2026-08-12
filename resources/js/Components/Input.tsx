@@ -36,22 +36,22 @@ const Input = (props: InputProps) => {
          {label && (
             <>
                {flexLabel ? (
-                  <small className="max-w-[164px] w-full mb-1 whitespace-nowrap flex items-center font-medium text-gray-500">
+                  <label className="mb-1.5 flex w-full max-w-[164px] items-center whitespace-nowrap text-sm font-medium text-slate-700">
                      <span className="mr-1">{label}</span>
-                     {required && <span className="block text-red-500">*</span>}
-                  </small>
+                     {required && <span className="text-red-600">*</span>}
+                  </label>
                ) : (
-                  <small className="w-full mb-1 whitespace-nowrap flex items-center font-medium text-gray-500">
+                  <label className="mb-1.5 flex w-full items-center whitespace-nowrap text-sm font-medium text-slate-700">
                      <span className="mr-1">{label}</span>
-                     {required && <span className="block text-red-500">*</span>}
-                  </small>
+                     {required && <span className="text-red-600">*</span>}
+                  </label>
                )}
             </>
          )}
 
          <div className="relative w-full">
             {maxLength && (
-               <small className="absolute -top-5 right-0 w-full text-end">
+               <small className="absolute -top-5 right-0 w-full text-end text-xs text-slate-500">
                   {value ? value.length : 0}/{maxLength}
                </small>
             )}
@@ -63,9 +63,9 @@ const Input = (props: InputProps) => {
                value={value ? value : ""}
                className={`${
                   lengthOver
-                     ? "!border !border-red-500 focus:!border-red-500"
-                     : "!border !border-gray-200 focus:!border-blue-500"
-               } h-10 px-2.5 focus:outline-0 focus:ring-0 rounded-md w-full text-sm text-gray-800 font-normal placeholder:text-gray-400 ${className} ${
+                     ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                     : "border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+               } h-10 w-full rounded-lg border px-3 text-sm font-normal text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400 ${className} ${
                   fullWidth ? "w-full" : ""
                }`}
                placeholder={placeholder}
@@ -77,11 +77,11 @@ const Input = (props: InputProps) => {
             />
 
             {lengthOver && (
-               <p className="text-sm text-red-500 mt-1">
+               <p className="mt-1 text-sm text-red-600">
                   Maksimum uzunluk daha az veya eşit olmalıdır {maxLength}
                </p>
             )}
-            {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+            {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
          </div>
       </div>
    );

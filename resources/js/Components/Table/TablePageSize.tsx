@@ -1,6 +1,5 @@
 import {
    Menu,
-   Button,
    MenuItem,
    MenuList,
    MenuHandler,
@@ -26,30 +25,30 @@ const TablePageSize = (props: Props) => {
    };
 
    return (
-      <div className={`relative ${className}`}>
-         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-            <ArrowDown className="w-3 h-3 text-gray-700" />
+      <div className={`relative ${className ?? ""}`}>
+         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <ArrowDown className="h-3 w-3 text-slate-500" />
          </span>
          <Menu placement="bottom-end">
             <MenuHandler>
-               <Button
-                  ripple={false}
-                  variant="text"
-                  color="white"
-                  className="text-start py-0 px-4 w-[72px] h-10 rounded-md text-gray-700 border border-gray-200 hover:border-blue-500"
+               <button
+                  type="button"
+                  className="h-10 w-[72px] rounded-lg border border-slate-200 px-3 text-left text-sm font-medium text-slate-700 hover:border-blue-500"
                >
                   {per_page}
-               </Button>
+               </button>
             </MenuHandler>
-            <MenuList className="max-h-[200px] min-w-[72px] p-0 overflow-hidden">
+            <MenuList className="max-h-[200px] min-w-[72px] overflow-hidden rounded-xl border border-slate-200 p-1 shadow-sm">
                <SimpleBar style={{ maxHeight: "198px" }}>
                   {dropdownList.map((item) => (
                      <MenuItem
                         key={item}
                         value={item}
                         onClick={() => gotoPage(current_page, item)}
-                        className={`text-center ${
-                           per_page === item && "bg-gray-100"
+                        className={`rounded-md text-center text-sm ${
+                           per_page === item
+                              ? "bg-slate-50 text-blue-700"
+                              : "text-slate-700"
                         }`}
                      >
                         {item}

@@ -1,17 +1,21 @@
 import { Link } from "@inertiajs/react";
+import AlertBanner from "@/Components/Panel/AlertBanner";
 
 const LimitWarning = ({ limit }: { limit: boolean | string }) => {
    return (
       <>
          {limit && (
-            <div className="p-4 rounded-md bg-red-50 mb-10">
-               <p className="text-red-500 text-center">
+            <AlertBanner variant="warning" className="text-center">
+               <p>
                   {limit}{" "}
-                  <Link href="/current-plan" className=" underline">
+                  <Link
+                     href="/current-plan"
+                     className="font-medium text-amber-900 underline"
+                  >
                      Buraya Tıklayın
                   </Link>
                </p>
-            </div>
+            </AlertBanner>
          )}
       </>
    );

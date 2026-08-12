@@ -1,14 +1,10 @@
 import {
    Menu,
-   Navbar,
    Avatar,
-   List,
    ListItem,
    MenuList,
    MenuItem,
-   IconButton,
    MenuHandler,
-   Card,
 } from "@material-tailwind/react";
 import axios from "axios";
 import { useState } from "react";
@@ -33,7 +29,7 @@ const DashboardNavbar = () => {
       const res = await axios.post("/logout");
       if (res.status === 200) window.location.href = "/";
    };
-   // localStorage.setItem("locale", "en");
+
    const handleFullscreenToggle = () => {
       if (!isFullscreen) {
          document.documentElement.requestFullscreen();
@@ -51,72 +47,72 @@ const DashboardNavbar = () => {
    };
 
    return (
-      <Navbar
-         fullWidth
-         blurred={false}
-         color="white"
-         className="rounded-lg transition-all sticky top-4 md:top-5 z-40 !shadow-box px-4 py-3"
-      >
-         <div className="flex justify-between gap-6 md:flex-row md:items-center">
-            <div className="capitalize">
-               <IconButton
-                  variant="text"
-                  color="blue-gray"
-                  className="hidden lg:block"
+      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+         <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+            <div className="flex min-w-0 items-center gap-2">
+               <button
+                  type="button"
+                  className="hidden h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 lg:inline-flex"
                   onClick={() => setOpenSidenav(dispatch, !openSidenav)}
+                  aria-label="Kenar çubuğunu aç/kapat"
                >
                   <MenuIcon />
-               </IconButton>
-               <IconButton
-                  variant="text"
-                  color="blue-gray"
-                  className="block lg:hidden"
+               </button>
+               <button
+                  type="button"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 lg:hidden"
                   onClick={() => setMobileSidenav(dispatch, !mobileSidenav)}
+                  aria-label="Menüyü aç"
                >
                   <MenuIcon />
-               </IconButton>
+               </button>
+               <div className="hidden min-w-0 sm:block">
+                  <p className="truncate text-sm font-medium text-slate-500">
+                     Panel
+                  </p>
+               </div>
             </div>
 
-            <div className="flex items-center">
-               <IconButton
+            <div className="flex items-center gap-1">
+               <button
+                  type="button"
                   onClick={handleFullscreenToggle}
-                  variant="text"
-                  color="blue-gray"
-                  className="rounded-full"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100"
+                  aria-label="Tam ekran"
                >
-                  <Expand className="h-[22px] w-[22px]" />
-               </IconButton>
+                  <Expand className="h-5 w-5" />
+               </button>
 
                <Menu placement="bottom-end">
                   <MenuHandler>
-                     <IconButton
-                        variant="text"
-                        color="blue-gray"
-                        className="rounded-full mr-2"
+                     <button
+                        type="button"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100"
+                        aria-label="Dil seç"
                      >
-                        <Globe className="h-6 w-6 text-gray-700 cursor-pointer" />
-                     </IconButton>
+                        <Globe className="h-5 w-5" />
+                     </button>
                   </MenuHandler>
 
-                  <MenuList className="min-w-[140px]">
+                  <MenuList className="min-w-[140px] rounded-xl border border-slate-200 p-1 shadow-sm">
                      <ListItem
                         selected={lanSelect("tr")}
                         onClick={() => router.get("/lang/tr")}
-                        className="py-2"
+                        className="rounded-lg py-2 text-sm"
                      >
                         Türkçe
                      </ListItem>
                      <ListItem
                         selected={lanSelect("fr")}
                         onClick={() => router.get("/lang/fr")}
-                        className="py-2"
+                        className="rounded-lg py-2 text-sm"
                      >
                         Français
                      </ListItem>
                      <ListItem
                         selected={lanSelect("de")}
                         onClick={() => router.get("/lang/de")}
-                        className="py-2"
+                        className="rounded-lg py-2 text-sm"
                      >
                         Deutsch
                      </ListItem>
@@ -125,34 +121,43 @@ const DashboardNavbar = () => {
 
                <Menu placement="bottom-end">
                   <MenuHandler>
-                     <div>
+                     <button
+                        type="button"
+                        className="ml-1 inline-flex items-center justify-center"
+                        aria-label="Kullanıcı menüsü"
+                     >
                         {user && user.image ? (
                            <Avatar
                               src={`/${user.image}`}
-                              alt="item-1"
+                              alt="user"
                               size="xs"
                               variant="circular"
-                              className="h-9 w-9 lg:mr-1 cursor-pointer"
+                              className="h-9 w-9 cursor-pointer"
                            />
                         ) : (
-                           <UserCircle className="h-10 w-10 text-blue-gray-500 lg:m-1 cursor-pointer" />
+                           <UserCircle className="h-9 w-9 cursor-pointer text-slate-400" />
                         )}
-                     </div>
+                     </button>
                   </MenuHandler>
 
-                  <MenuList className="min-w-[140px]">
-                     <MenuItem>
+                  <MenuList className="min-w-[140px] rounded-xl border border-slate-200 p-1 shadow-sm">
+                     <MenuItem className="rounded-lg text-sm">
                         <a href="/">Anasayfa</a>
                      </MenuItem>
-                     <MenuItem>
+                     <MenuItem className="rounded-lg text-sm">
                         <Link href="/settings">Profil</Link>
                      </MenuItem>
-                     <MenuItem onClick={logout}>Çıkış Yap</MenuItem>
+                     <MenuItem
+                        className="rounded-lg text-sm"
+                        onClick={logout}
+                     >
+                        Çıkış Yap
+                     </MenuItem>
                   </MenuList>
                </Menu>
             </div>
          </div>
-      </Navbar>
+      </header>
    );
 };
 

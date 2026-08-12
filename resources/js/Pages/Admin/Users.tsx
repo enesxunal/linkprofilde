@@ -1,8 +1,6 @@
 import { Head, router } from "@inertiajs/react";
 import Dashboard from "@/Layouts/Dashboard";
-import UsersIcon from "@/Components/Icons/Users";
 import { usersHead } from "@/utils/table-head";
-import Breadcrumb from "@/Components/Breadcrumb";
 import { useTable, useSortBy } from "react-table";
 import TableNav from "@/Components/Table/TableNav";
 import TableHead from "@/Components/Table/TableHead";
@@ -13,6 +11,11 @@ import TablePagination from "@/Components/Table/TablePagination";
 import UpdateUser from "@/Components/Admin/UpdateUser";
 import { getTableRowId } from "@/utils/table-row";
 import { pageChange } from "@/utils/utils";
+import PageHeader from "@/Components/Panel/PageHeader";
+import PanelCard from "@/Components/Panel/PanelCard";
+import Badge from "@/Components/Panel/Badge";
+import EmptyState from "@/Components/Panel/EmptyState";
+import UsersIcon from "@/Components/Icons/Users";
 
 interface Props extends PageProps {
    users: PaginationProps;
@@ -38,24 +41,15 @@ const Users = (props: Props) => {
    return (
       <>
          <Head title="Tüm Kullanıcılar" />
-         <Breadcrumb Icon={UsersIcon} title="Tüm Kullanıcılar" />
-
-         <div className="card">
-            <TableNav
-               title={suspiciousOnly ? "Şüpheli Hesaplar" : "Tüm Kayıtlar"}
-               data={users}
-               globalSearch={true}
-               setSearchData={setUsers}
-               tablePageSizes={[10, 15, 20, 25]}
-               searchPath="/admin/users/search"
-               extraSearchParams={suspiciousOnly ? { suspicious: 1 } : undefined}
-            />
-            <div className="px-7 pb-2 flex gap-2">
-               {suspiciousOnly ? (
+         <PageHeader
+            title="Tüm Kullanıcılar"
+            description="Kayıtlı hesapları görüntüleyin ve durumlarını yönetin."
+            actions={
+               suspiciousOnly ? (
                   <button
                      type="button"
                      onClick={() => router.get("/admin/users")}
-                     className="text-sm text-blue-600 hover:underline"
+                     className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                   >
                      ← Tümünü göster
                   </button>
@@ -65,82 +59,118 @@ const Users = (props: Props) => {
                      onClick={() =>
                         router.get("/admin/users", { suspicious: "1" })
                      }
-                     className="text-sm px-3 py-1 rounded bg-amber-100 text-amber-800 hover:bg-amber-200"
+                     className="inline-flex items-center rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800 hover:bg-amber-100"
                   >
                      Şüpheli hesapları listele
                   </button>
-               )}
-            </div>
+               )
+            }
+         />
 
-            <div className="overflow-x-auto">
-               <table {...getTableProps()} className="w-full min-w-[1000px]">
-                  <thead>
-                     <TableHead headerGroups={headerGroups} />
-                  </thead>
-                  <tbody {...getTableBodyProps()}>
-                     {rows.map((row) => {
-                        prepareRow(row);
-                        const recordId = (row.original as UserProps).id;
-                        return (
-                           <tr
-                              {...row.getRowProps()}
-                              key={recordId}
-                              className="border-b border-gray-200 dark:border-neutral-500"
-                           >
-                              {row.cells.map((cell) => {
-                                 const { row, column } = cell;
-                                 const { image, status }: any = row.original;
+         <PanelCard noPadding>
+            <TableNav
+               title={suspiciousOnly ? "Şüpheli Hesaplar" : "Tüm Kayıtlar"}
+               data={users}
+               globalSearch={true}
+               setSearchData={setUsers}
+               tablePageSizes={[10, 15, 20, 25]}
+               searchPath="/admin/users/search"
+               extraSearchParams={suspiciousOnly ? { suspicious: 1 } : undefined}
+            />
 
-                                 return (
-                                    <td
-                                       {...cell.getCellProps()}
-                                       className="px-7 py-[18px] text-start last:text-end text-gray-700 "
-                                    >
-                                       {column.id === "photo" ? (
-                                          <>
-                                             {image ? (
-                                                <img
-                                                   src={image}
-                                                   className="w-10 h-10 rounded-full"
-                                                ></img>
-                                             ) : (
-                                                <UserCircle className="w-10 h-10 text-gray-600" />
-                                             )}
-                                          </>
-                                       ) : column.id === "status" ? (
-                                          <div className="">
-                                             <span className="text-sm w-12 py-0.5 px-2 font-medium bg-gray-100 rounded">
+            {rows.length === 0 ? (
+               <EmptyState
+                  icon={<UsersIcon className="h-6 w-6" />}
+                  title="Kullanıcı bulunamadı"
+                  description={
+                     suspiciousOnly
+                        ? "Şüpheli hesap kriterlerine uyan kayıt yok."
+                        : "Arama kriterlerinize uygun kullanıcı yok."
+                  }
+               />
+            ) : (
+               <div className="overflow-x-auto">
+                  <table {...getTableProps()} className="w-full min-w-[1000px]">
+                     <thead>
+                        <TableHead headerGroups={headerGroups} />
+                     </thead>
+                     <tbody {...getTableBodyProps()}>
+                        {rows.map((row) => {
+                           prepareRow(row);
+                           const recordId = (row.original as UserProps).id;
+                           return (
+                              <tr
+                                 {...row.getRowProps()}
+                                 key={recordId}
+                                 className="border-b border-slate-100 hover:bg-slate-50/70"
+                              >
+                                 {row.cells.map((cell) => {
+                                    const { row: cellRow, column } = cell;
+                                    const { image, status }: any =
+                                       cellRow.original;
+
+                                    return (
+                                       <td
+                                          {...cell.getCellProps()}
+                                          className="px-4 py-3.5 text-start text-slate-700 last:text-end sm:px-6"
+                                       >
+                                          {column.id === "photo" ? (
+                                             <>
+                                                {image ? (
+                                                   <img
+                                                      src={image}
+                                                      className="h-10 w-10 rounded-full object-cover"
+                                                      alt=""
+                                                   />
+                                                ) : (
+                                                   <UserCircle className="h-10 w-10 text-slate-400" />
+                                                )}
+                                             </>
+                                          ) : column.id === "status" ? (
+                                             <Badge
+                                                variant={
+                                                   status === "active"
+                                                      ? "success"
+                                                      : status === "banned" ||
+                                                        status === "inactive"
+                                                      ? "danger"
+                                                      : "default"
+                                                }
+                                             >
                                                 {status}
+                                             </Badge>
+                                          ) : column.id === "action" ? (
+                                             <div className="flex items-center justify-end">
+                                                <UpdateUser
+                                                   key={recordId}
+                                                   user={
+                                                      cellRow.original as UserProps
+                                                   }
+                                                   users={users}
+                                                   setUsers={setUsers}
+                                                />
+                                             </div>
+                                          ) : (
+                                             <span className="text-sm font-medium">
+                                                {cell.render("Cell")}
                                              </span>
-                                          </div>
-                                       ) : column.id === "action" ? (
-                                          <div className="flex justify-end items-center">
-                                             <UpdateUser
-                                                key={recordId}
-                                                user={row.original as UserProps}
-                                                users={users}
-                                                setUsers={setUsers}
-                                             />
-                                          </div>
-                                       ) : (
-                                          <span
-                                             className={`text-sm font-medium`}
-                                          >
-                                             {cell.render("Cell")}
-                                          </span>
-                                       )}
-                                    </td>
-                                 );
-                              })}
-                           </tr>
-                        );
-                     })}
-                  </tbody>
-               </table>
-            </div>
+                                          )}
+                                       </td>
+                                    );
+                                 })}
+                              </tr>
+                           );
+                        })}
+                     </tbody>
+                  </table>
+               </div>
+            )}
 
-            <TablePagination paginationInfo={users} className="p-7" />
-         </div>
+            <TablePagination
+               paginationInfo={users}
+               className="border-t border-slate-200 px-5 py-4 sm:px-6"
+            />
+         </PanelCard>
       </>
    );
 };

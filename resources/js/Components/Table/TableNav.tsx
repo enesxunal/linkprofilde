@@ -102,29 +102,26 @@ const TableNav = (props: Props) => {
    );
 
    return (
-      <div className="p-7 md:flex items-center justify-between">
+      <div className="flex flex-col gap-4 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
          {title && (
-            <p className="mb-4 md:mb-0 text18 font-bold text-gray-900">
-               {title}
-            </p>
+            <p className="text-base font-semibold text-slate-900">{title}</p>
          )}
-         <div className="flex justify-end items-center">
+         <div className="flex flex-wrap items-center justify-end gap-3">
             {globalSearch && (
-               <div className="w-full md:max-w-[260px] relative">
+               <div className="relative w-full md:max-w-[260px]">
                   <input
                      type="text"
                      placeholder="Arama Yap"
                      onChange={searchHandler}
-                     className="h-10 pl-12 pr-4 py-[15px] border border-gray-200 rounded-md w-full focus:ring-0 focus:outline-0 focus:border-blue-500 text-sm font-normal text-gray-500"
+                     className="h-10 w-full rounded-lg border border-slate-200 py-2 pl-10 pr-3 text-sm font-normal text-slate-700 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
-                  <Search className="absolute w-4 h-4 top-3 left-4 text-gray-700 z-10" />
+                  <Search className="absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
                </div>
             )}
 
             <TablePageSize
                pageData={data}
                dropdownList={tablePageSizes}
-               className="ml-3"
             />
 
             {component && component}

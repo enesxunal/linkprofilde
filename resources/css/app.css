@@ -36,8 +36,44 @@
       @apply max-w-[1200px] w-full mx-auto;
    }
    .card {
-      @apply shadow-box rounded-lg bg-white;
+      @apply rounded-xl border border-slate-200 bg-white shadow-sm;
    }
+}
+
+/* Dashboard panel — reset global landing-scale headings */
+.dashboard-shell {
+   color: #475569;
+   font-size: 0.875rem;
+   line-height: 1.5;
+}
+
+.dashboard-shell h1,
+.dashboard-shell h2,
+.dashboard-shell h3,
+.dashboard-shell h4,
+.dashboard-shell h5,
+.dashboard-shell h6 {
+   font-size: inherit;
+   font-weight: inherit;
+   line-height: inherit;
+   letter-spacing: inherit;
+   color: inherit;
+}
+
+.dashboard-shell h1 {
+   @apply text-xl sm:text-2xl font-bold tracking-tight text-slate-900;
+}
+
+.dashboard-shell h2 {
+   @apply text-base font-semibold text-slate-900;
+}
+
+.dashboard-shell p,
+.dashboard-shell li,
+.dashboard-shell span,
+.dashboard-shell label,
+.dashboard-shell small {
+   line-height: 1.5;
 }
 
 /* Intro / Landing Page */
@@ -64,6 +100,14 @@
 
 .home-landing details summary::-webkit-details-marker {
    display: none;
+}
+
+/* Auth pages — reset global heading scale from @layer base */
+.auth-landing h1 {
+   font-size: clamp(1.5rem, 3vw, 1.875rem);
+   line-height: 1.25;
+   font-weight: 700;
+   letter-spacing: -0.02em;
 }
 
 .pricing [aria-selected="true"] {

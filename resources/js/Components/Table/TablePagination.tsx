@@ -1,6 +1,5 @@
 import {
    Menu,
-   Button,
    MenuItem,
    MenuList,
    MenuHandler,
@@ -14,6 +13,9 @@ interface Props {
    className: string;
    paginationInfo: PaginationProps;
 }
+
+const pageButtonClass =
+   "inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50";
 
 const TablePagination = (props: Props) => {
    const {
@@ -50,32 +52,32 @@ const TablePagination = (props: Props) => {
    };
 
    const menuItem = (e: number) => {
-      return `text-center py-1 ${current_page === e && "bg-blue-50"}`;
+      return `rounded-md text-center py-1.5 text-sm ${
+         current_page === e ? "bg-blue-50 text-blue-700" : "text-slate-700"
+      }`;
    };
 
    return (
       <div className={`${props.className}`}>
-         <div className="flex md:hidden items-center justify-center mb-4">
-            <span className="mr-1">
+         <div className="mb-4 flex items-center justify-center md:hidden">
+            <span className="mr-1 text-sm text-slate-600">
                Sayfa{" "}
-               <strong>
-                  {current_page} of {last_page}
+               <strong className="text-slate-900">
+                  {current_page} / {last_page}
                </strong>
             </span>
-            <span>|Sayfaya Git:</span>
-            <div className="w-[60px] ml-3">
+            <span className="text-sm text-slate-500">| Sayfaya Git:</span>
+            <div className="ml-3 w-[60px]">
                <Menu placement="bottom-end">
                   <MenuHandler>
-                     <Button
-                        ripple={false}
-                        variant="text"
-                        color="white"
-                        className="p-0 w-[60px] h-8 rounded-md text-gray-700 border border-gray-200 hover:border-blue-500"
+                     <button
+                        type="button"
+                        className="h-8 w-[60px] rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:border-blue-500"
                      >
                         {current_page}
-                     </Button>
+                     </button>
                   </MenuHandler>
-                  <MenuList className="max-h-[200px] min-w-[60px] p-0 overflow-hidden">
+                  <MenuList className="max-h-[200px] min-w-[60px] overflow-hidden rounded-xl border border-slate-200 p-1 shadow-sm">
                      <SimpleBar style={{ maxHeight: "198px" }}>
                         {dropdownList.map((item) => (
                            <MenuItem
@@ -93,48 +95,44 @@ const TablePagination = (props: Props) => {
             </div>
          </div>
 
-         <div className="flex items-center justify-center">
-            <Button
-               color="white"
-               variant="text"
+         <div className="flex flex-wrap items-center justify-center gap-2">
+            <button
+               type="button"
                disabled={!prev_page_url}
                onClick={() => gotoRoute(first_page_url)}
-               className="active:bg-blue-500 hover:bg-blue-600/90 bg-blue-500 font-medium capitalize rounded-md py-2 px-3"
+               className={pageButtonClass}
             >
-               {"<<Başa Dön"}
-            </Button>
+               « Başa
+            </button>
 
-            <Button
-               variant="text"
-               color="white"
+            <button
+               type="button"
                disabled={!prev_page_url}
                onClick={() => gotoRoute(prev_page_url)}
-               className="active:bg-blue-500 hover:bg-blue-600/90 bg-blue-500 font-medium capitalize rounded-md py-2 px-3 mx-3"
+               className={pageButtonClass}
             >
                Geri
-            </Button>
+            </button>
 
-            <div className="hidden md:flex items-center">
-               <span className="mr-1">
+            <div className="hidden items-center md:flex">
+               <span className="mr-1 text-sm text-slate-600">
                   Sayfa{" "}
-                  <strong>
-                     {current_page} of {last_page}
+                  <strong className="text-slate-900">
+                     {current_page} / {last_page}
                   </strong>
                </span>
-               <span>| Sayfaya Git:</span>
-               <div className="w-[60px] ml-3">
+               <span className="text-sm text-slate-500">| Sayfaya Git:</span>
+               <div className="ml-3 w-[60px]">
                   <Menu placement="bottom-end">
                      <MenuHandler>
-                        <Button
-                           ripple={false}
-                           variant="text"
-                           color="white"
-                           className="p-0 w-[60px] h-8 rounded-md text-gray-700 border border-gray-200 hover:border-blue-500"
+                        <button
+                           type="button"
+                           className="h-8 w-[60px] rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:border-blue-500"
                         >
                            {current_page}
-                        </Button>
+                        </button>
                      </MenuHandler>
-                     <MenuList className="max-h-[200px] min-w-[60px] p-0 overflow-hidden">
+                     <MenuList className="max-h-[200px] min-w-[60px] overflow-hidden rounded-xl border border-slate-200 p-1 shadow-sm">
                         <SimpleBar style={{ maxHeight: "198px" }}>
                            {dropdownList.map((item) => (
                               <MenuItem
@@ -152,25 +150,23 @@ const TablePagination = (props: Props) => {
                </div>
             </div>
 
-            <Button
-               variant="text"
-               color="white"
+            <button
+               type="button"
                disabled={!next_page_url}
                onClick={() => gotoRoute(next_page_url)}
-               className="active:bg-blue-500 hover:bg-blue-600/90 bg-blue-500 font-medium capitalize rounded-md py-2 px-3 mx-3"
+               className={pageButtonClass}
             >
                İleri
-            </Button>
+            </button>
 
-            <Button
-               variant="text"
-               color="white"
+            <button
+               type="button"
                disabled={!next_page_url}
                onClick={() => gotoRoute(last_page_url)}
-               className="active:bg-blue-500 hover:bg-blue-600/90 bg-blue-500 font-medium capitalize rounded-md py-2 px-3"
+               className={pageButtonClass}
             >
-               {"Son>>"}
-            </Button>
+               Son »
+            </button>
          </div>
       </div>
    );

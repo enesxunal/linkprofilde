@@ -33,10 +33,10 @@ const InputDropdown = (props: SelectInputProps) => {
    const dropdownActive = (item: SelectListProps) => {
       const active =
          item.value === selected.value
-            ? "bg-gray-100 text-blue-500"
-            : "text-gray-900";
+            ? "bg-slate-50 text-blue-700"
+            : "text-slate-800";
 
-      return `relative cursor-pointer select-none py-2 px-4 hover:bg-gray-25 hover:text-blue-500 ${active} ${dropdownListClass}`;
+      return `relative cursor-pointer select-none px-3 py-2 hover:bg-slate-50 hover:text-blue-700 ${active} ${dropdownListClass}`;
    };
 
    return (
@@ -48,15 +48,15 @@ const InputDropdown = (props: SelectInputProps) => {
          {label && (
             <>
                {flexLabel ? (
-                  <small className="max-w-[164px] w-full mb-1 whitespace-nowrap flex items-center font-medium text-gray-500">
+                  <label className="mb-1.5 flex w-full max-w-[164px] items-center whitespace-nowrap text-sm font-medium text-slate-700">
                      <span className="mr-1">{label}</span>
-                     {required && <span className="block text-red-500">*</span>}
-                  </small>
+                     {required && <span className="text-red-600">*</span>}
+                  </label>
                ) : (
-                  <small className="w-full mb-1 whitespace-nowrap flex items-center font-medium text-gray-500">
+                  <label className="mb-1.5 flex w-full items-center whitespace-nowrap text-sm font-medium text-slate-700">
                      <span className="mr-1">{label}</span>
-                     {required && <span className="block text-red-500">*</span>}
-                  </small>
+                     {required && <span className="text-red-600">*</span>}
+                  </label>
                )}
             </>
          )}
@@ -64,11 +64,11 @@ const InputDropdown = (props: SelectInputProps) => {
          <Listbox name={name} value={selected.key} onChange={setSelected}>
             <div className={`relative ${fullWidth && "w-full"}`}>
                <Listbox.Button
-                  className={`text-left !border !border-gray-200 focus:!border-blue-500 h-10 px-2.5 rounded-md focus:outline-none w-full text-sm ${props.className}`}
+                  className={`h-10 w-full rounded-lg border border-slate-200 px-3 text-left text-sm text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${props.className}`}
                >
                   <span className="block truncate">{selected.key}</span>
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                     <ArrowDown className="w-3 h-3 text-gray-700" />
+                     <ArrowDown className="h-3 w-3 text-slate-500" />
                   </span>
                </Listbox.Button>
 
@@ -81,7 +81,7 @@ const InputDropdown = (props: SelectInputProps) => {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                >
-                  <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-slate-200 bg-white py-1 text-sm shadow-sm focus:outline-none">
                      {itemList.map((item, index) => {
                         return (
                            <Listbox.Option
@@ -98,7 +98,7 @@ const InputDropdown = (props: SelectInputProps) => {
             </div>
          </Listbox>
 
-         {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+         {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
    );
 };

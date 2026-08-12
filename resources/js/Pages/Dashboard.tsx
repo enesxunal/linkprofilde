@@ -7,6 +7,8 @@ import DashboardLayout from "@/Layouts/Dashboard";
 import AreaChart from "@/Components/Charts/AreaChart";
 import LineChart from "@/Components/Charts/LineChart";
 import ListCheck from "@/Components/Icons/ListCheck";
+import PageHeader from "@/Components/Panel/PageHeader";
+import PanelCard from "@/Components/Panel/PanelCard";
 
 interface Props extends PageProps {
    links: number;
@@ -59,26 +61,35 @@ const Dashboard = (props: Props) => {
       <>
          <Head title="Kontrol Paneli" />
 
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7 mb-7">
+         <PageHeader
+            title="Kontrol Paneli"
+            description="Profilleriniz, tıklamalarınız ve QR kodlarınıza genel bakış."
+         />
+
+         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             {overview.map((item, ind) => (
-               <div
-                  key={ind}
-                  className="card p-4 flex flex-col justify-between"
-               >
-                  <div className="w-7 h-7 bg-blue-50 rounded flex items-center justify-center">
-                     <item.Icon className="w-4 h-4 text-blue-500" />
+               <PanelCard key={ind} noPadding bodyClassName="p-5">
+                  <div className="flex flex-col gap-3">
+                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
+                        <item.Icon className="h-4 w-4 text-blue-600" />
+                     </div>
+                     <p className="text-sm font-medium text-slate-500">
+                        {item.title}
+                     </p>
+                     <p className="text-2xl font-bold tracking-tight text-slate-900">
+                        {item.total}
+                     </p>
                   </div>
-                  <p className="text-gray-500 font-medium mt-1">{item.title}</p>
-                  <h6 className=" font-semibold">{item.total}</h6>
-               </div>
+               </PanelCard>
             ))}
          </div>
 
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-7 mb-7">
-            <div className="shadow-box bg-white rounded-lg pr-2">
-               <p className="font-medium text-gray-700 py-5 pl-5 right-3">
-               Aylık sayfa görüntüleme etkinlikleri
-               </p>
+         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <PanelCard
+               title="Aylık sayfa görüntüleme etkinlikleri"
+               noPadding
+               bodyClassName="pr-2 pb-2"
+            >
                <AreaChart
                   height={300}
                   data={[
@@ -88,11 +99,12 @@ const Dashboard = (props: Props) => {
                      },
                   ]}
                />
-            </div>
-            <div className="shadow-box bg-white rounded-lg pr-2">
-               <p className="font-medium text-gray-700 py-5 pl-5 right-3">
-               Günlük sayfa görüntüleme etkinlikleri
-               </p>
+            </PanelCard>
+            <PanelCard
+               title="Günlük sayfa görüntüleme etkinlikleri"
+               noPadding
+               bodyClassName="pr-2 pb-2"
+            >
                <LineChart
                   label={lastSevenDays}
                   height={300}
@@ -103,7 +115,7 @@ const Dashboard = (props: Props) => {
                      },
                   ]}
                />
-            </div>
+            </PanelCard>
          </div>
       </>
    );

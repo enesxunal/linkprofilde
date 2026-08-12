@@ -25,7 +25,7 @@ const Switch = (props: SwitchProps) => {
    } = props;
 
    return (
-      <label className="group max-w-[300px] flex items-center cursor-pointer">
+      <label className="group flex max-w-[300px] cursor-pointer items-center">
          <InputSwitch
             id={switchId}
             name={name}
@@ -35,17 +35,17 @@ const Switch = (props: SwitchProps) => {
             defaultChecked={defaultChecked}
             onChange={onChange}
             containerProps={{ className: "w-11 h-6" }}
-            className="h-full w-full checked:bg-blue-500"
+            className="h-full w-full checked:bg-blue-600"
             circleProps={{
                className: "before:hidden after:hidden left-0.5 border-none",
             }}
          />
          {label && (
-            <small
-               className={`whitespace-nowrap text-gray-500 font-medium pl-4 ${labelClass}`}
+            <span
+               className={`pl-3 text-sm font-medium text-slate-700 ${labelClass}`}
             >
                {label}
-            </small>
+            </span>
          )}
       </label>
    );
