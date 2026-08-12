@@ -2,7 +2,7 @@ import Input from "@/Components/Input";
 import { useState, FormEventHandler } from "react";
 import { useForm, usePage } from "@inertiajs/react";
 import UserCircle from "@/Components/Icons/UserCircle";
-import { Avatar, Button } from "@material-tailwind/react";
+import { Avatar } from "@material-tailwind/react";
 import { PageProps } from "@/types";
 
 const ProfileUpdate = () => {
@@ -37,33 +37,36 @@ const ProfileUpdate = () => {
    };
 
    return (
-      <div className="card max-w-[1000px] w-full mx-auto mb-7">
-         <div className="px-7 pt-7 pb-4 border-b border-b-gray-200">
-            <p className="text18 font-bold text-gray-900">Edit Profile</p>
+      <div className="card mx-auto w-full max-w-[1000px]">
+         <div className="border-b border-slate-200 px-5 pb-4 pt-5 sm:px-6">
+            <p className="text-lg font-semibold text-slate-900">Profili Düzenle</p>
+            <p className="mt-0.5 text-sm text-slate-600">
+               Ad, telefon ve profil fotoğrafınızı güncelleyin.
+            </p>
          </div>
-         <form onSubmit={submit} className="p-7">
-            <div className="flex flex-col md:flex-row mb-8">
-               <p className="max-w-[164px] w-full font-medium text-gray-500 mb-1">
-                  Profile Picture
+         <form onSubmit={submit} className="p-5 sm:p-6">
+            <div className="mb-8 flex flex-col md:flex-row">
+               <p className="mb-1.5 w-full max-w-[164px] text-sm font-medium text-slate-700">
+                  Profil Fotoğrafı
                </p>
                <div>
                   {imageUrl ? (
                      <Avatar
                         src={imageUrl}
-                        alt="item-1"
+                        alt="profile"
                         size="xs"
                         variant="circular"
                         className="h-[100px] w-[100px]"
                      />
                   ) : (
-                     <UserCircle className="h-[100px] w-[100px] text-blue-gray-500" />
+                     <UserCircle className="h-[100px] w-[100px] text-slate-400" />
                   )}
-                  <div className="mt-1 flex items-center">
+                  <div className="mt-2 flex flex-wrap items-center gap-3">
                      <label
                         htmlFor="formFileSm"
-                        className="text-xs font-medium text-gray-900 px-2.5 py-1.5 border border-gray-700 bg-gray-100 whitespace-nowrap"
+                        className="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
                      >
-                        Choose Photo
+                        Fotoğraf Seç
                      </label>
                      <input
                         hidden
@@ -71,12 +74,12 @@ const ProfileUpdate = () => {
                         type="file"
                         onChange={handleImageChange}
                      />
-                     <small className="ml-3 text-gray-500">
-                        JPG, JPEG, PNG, SVG File, Maximum 2MB
+                     <small className="text-slate-500">
+                        JPG, JPEG, PNG — maksimum 2MB
                      </small>
                   </div>
                   {errors.image && (
-                     <p className="text-sm text-red-500 mt-1">{errors.image}</p>
+                     <p className="mt-1 text-sm text-red-600">{errors.image}</p>
                   )}
                </div>
             </div>
@@ -88,9 +91,9 @@ const ProfileUpdate = () => {
                   name="name"
                   value={data.name}
                   error={errors.name}
-                  placeholder="Your full name"
+                  placeholder="Adınız ve soyadınız"
                   onChange={onHandleChange}
-                  label="Full Name"
+                  label="Ad Soyad"
                   flexLabel
                   required
                />
@@ -103,22 +106,20 @@ const ProfileUpdate = () => {
                   name="phone"
                   value={data.phone}
                   error={errors.phone}
-                  placeholder="Your phone number"
+                  placeholder="Telefon numaranız"
                   onChange={onHandleChange}
-                  label="Phone"
+                  label="Telefon"
                   flexLabel
                />
             </div>
 
-            <div className="flex items-center mt-7 md:pl-[164px]">
-               <Button
+            <div className="mt-7 flex items-center md:pl-[164px]">
+               <button
                   type="submit"
-                  color="blue"
-                  variant="gradient"
-                  className="py-2.5 px-5 rounded-md font-medium capitalize text-sm hover:shadow-md"
+                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                >
-                  Save Changes
-               </Button>
+                  Değişiklikleri Kaydet
+               </button>
             </div>
          </form>
       </div>

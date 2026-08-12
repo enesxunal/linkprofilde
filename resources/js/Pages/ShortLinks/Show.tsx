@@ -2,14 +2,13 @@ import Dashboard from "@/Layouts/Dashboard";
 import { Head, Link, router } from "@inertiajs/react";
 import LinkIcon from "@/Components/Icons/Link";
 import Delete from "@/Components/Icons/Delete";
-import Breadcrumb from "@/Components/Breadcrumb";
 import { useTable, useSortBy } from "react-table";
 import TableNav from "@/Components/Table/TableNav";
 import { shortLinksHead } from "@/utils/table-head";
 import TableHead from "@/Components/Table/TableHead";
 import EditLink from "@/Components/ShortLink/EditLink";
 import ChartLineUp from "@/Components/Icons/ChartLineUp";
-import { Button, IconButton } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 import { LinkProps, PageProps, PaginationProps } from "@/types";
 import { ReactNode, useEffect, useMemo, useState, useRef } from "react";
 import TablePagination from "@/Components/Table/TablePagination";
@@ -19,6 +18,9 @@ import { pageChange } from "@/utils/utils";
 import { QRCode } from "react-qrcode-logo";
 import LimitWarning from "@/Components/LimitWarning";
 import { getTableRowId } from "@/utils/table-row";
+import PageHeader from "@/Components/Panel/PageHeader";
+import PanelCard from "@/Components/Panel/PanelCard";
+import EmptyState from "@/Components/Panel/EmptyState";
 
 interface Props extends PageProps {
    links: PaginationProps;
@@ -86,10 +88,10 @@ const Show = (props: Props) => {
    return (
       <>
          <Head title="Kısa Linkler" />
-         <Breadcrumb
-            Icon={LinkIcon}
+         <PageHeader
             title="Kısa Linkler"
-            Component={<CreateLink />}
+            description="Kısa linklerinizi oluşturun ve yönetin."
+            actions={<CreateLink />}
          />
          <LimitWarning limit={props.limit} />
 
@@ -102,7 +104,7 @@ const Show = (props: Props) => {
             </div>
          )}
 
-         <div className="card">
+         <PanelCard noPadding>
             <TableNav
                data={links}
                globalSearch={true}
@@ -112,134 +114,144 @@ const Show = (props: Props) => {
                title="Tüm Kısa Linkler"
             />
 
-            <div className="overflow-x-auto">
-               <table {...getTableProps()} className="w-full min-w-[1000px]">
-                  <thead>
-                     <TableHead justifyHead headerGroups={headerGroups} />
-                  </thead>
-                  <tbody {...getTableBodyProps()}>
-                     {rows.map((row) => {
-                        prepareRow(row);
-                        const recordId = (row.original as LinkProps).id;
-                        return (
-                           <tr
-                              {...row.getRowProps()}
-                              key={recordId}
-                              className="border-b border-gray-200 dark:border-neutral-500"
-                           >
-                              {row.cells.map((cell) => {
-                                 const { row, column } = cell;
-                                 const {
-                                    id,
-                                    qrcode,
-                                    visited,
-                                    url_name,
-                                    link_name,
-                                 }: any = row.original;
+            {rows.length === 0 ? (
+               <EmptyState
+                  icon={<LinkIcon className="h-6 w-6" />}
+                  title="Kısa link bulunamadı"
+                  description="Arama kriterlerinize uygun kısa link yok."
+               />
+            ) : (
+               <div className="overflow-x-auto">
+                  <table {...getTableProps()} className="w-full min-w-[1000px]">
+                     <thead>
+                        <TableHead justifyHead headerGroups={headerGroups} />
+                     </thead>
+                     <tbody {...getTableBodyProps()}>
+                        {rows.map((row) => {
+                           prepareRow(row);
+                           const recordId = (row.original as LinkProps).id;
+                           return (
+                              <tr
+                                 {...row.getRowProps()}
+                                 key={recordId}
+                                 className="border-b border-slate-100 hover:bg-slate-50/70"
+                              >
+                                 {row.cells.map((cell) => {
+                                    const { row, column } = cell;
+                                    const {
+                                       id,
+                                       qrcode,
+                                       visited,
+                                       url_name,
+                                       link_name,
+                                    }: any = row.original;
 
-                                 return (
-                                    <td
-                                       {...cell.getCellProps()}
-                                       className="px-7 py-[18px] text-start last:text-end"
-                                    >
-                                       {column.id === "url" ? (
-                                          <a
-                                             target="_blank"
-                                             href={`${props.ziggy.url}/${url_name}`}
-                                             className="text-sm underline font-medium"
-                                          >
-                                             {`${props.ziggy.url}/${url_name}`}
-                                          </a>
-                                       ) : column.id === "name" ? (
-                                          <p className="text-center text-sm font-medium">
-                                             {link_name}
-                                          </p>
-                                       ) : column.id === "view" ? (
-                                          <div className="flex justify-center">
-                                             <Link
-                                                href={`/link/analytics/${id}`}
-                                                className="text-sm w-12 py-0.5 flex items-center justify-center bg-gray-100 rounded"
+                                    return (
+                                       <td
+                                          {...cell.getCellProps()}
+                                          className="px-4 py-3.5 text-start text-sm text-slate-700 last:text-end sm:px-6"
+                                       >
+                                          {column.id === "url" ? (
+                                             <a
+                                                target="_blank"
+                                                href={`${props.ziggy.url}/${url_name}`}
+                                                className="text-sm font-medium underline"
                                              >
-                                                <ChartLineUp className="text-gray-700" />
-                                                <span className="ml-1">
-                                                   {visited.length}
-                                                </span>
-                                             </Link>
-                                          </div>
-                                       ) : column.id === "qrcode" ? (
-                                          <div className="flex justify-center">
-                                             {qrcode ? (
-                                                <img
-                                                   className="w-10 h-10 rounded-sm"
-                                                   src={qrcode.img_data}
-                                                   alt=""
-                                                />
-                                             ) : (
+                                                {`${props.ziggy.url}/${url_name}`}
+                                             </a>
+                                          ) : column.id === "name" ? (
+                                             <p className="text-center text-sm font-medium">
+                                                {link_name}
+                                             </p>
+                                          ) : column.id === "view" ? (
+                                             <div className="flex justify-center">
+                                                <Link
+                                                   href={`/link/analytics/${id}`}
+                                                   className="inline-flex items-center justify-center rounded-lg bg-slate-50 px-2.5 py-1 text-sm text-slate-700 hover:bg-slate-100"
+                                                >
+                                                   <ChartLineUp className="text-slate-600" />
+                                                   <span className="ml-1">
+                                                      {visited.length}
+                                                   </span>
+                                                </Link>
+                                             </div>
+                                          ) : column.id === "qrcode" ? (
+                                             <div className="flex justify-center">
+                                                {qrcode ? (
+                                                   <img
+                                                      className="w-10 h-10 rounded-sm"
+                                                      src={qrcode.img_data}
+                                                      alt=""
+                                                   />
+                                                ) : (
+                                                   <Button
+                                                      variant="text"
+                                                      color="white"
+                                                      onClick={() =>
+                                                         setCreateQR({
+                                                            link_id: id,
+                                                            link_url: url_name,
+                                                         })
+                                                      }
+                                                      className="flex items-center justify-center whitespace-nowrap rounded-lg bg-slate-50 px-2.5 py-1 text-sm font-medium capitalize text-slate-700 hover:bg-slate-100 active:bg-slate-100"
+                                                   >
+                                                      Qr Oluştur
+                                                   </Button>
+                                                )}
+                                             </div>
+                                          ) : column.id === "copy" ? (
+                                             <div className="flex justify-center">
                                                 <Button
                                                    variant="text"
                                                    color="white"
                                                    onClick={() =>
-                                                      setCreateQR({
-                                                         link_id: id,
-                                                         link_url: url_name,
-                                                      })
+                                                      handleCopy(id, url_name)
                                                    }
-                                                   className="text-sm py-[3px] px-2 flex text-gray-800 items-center justify-center bg-gray-100 hover:bg-gray-100 active:bg-gray-200 rounded whitespace-nowrap capitalize font-medium"
+                                                   className="flex items-center justify-center whitespace-nowrap rounded-lg bg-slate-50 px-2.5 py-1 text-sm font-medium capitalize text-slate-700 hover:bg-slate-100 active:bg-slate-100"
                                                 >
-                                                   Qr Oluştur
+                                                   {copied === id
+                                                      ? "Kopyalandı"
+                                                      : "Kopyala"}
                                                 </Button>
-                                             )}
-                                          </div>
-                                       ) : column.id === "copy" ? (
-                                          <div className="flex justify-center">
-                                             <Button
-                                                variant="text"
-                                                color="white"
-                                                onClick={() =>
-                                                   handleCopy(id, url_name)
-                                                }
-                                                className="text-sm py-[3px] px-2 flex text-gray-800 items-center justify-center bg-gray-100 hover:bg-gray-100 active:bg-gray-200 rounded whitespace-nowrap capitalize font-medium"
-                                             >
-                                                {copied === id
-                                                   ? "Kopyalandı"
-                                                   : "Kopyala"}
-                                             </Button>
-                                          </div>
-                                       ) : column.id === "action" ? (
-                                          <div className="flex justify-end items-center">
-                                             <EditLink
-                                                key={recordId}
-                                                links={links}
-                                                setLinks={setLinks}
-                                                link={row.original as LinkProps}
-                                             />
+                                             </div>
+                                          ) : column.id === "action" ? (
+                                             <div className="flex justify-end items-center">
+                                                <EditLink
+                                                   key={recordId}
+                                                   links={links}
+                                                   setLinks={setLinks}
+                                                   link={row.original as LinkProps}
+                                                />
 
-                                             <DeleteByInertia
-                                                apiPath={`/short-links/delete/${id}`}
-                                                Component={
-                                                   <IconButton
-                                                      color="white"
-                                                      variant="text"
-                                                      className="w-7 h-7 rounded-full bg-red-50 hover:bg-red-50 active:bg-red-50 text-red-500 ml-3"
-                                                   >
-                                                      <Delete className="h-4 w-4" />
-                                                   </IconButton>
-                                                }
-                                             />
-                                          </div>
-                                       ) : null}
-                                    </td>
-                                 );
-                              })}
-                           </tr>
-                        );
-                     })}
-                  </tbody>
-               </table>
-            </div>
+                                                <DeleteByInertia
+                                                   apiPath={`/short-links/delete/${id}`}
+                                                   Component={
+                                                      <button
+                                                         type="button"
+                                                         className="ml-2 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
+                                                      >
+                                                         <Delete className="h-4 w-4" />
+                                                      </button>
+                                                   }
+                                                />
+                                             </div>
+                                          ) : null}
+                                       </td>
+                                    );
+                                 })}
+                              </tr>
+                           );
+                        })}
+                     </tbody>
+                  </table>
+               </div>
+            )}
 
-            <TablePagination paginationInfo={links} className="p-7" />
-         </div>
+            <TablePagination
+               paginationInfo={links}
+               className="border-t border-slate-200 px-5 py-4 sm:px-6"
+            />
+         </PanelCard>
       </>
    );
 };

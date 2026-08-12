@@ -1,226 +1,144 @@
+import { ReactNode } from "react";
+import { Head, Link } from "@inertiajs/react";
+import Dashboard from "@/Layouts/Dashboard";
+import { PageProps, PlanProps } from "@/types";
+import BadgeCheck from "@/Components/Icons/BadgeCheck";
+import PageHeader from "@/Components/Panel/PageHeader";
+import PanelCard from "@/Components/Panel/PanelCard";
+import Badge from "@/Components/Panel/Badge";
 import {
    Tab,
    Tabs,
-   Button,
    TabsBody,
    TabPanel,
    TabsHeader,
 } from "@material-tailwind/react";
-import { ReactNode } from "react";
-import { Head, Link } from "@inertiajs/react";
-import Dashboard from "@/Layouts/Dashboard";
-import Breadcrumb from "@/Components/Breadcrumb";
-import Pricing from "@/Components/Icons/Pricing";
-import { PageProps, PlanProps } from "@/types";
-import BadgeCheck from "@/Components/Icons/BadgeCheck";
 
 interface Props extends PageProps {
    plans: PlanProps[];
 }
 
+const planBadge = (name: string) => {
+   if (name === "BASIC") return "default" as const;
+   if (name === "STANDARD") return "info" as const;
+   return "success" as const;
+};
+
+const PlanCard = ({
+   plan,
+   period,
+}: {
+   plan: PlanProps;
+   period: "monthly" | "yearly";
+}) => {
+   const features = [
+      `${plan.biolinks} Profil Link Oluşturma`,
+      `${plan.shortlinks} Kısa Link Oluşturma`,
+      `${plan.qrcodes} QR Kod Oluşturma`,
+      `${plan.themes} Temalara Erişim`,
+      plan.custom_theme
+         ? "Özel Tema Oluşturulabilir"
+         : "Özel Tema Oluşturulamaz",
+   ];
+
+   const price =
+      plan.name === "BASIC"
+         ? "Ücretsiz"
+         : period === "monthly"
+         ? `${plan.monthly_price} ${plan.currency}`
+         : `${plan.yearly_price} ${plan.currency}`;
+
+   return (
+      <PanelCard noPadding>
+         <div className="border-b border-slate-200 p-6">
+            <Badge variant={planBadge(plan.name)}>{plan.name}</Badge>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+               {price}
+            </p>
+            {plan.name !== "BASIC" && (
+               <p className="mt-1 text-sm text-slate-500">
+                  {period === "monthly" ? "Aylık" : "Yıllık"}
+               </p>
+            )}
+            <p className="mt-2 text-sm text-slate-600">
+               Bireysel kullanım için plan özellikleri.
+            </p>
+         </div>
+         <div className="p-6">
+            {features.map((item, ind) => (
+               <div
+                  key={ind}
+                  className="mb-3 flex items-center text-sm text-slate-700 last:mb-0"
+               >
+                  <BadgeCheck className="mr-2 h-4 w-4 text-blue-600" />
+                  {item}
+               </div>
+            ))}
+            <Link
+               href={`/admin/pricing-plans/update/${plan.id}`}
+               className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+            >
+               Planı Düzenle
+            </Link>
+         </div>
+      </PanelCard>
+   );
+};
+
 const Show = (props: Props) => {
-   const { auth, plans } = props;
+   const { plans } = props;
 
    return (
       <>
          <Head title="Fiyatlandırma Planları" />
-         <Breadcrumb
-            Icon={Pricing}
+         <PageHeader
             title="Fiyatlandırma Planları"
-            Component={
-               <Link href="/admin/pricing-plans/create">
-                  <Button
-                     color="blue"
-                     variant="gradient"
-                     className="py-2.5 px-5 rounded-md font-medium capitalize text-sm hover:shadow-md"
-                  >
-                    Yeni Fiyat Planı Oluştur
-                  </Button>
+            description="Plan limitlerini ve fiyatları yönetin."
+            actions={
+               <Link
+                  href="/admin/pricing-plans/create"
+                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+               >
+                  Yeni Fiyat Planı Oluştur
                </Link>
             }
          />
 
          <Tabs value="monthly">
             <TabsHeader
-               className="bg-transparent max-w-[200px] w-full mx-auto mt-4 mb-3"
-               indicatorProps={{ className: "bg-blue-500 text-white" }}
+               className="mx-auto mb-4 w-full max-w-[220px] rounded-lg border border-slate-200 bg-slate-50 p-1"
+               indicatorProps={{
+                  className: "bg-white shadow-sm rounded-md",
+               }}
             >
                <Tab
                   value="monthly"
-                  className="py-2 transition-colors duration-300"
-                  activeClassName="text-white"
+                  className="rounded-md py-2 text-sm font-medium text-slate-600"
+                  activeClassName="text-slate-900"
                >
                   Aylık
                </Tab>
                <Tab
                   value="yearly"
-                  className="py-2 transition-colors duration-300"
-                  activeClassName="text-white"
+                  className="rounded-md py-2 text-sm font-medium text-slate-600"
+                  activeClassName="text-slate-900"
                >
                   Yıllık
                </Tab>
             </TabsHeader>
             <TabsBody>
-               <TabPanel value="monthly">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-                     {plans.map((plan, ind) => {
-                        const features = [
-                           `${plan.biolinks} Profil Link Oluşturma`,     
-                           `${plan.shortlinks} Kısa Link Oluşturma`,
-                           `${plan.qrcodes} QR Kod Oluşturma`,
-                           `${plan.themes} Temalara Erişim`,
-                           plan.custom_theme
-                              ? "Özel Tema Oluşturulabilir"
-                              : "Özel Tema Oluşturulamaz",
-                        ];
-
-                        let badgeStyle = "";
-                        if (plan.name === "BASIC") {
-                           badgeStyle = "bg-gray-100 text-gray-900";
-                        } else if (plan.name === "STANDARD") {
-                           badgeStyle = "bg-blue-100 text-blue-500";
-                        } else {
-                           badgeStyle = "bg-green-100 text-green-500";
-                        }
-
-                        return (
-                           <div key={ind} className="card group">
-                              <div className="p-6 border-b-2 border-gray-300">
-                                 <span
-                                    className={`text-xs px-2 py-0.5 font-medium rounded-full ${badgeStyle}`}
-                                 >
-                                    {plan.name}
-                                 </span>
-
-                                 {plan.name === "BASIC" ? (
-                                    <p className="font-medium text-gray-700 mt-3 mb-2">
-                                       <span className="text-[40px] font-bold text-gray-900">
-                                          Ücretsiz
-                                       </span>
-                                    </p>
-                                 ) : (
-                                    <>
-                                       <p className="font-medium text-gray-700 mt-3 mb-2">
-                                          <span className="text-[40px] font-bold text-gray-900">
-                                             {plan.monthly_price}
-                                          </span>
-                                          {` ${plan.currency} Monthly`}
-                                       </p>
-                                    </>
-                                 )}
-
-                                 <p className="text-sm text-gray-700 mt-1">
-                                 Bireysel tasarımcı ve geliştirici için.
-                                 </p>
-                              </div>
-
-                              <div className="p-6">
-                                 {features.map((item, ind) => (
-                                    <div
-                                       key={ind}
-                                       className="flex items-center text-gray-700 mb-4 last:mb-0"
-                                    >
-                                       <BadgeCheck className="w-4 h-4 mr-2 text-blue-500" />
-                                       <small>{item}</small>
-                                    </div>
-                                 ))}
-
-                                 <Link
-                                    href={`/admin/pricing-plans/update/${plan.id}`}
-                                 >
-                                    <Button
-                                       color="blue"
-                                       variant="gradient"
-                                       className="w-full mt-4 py-2.5 px-1 rounded-md font-medium capitalize text-sm hover:shadow-md"
-                                    >
-                                       Planı Düzenle
-                                    </Button>
-                                 </Link>
-                              </div>
-                           </div>
-                        );
-                     })}
+               <TabPanel value="monthly" className="px-0">
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                     {plans.map((plan, ind) => (
+                        <PlanCard key={ind} plan={plan} period="monthly" />
+                     ))}
                   </div>
                </TabPanel>
-               <TabPanel value="yearly">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-                     {plans.map((plan, ind) => {
-                        const features = [
-                           `${plan.biolinks} Profil Link Oluşturma`,     
-                           `${plan.shortlinks} Kısa Link Oluşturma`,
-                           `${plan.qrcodes} QR Kod Oluşturma`,
-                           `${plan.themes} Temalara Erişim`,
-                           plan.custom_theme
-                              ? "Özel Tema Oluşturulabilir"
-                              : "Özel Tema Oluşturulamaz",
-                        ];
-
-                        let badgeStyle = "";
-                        if (plan.name === "BASIC") {
-                           badgeStyle = "bg-gray-100 text-gray-900";
-                        } else if (plan.name === "STANDARD") {
-                           badgeStyle = "bg-blue-100 text-blue-500";
-                        } else {
-                           badgeStyle = "bg-green-100 text-green-500";
-                        }
-
-                        return (
-                           <div key={ind} className="card group">
-                              <div className="p-6 border-b-2 border-gray-300">
-                                 <span
-                                    className={`text-xs px-2 py-0.5 font-medium rounded-full ${badgeStyle}`}
-                                 >
-                                    {plan.name}
-                                 </span>
-
-                                 {plan.name === "BASIC" ? (
-                                    <p className="font-medium text-gray-700 mt-3 mb-2">
-                                       <span className="text-[40px] font-bold text-gray-900">
-                                          Ücretsiz
-                                       </span>
-                                    </p>
-                                 ) : (
-                                    <>
-                                       <p className="font-medium text-gray-700 mt-3 mb-2">
-                                          <span className="text-[40px] font-bold text-gray-900">
-                                             {plan.yearly_price}
-                                          </span>
-                                          {` ${plan.currency} Yearly`}
-                                       </p>
-                                    </>
-                                 )}
-
-                                 <p className="text-sm text-gray-700 mt-1">
-                                 Standart kullanım için standart plan.
-                                 </p>
-                              </div>
-
-                              <div className="p-6">
-                                 {features.map((item, ind) => (
-                                    <div
-                                       key={ind}
-                                       className="flex items-center text-gray-700 mb-4 last:mb-0"
-                                    >
-                                       <BadgeCheck className="w-4 h-4 mr-2 text-blue-500" />
-                                       <small>{item}</small>
-                                    </div>
-                                 ))}
-
-                                 <Link
-                                    href={`/admin/pricing-plans/update/${plan.id}`}
-                                 >
-                                    <Button
-                                       color="blue"
-                                       variant="gradient"
-                                       className="w-full mt-4 py-2.5 px-1 rounded-md font-medium capitalize text-sm hover:shadow-md"
-                                    >
-                                       Planı Güncelle
-                                    </Button>
-                                 </Link>
-                              </div>
-                           </div>
-                        );
-                     })}
+               <TabPanel value="yearly" className="px-0">
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                     {plans.map((plan, ind) => (
+                        <PlanCard key={ind} plan={plan} period="yearly" />
+                     ))}
                   </div>
                </TabPanel>
             </TabsBody>

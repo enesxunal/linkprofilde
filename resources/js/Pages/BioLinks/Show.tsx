@@ -2,7 +2,6 @@ import { pageChange } from "@/utils/utils";
 import Dashboard from "@/Layouts/Dashboard";
 import Delete from "@/Components/Icons/Delete";
 import LinkIcon from "@/Components/Icons/Link";
-import Breadcrumb from "@/Components/Breadcrumb";
 import { useTable, useSortBy } from "react-table";
 import { bioLinksHead } from "@/utils/table-head";
 import TableNav from "@/Components/Table/TableNav";
@@ -12,13 +11,16 @@ import { Head, Link, router } from "@inertiajs/react";
 import ChartLineUp from "@/Components/Icons/ChartLineUp";
 import CreateLink from "@/Components/BioLink/CreateLink";
 import DeleteByInertia from "@/Components/DeleteByInertia";
-import { Button, IconButton } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 import { LinkProps, PageProps, PaginationProps } from "@/types";
 import TablePagination from "@/Components/Table/TablePagination";
 import { ReactNode, useMemo, useState, useEffect, useRef } from "react";
 import { QRCode } from "react-qrcode-logo";
 import LimitWarning from "@/Components/LimitWarning";
 import { getTableRowId } from "@/utils/table-row";
+import PageHeader from "@/Components/Panel/PageHeader";
+import PanelCard from "@/Components/Panel/PanelCard";
+import EmptyState from "@/Components/Panel/EmptyState";
 
 interface Props extends PageProps {
    links: PaginationProps;
@@ -104,10 +106,10 @@ const Show = (props: Props) => {
    return (
       <>
          <Head title="Profil Linkleri" />
-         <Breadcrumb
-            Icon={LinkIcon}
+         <PageHeader
             title="Profiller"
-            Component={<CreateLink />}
+            description="Bio link profillerinizi yönetin."
+            actions={<CreateLink />}
          />
          <LimitWarning limit={props.limit} />
 
@@ -120,7 +122,7 @@ const Show = (props: Props) => {
             </div>
          )}
 
-         <div className="card">
+         <PanelCard noPadding>
             <TableNav
                data={links ?? safePagination}
                globalSearch={true}
@@ -130,146 +132,156 @@ const Show = (props: Props) => {
                title="Profil"
             />
 
-            <div className="overflow-x-auto">
-               <table {...getTableProps()} className="w-full min-w-[1000px]">
-                  <thead>
-                     <TableHead justifyHead headerGroups={headerGroups} />
-                  </thead>
-                  <tbody {...getTableBodyProps()}>
-                     {(rows ?? []).map((row) => {
-                        prepareRow(row);
-                        const cells = row.cells ?? [];
-                        const recordId = (row.original as LinkProps).id;
-                        return (
-                           <tr
-                              {...row.getRowProps()}
-                              key={recordId}
-                              className="border-b border-gray-200 dark:border-neutral-500"
-                           >
-                              {cells.map((cell) => {
-                                 const { row, column } = cell;
-                                 const { id, url_name, visited_count, qrcode }: any =
-                                    row.original;
+            {rows.length === 0 ? (
+               <EmptyState
+                  icon={<LinkIcon className="h-6 w-6" />}
+                  title="Profil bulunamadı"
+                  description="Arama kriterlerinize uygun profil yok."
+               />
+            ) : (
+               <div className="overflow-x-auto">
+                  <table {...getTableProps()} className="w-full min-w-[1000px]">
+                     <thead>
+                        <TableHead justifyHead headerGroups={headerGroups} />
+                     </thead>
+                     <tbody {...getTableBodyProps()}>
+                        {(rows ?? []).map((row) => {
+                           prepareRow(row);
+                           const cells = row.cells ?? [];
+                           const recordId = (row.original as LinkProps).id;
+                           return (
+                              <tr
+                                 {...row.getRowProps()}
+                                 key={recordId}
+                                 className="border-b border-slate-100 hover:bg-slate-50/70"
+                              >
+                                 {cells.map((cell) => {
+                                    const { row, column } = cell;
+                                    const { id, url_name, visited_count, qrcode }: any =
+                                       row.original;
 
-                                 return (
-                                    <td
-                                       {...cell.getCellProps()}
-                                       className="px-7 py-[18px] text-start last:text-end"
-                                    >
-                                       {column.id === "customize" ? (
-                                          <div className="text-center">
-                                             <Link
-                                                href={`/bio-links/customize/${id}`}
-                                                className="text-sm px-2 py-1 rounded-md font-medium bg-blue-50 hover:bg-blue-50 active:bg-blue-50 text-blue-500"
-                                             >
-                                                Özelleştir
-                                             </Link>
-                                          </div>
-                                       ) : column.id === "visit" ? (
-                                          <div className="text-center">
-                                             <a
-                                                target="_blank"
-                                                href={`/${url_name}`}
-                                                className="text-sm px-2 py-1 rounded-md font-medium bg-green-50 hover:bg-green-50 active:bg-green-50 text-green-500"
-                                             >
-                                                Linki Gör
-                                             </a>
-                                          </div>
-                                       ) : column.id === "view" ? (
-                                          <div className="flex justify-center">
-                                             <Link
-                                                href={`/link/analytics/${id}`}
-                                                className="text-sm w-12 py-0.5 flex items-center justify-center bg-gray-100 rounded"
-                                             >
-                                                <ChartLineUp className="text-gray-700" />
-                                                <span className="ml-1">
-                                                   {visited_count ?? 0}
-                                                </span>
-                                             </Link>
-                                          </div>
-                                       ) : column.id === "qrcode" ? (
-                                          <div className="flex justify-center">
-                                             {qrcode ? (
-                                                <img
-                                                   className="w-10 h-10 rounded-sm"
-                                                   src={qrcode.img_data}
-                                                   alt=""
-                                                />
-                                             ) : (
+                                    return (
+                                       <td
+                                          {...cell.getCellProps()}
+                                          className="px-4 py-3.5 text-start text-sm text-slate-700 last:text-end sm:px-6"
+                                       >
+                                          {column.id === "customize" ? (
+                                             <div className="text-center">
+                                                <Link
+                                                   href={`/bio-links/customize/${id}`}
+                                                   className="rounded-lg bg-blue-50 px-2.5 py-1 text-sm font-medium text-blue-600 hover:bg-blue-100"
+                                                >
+                                                   Özelleştir
+                                                </Link>
+                                             </div>
+                                          ) : column.id === "visit" ? (
+                                             <div className="text-center">
+                                                <a
+                                                   target="_blank"
+                                                   href={`/${url_name}`}
+                                                   className="rounded-lg bg-green-50 px-2.5 py-1 text-sm font-medium text-green-600 hover:bg-green-100"
+                                                >
+                                                   Linki Gör
+                                                </a>
+                                             </div>
+                                          ) : column.id === "view" ? (
+                                             <div className="flex justify-center">
+                                                <Link
+                                                   href={`/link/analytics/${id}`}
+                                                   className="inline-flex items-center justify-center rounded-lg bg-slate-50 px-2.5 py-1 text-sm text-slate-700 hover:bg-slate-100"
+                                                >
+                                                   <ChartLineUp className="text-slate-600" />
+                                                   <span className="ml-1">
+                                                      {visited_count ?? 0}
+                                                   </span>
+                                                </Link>
+                                             </div>
+                                          ) : column.id === "qrcode" ? (
+                                             <div className="flex justify-center">
+                                                {qrcode ? (
+                                                   <img
+                                                      className="w-10 h-10 rounded-sm"
+                                                      src={qrcode.img_data}
+                                                      alt=""
+                                                   />
+                                                ) : (
+                                                   <Button
+                                                      variant="text"
+                                                      color="white"
+                                                      onClick={() =>
+                                                         setCreateQR({
+                                                            link_id: id,
+                                                            link_url: url_name,
+                                                         })
+                                                      }
+                                                      className="flex items-center justify-center whitespace-nowrap rounded-lg bg-slate-50 px-2.5 py-1 text-sm font-medium capitalize text-slate-700 hover:bg-slate-100 active:bg-slate-100"
+                                                   >
+                                                      QR Oluştur
+                                                   </Button>
+                                                )}
+                                             </div>
+                                          ) : column.id === "copy" ? (
+                                             <div className="flex justify-center">
                                                 <Button
                                                    variant="text"
                                                    color="white"
                                                    onClick={() =>
-                                                      setCreateQR({
-                                                         link_id: id,
-                                                         link_url: url_name,
-                                                      })
+                                                      handleCopy(id, url_name)
                                                    }
-                                                   className="text-sm py-[3px] px-2 flex text-gray-800 items-center justify-center bg-gray-100 hover:bg-gray-100 active:bg-gray-200 rounded whitespace-nowrap capitalize font-medium"
+                                                   className="flex items-center justify-center whitespace-nowrap rounded-lg bg-slate-50 px-2.5 py-1 text-sm font-medium capitalize text-slate-700 hover:bg-slate-100 active:bg-slate-100"
                                                 >
-                                                   QR Oluştur
+                                                   {copied === id
+                                                      ? "Kopyalandı"
+                                                      : "Kopyala"}
                                                 </Button>
-                                             )}
-                                          </div>
-                                       ) : column.id === "copy" ? (
-                                          <div className="flex justify-center">
-                                             <Button
-                                                variant="text"
-                                                color="white"
-                                                onClick={() =>
-                                                   handleCopy(id, url_name)
-                                                }
-                                                className="text-sm py-[3px] px-2 flex text-gray-800 items-center justify-center bg-gray-100 hover:bg-gray-100 active:bg-gray-200 rounded whitespace-nowrap capitalize font-medium"
+                                             </div>
+                                          ) : column.id === "action" ? (
+                                             <div className="flex justify-end items-center">
+                                                <EditLink
+                                                   key={recordId}
+                                                   links={links}
+                                                   setLinks={setLinks}
+                                                   link={row.original as LinkProps}
+                                                />
+
+                                                <DeleteByInertia
+                                                   apiPath={`/bio-links/delete/${id}`}
+                                                   Component={
+                                                      <button
+                                                         type="button"
+                                                         className="ml-2 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
+                                                      >
+                                                         <Delete className="h-4 w-4" />
+                                                      </button>
+                                                   }
+                                                />
+                                             </div>
+                                          ) : (
+                                             <span
+                                                className={`text-sm text-slate-700 ${
+                                                   column.id === "name" &&
+                                                   "font-bold"
+                                                }`}
                                              >
-                                                {copied === id
-                                                   ? "Kopyalandı"
-                                                   : "Kopyala"}
-                                             </Button>
-                                          </div>
-                                       ) : column.id === "action" ? (
-                                          <div className="flex justify-end items-center">
-                                             <EditLink
-                                                key={recordId}
-                                                links={links}
-                                                setLinks={setLinks}
-                                                link={row.original as LinkProps}
-                                             />
+                                                {cell.render("Cell")}
+                                             </span>
+                                          )}
+                                       </td>
+                                    );
+                                 })}
+                              </tr>
+                           );
+                        })}
+                     </tbody>
+                  </table>
+               </div>
+            )}
 
-                                             <DeleteByInertia
-                                                apiPath={`/bio-links/delete/${id}`}
-                                                Component={
-                                                   <IconButton
-                                                      color="white"
-                                                      variant="text"
-                                                      className="w-7 h-7 rounded-full bg-red-50 hover:bg-red-50 active:bg-red-50 text-red-500 ml-3"
-                                                   >
-                                                      <Delete className="h-4 w-4" />
-                                                   </IconButton>
-                                                }
-                                             />
-                                          </div>
-                                       ) : (
-                                          <span
-                                             className={`text-sm text-gray-700 ${
-                                                column.id === "name" &&
-                                                "font-bold"
-                                             }`}
-                                          >
-                                             {cell.render("Cell")}
-                                          </span>
-                                       )}
-                                    </td>
-                                 );
-                              })}
-                           </tr>
-                        );
-                     })}
-                  </tbody>
-               </table>
-            </div>
-
-            <TablePagination paginationInfo={links ?? safePagination} className="p-7" />
-         </div>
+            <TablePagination
+               paginationInfo={links ?? safePagination}
+               className="border-t border-slate-200 px-5 py-4 sm:px-6"
+            />
+         </PanelCard>
       </>
    );
 };

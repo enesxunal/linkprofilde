@@ -2,9 +2,8 @@ import { ReactNode } from "react";
 import { PaymentProps } from "@/types";
 import { Head } from "@inertiajs/react";
 import Dashboard from "@/Layouts/Dashboard";
-import Breadcrumb from "@/Components/Breadcrumb";
 import ToslaSettings from "@/Components/Forms/ToslaSettings";
-import PaymentSettings from "@/Components/Icons/PaymentSettings";
+import PageHeader from "@/Components/Panel/PageHeader";
 
 interface Props {
    tosla?: PaymentProps | null;
@@ -24,8 +23,10 @@ const PaymentSetup = (props: Props) => {
    return (
       <>
          <Head title="Ödeme Ayarları" />
-         <Breadcrumb Icon={PaymentSettings} title="Ödeme Ayarları" />
-
+         <PageHeader
+            title="Ödeme Ayarları"
+            description="Tosla ödeme entegrasyon bilgilerini yönetin."
+         />
          <ToslaSettings tosla={tosla} />
       </>
    );

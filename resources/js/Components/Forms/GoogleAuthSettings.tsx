@@ -1,7 +1,6 @@
 import React from "react";
 import Input from "@/Components/Input";
 import { useForm } from "@inertiajs/react";
-import { Button } from "@material-tailwind/react";
 import Switch from "@/Components/Switch";
 import { SocialLoginProps } from "@/types";
 
@@ -35,19 +34,22 @@ const GoogleAuthSettings = (props: { google: SocialLoginProps }) => {
    };
 
    return (
-      <div className="card max-w-[1000px] w-full mx-auto my-7">
-         <div className="px-7 pt-7 pb-4 border-b border-b-gray-200">
-            <p className="text18 font-bold text-gray-900">
-               Google Auth Settings
+      <div className="card mx-auto w-full max-w-[1000px]">
+         <div className="border-b border-slate-200 px-5 pb-4 pt-5 sm:px-6">
+            <p className="text-lg font-semibold text-slate-900">
+               Google Giriş Ayarları
+            </p>
+            <p className="mt-0.5 text-sm text-slate-600">
+               Google OAuth istemci bilgilerini yönetin.
             </p>
          </div>
 
-         <form onSubmit={submit} className="p-7">
+         <form onSubmit={submit} className="p-5 sm:p-6">
             <div className="mb-7 md:pl-[164px]">
                <Switch
                   switchId="google"
                   name="google_login_allow"
-                  label="Allow Google Login"
+                  label="Google ile girişi aktif et"
                   onChange={onHandleChange}
                   defaultChecked={data.google_login_allow}
                />
@@ -60,9 +62,9 @@ const GoogleAuthSettings = (props: { google: SocialLoginProps }) => {
                   name="google_client_id"
                   value={data.google_client_id}
                   error={errors.google_client_id}
-                  placeholder="Enter your google client id"
+                  placeholder="Google Client ID"
                   onChange={onHandleChange}
-                  label="Google Client Id"
+                  label="Google Client ID"
                   flexLabel
                   required
                />
@@ -75,7 +77,7 @@ const GoogleAuthSettings = (props: { google: SocialLoginProps }) => {
                   name="google_client_secret"
                   value={data.google_client_secret}
                   error={errors.google_client_secret}
-                  placeholder="Enter your google client secret"
+                  placeholder="Google Client Secret"
                   onChange={onHandleChange}
                   label="Google Client Secret"
                   flexLabel
@@ -90,23 +92,21 @@ const GoogleAuthSettings = (props: { google: SocialLoginProps }) => {
                   name="google_redirect"
                   value={data.google_redirect}
                   error={errors.google_redirect}
-                  placeholder="Enter your google redirect url"
+                  placeholder="Google Redirect URL"
                   onChange={onHandleChange}
-                  label="Google Redirect Url"
+                  label="Google Redirect URL"
                   flexLabel
                   required
                />
             </div>
 
-            <div className="flex items-center mt-6 md:pl-[164px]">
-               <Button
+            <div className="mt-6 flex items-center md:pl-[164px]">
+               <button
                   type="submit"
-                  color="blue"
-                  variant="gradient"
-                  className="py-2.5 px-5 rounded-md font-medium capitalize text-sm hover:shadow-md"
+                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                >
-                  Save Changes
-               </Button>
+                  Değişiklikleri Kaydet
+               </button>
             </div>
          </form>
       </div>

@@ -1,15 +1,13 @@
 import { useState } from "react";
 import "katex/dist/katex.min.css";
 import "react-quill/dist/quill.snow.css";
-import Page from "@/Components/Icons/Page";
 import Dashboard from "@/Layouts/Dashboard";
-import Breadcrumb from "@/Components/Breadcrumb";
 import Input from "@/Components/Input";
 import { Head, useForm } from "@inertiajs/react";
-import { Button, Card } from "@material-tailwind/react";
 import ReactQuill from "react-quill";
 import { formats } from "@/utils/utils";
 import CustomToolbar from "@/Components/CustomToolbar";
+import PageHeader from "@/Components/Panel/PageHeader";
 import katex from "katex";
 window.katex = katex;
 
@@ -30,7 +28,6 @@ const Create = () => {
          setData(name, value);
 
          if (value.length > 0) {
-            // Input validation for characters and hyphen
             const regex = /^[a-z]+(-[a-z]+)*$/;
             const isValidInput = regex.test(value);
 
@@ -54,23 +51,28 @@ const Create = () => {
    return (
       <>
          <Head title="Özel Sayfa Oluştur" />
-         <Breadcrumb Icon={Page} title="Özel Sayfa Oluştur" />
+         <PageHeader
+            title="Özel Sayfa Oluştur"
+            description="Yeni bir özel sayfa oluşturun."
+         />
 
-         <Card className="max-w-[1200px] w-full mx-auto">
-            <div className="px-7 pt-7 pb-4 border-b border-b-gray-200">
-               <p className="text18 font-bold text-gray-900">Create New Page</p>
+         <div className="card mx-auto w-full max-w-[1200px]">
+            <div className="border-b border-slate-200 px-5 pb-4 pt-5 sm:px-6">
+               <p className="text-lg font-semibold text-slate-900">
+                  Yeni Sayfa
+               </p>
             </div>
-            <form onSubmit={submit} className="p-7">
-               <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <form onSubmit={submit} className="p-5 sm:p-6">
+               <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <Input
                      type="text"
                      fullWidth
                      name="name"
                      value={data.name}
                      error={errors.name}
-                     placeholder="Name of the page"
+                     placeholder="Sayfa adı"
                      onChange={onHandleChange}
-                     label="Full Name"
+                     label="Sayfa Adı"
                      required
                   />
 
@@ -81,10 +83,10 @@ const Create = () => {
                      value={data.route}
                      error={
                         errors.route ?? !validRoute
-                           ? "Route should be characters and you can use hyphen(-) for separation"
+                           ? "Route yalnızca küçük harf ve tire (-) içerebilir"
                            : ""
                      }
-                     placeholder="Page route or url"
+                     placeholder="ornek-sayfa"
                      onChange={onHandleChange}
                      label="Route"
                      required
@@ -92,11 +94,11 @@ const Create = () => {
                </div>
 
                <div>
-                  <small className="w-full mb-1 whitespace-nowrap flex items-center font-medium text-gray-500">
-                     <span className="mr-1">Page Content</span>
-                     <span className="block text-red-500">*</span>
-                  </small>
-                  <div className="border border-gray-300 rounded-md">
+                  <label className="mb-1.5 flex w-full items-center text-sm font-medium text-slate-700">
+                     <span className="mr-1">Sayfa İçeriği</span>
+                     <span className="text-red-600">*</span>
+                  </label>
+                  <div className="rounded-lg border border-slate-200">
                      <CustomToolbar />
                      <ReactQuill
                         modules={modules}
@@ -108,17 +110,15 @@ const Create = () => {
                   </div>
                </div>
 
-               <Button
+               <button
                   type="submit"
-                  variant="text"
-                  color="white"
                   disabled={!validRoute}
-                  className="mt-10 bg-blue-500 hover:bg-blue-500 active:bg-blue-500 font-medium capitalize rounded-md"
+                  className="mt-8 inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                >
-                  Create New Page
-               </Button>
+                  Sayfayı Oluştur
+               </button>
             </form>
-         </Card>
+         </div>
       </>
    );
 };

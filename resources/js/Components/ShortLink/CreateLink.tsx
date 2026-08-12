@@ -1,6 +1,6 @@
 import Input from "../Input";
 import { FormEventHandler, useEffect, useState } from "react";
-import { Button, Dialog } from "@material-tailwind/react";
+import { Dialog } from "@material-tailwind/react";
 import { useForm } from "@inertiajs/react";
 
 const CreateLink = () => {
@@ -38,20 +38,19 @@ const CreateLink = () => {
 
    return (
       <>
-         <Button
-            color="blue"
-            variant="gradient"
+         <button
+            type="button"
             onClick={handleOpen}
-            className="py-2.5 px-5 rounded-md font-medium capitalize text-sm hover:shadow-md flex"
+            className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
          >
            Kısa Link Oluştur
-         </Button>
+         </button>
 
          <Dialog
             size="sm"
             open={open}
             handler={handleOpen}
-            className="p-6 max-h-[calc(100vh-80px)] overflow-y-auto text-gray-800"
+            className="mx-4 max-h-[calc(100vh-80px)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 text-slate-800 shadow-sm sm:mx-0"
          >
             <div className="flex items-center justify-between mb-6">
                <p className="text-xl font-medium">Yeni Link Oluştur</p>
@@ -103,23 +102,20 @@ const CreateLink = () => {
                   />
                </div>
 
-               <div className="flex justify-end mt-4">
-                  <Button
-                     color="red"
-                     variant="text"
+               <div className="mt-4 flex justify-end gap-2">
+                  <button
+                     type="button"
                      onClick={handleOpen}
-                     className="py-2 font-medium capitalize text-base mr-2"
+                     className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                   >
-                     <span>Çıkış</span>
-                  </Button>
-                  <Button
+                     İptal
+                  </button>
+                  <button
                      type="submit"
-                     color="blue"
-                     variant="gradient"
-                     className="py-2 font-medium capitalize text-base"
+                     className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                   >
-                     <span>Değişiklikleri Kaydet</span>
-                  </Button>
+                     Kaydet
+                  </button>
                </div>
             </form>
          </Dialog>

@@ -1,7 +1,7 @@
 import Input from "@/Components/Input";
 import { useForm } from "@inertiajs/react";
 import { useState, ChangeEvent, FormEvent } from "react";
-import { Avatar, Button } from "@material-tailwind/react";
+import { Avatar } from "@material-tailwind/react";
 import UserCircle from "@/Components/Icons/UserCircle";
 import { AppSettingProps } from "@/types";
 import TextArea from "../TextArea";
@@ -44,37 +44,40 @@ const AppSettings = (props: { app: AppSettingProps }) => {
    };
 
    return (
-      <div className="card max-w-[1000px] w-full mx-auto">
-         <div className="px-7 pt-7 pb-4 border-b border-b-gray-200">
-            <p className="text18 font-bold text-gray-900">
-               Setup Global Settings
+      <div className="card mx-auto w-full max-w-[1000px]">
+         <div className="border-b border-slate-200 px-5 pb-4 pt-5 sm:px-6">
+            <p className="text-lg font-semibold text-slate-900">
+               Genel Uygulama Ayarları
+            </p>
+            <p className="mt-0.5 text-sm text-slate-600">
+               Logo, başlık, açıklama ve telif bilgilerini yönetin.
             </p>
          </div>
 
-         <form onSubmit={submit} className="p-7">
+         <form onSubmit={submit} className="p-5 sm:p-6">
             <div className="grid grid-cols-1 gap-7">
                <div className="flex flex-col md:flex-row">
-                  <p className="max-w-[164px] w-full font-medium text-gray-500 mb-1">
-                     App Logo
+                  <p className="mb-1.5 w-full max-w-[164px] text-sm font-medium text-slate-700">
+                     Uygulama Logosu
                   </p>
                   <div>
                      {imageUrl ? (
                         <Avatar
                            src={imageUrl}
-                           alt="item-1"
+                           alt="logo"
                            size="xs"
                            variant="circular"
                            className="h-[100px] w-[100px]"
                         />
                      ) : (
-                        <UserCircle className="h-[100px] w-[100px] text-blue-gray-500" />
+                        <UserCircle className="h-[100px] w-[100px] text-slate-400" />
                      )}
-                     <div className="mt-1 flex items-center">
+                     <div className="mt-2 flex flex-wrap items-center gap-3">
                         <label
                            htmlFor="formFileSm"
-                           className="text12 font-medium text-gray-900 px-2.5 py-1.5 border border-gray-700 bg-gray-100 whitespace-nowrap"
+                           className="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
                         >
-                           Choose Photo
+                           Fotoğraf Seç
                         </label>
                         <input
                            hidden
@@ -82,12 +85,12 @@ const AppSettings = (props: { app: AppSettingProps }) => {
                            type="file"
                            onChange={handleImageChange}
                         />
-                        <small className="ml-3 text-gray-500">
-                           JPG, JPEG, PNG, SVG File, Maximum 2MB
+                        <small className="text-slate-500">
+                           JPG, JPEG, PNG — maksimum 2MB
                         </small>
                      </div>
                      {errors.logo && (
-                        <p className="text-sm text-red-500 mt-1">
+                        <p className="mt-1 text-sm text-red-600">
                            {errors.logo}
                         </p>
                      )}
@@ -99,21 +102,21 @@ const AppSettings = (props: { app: AppSettingProps }) => {
                   fullWidth
                   type="text"
                   name="title"
-                  label="App Title"
+                  label="Uygulama Başlığı"
                   value={data.title}
                   error={errors.title}
                   onChange={onHandleChange}
-                  placeholder="Enter your app title"
+                  placeholder="Uygulama başlığını girin"
                />
 
                <Input
                   type="text"
                   name="copyright"
-                  label="App Copyright"
+                  label="Telif Metni"
                   value={data.copyright}
                   error={errors.copyright}
                   onChange={onHandleChange}
-                  placeholder="Enter the copy right text. (Show on footer)"
+                  placeholder="Footer’da görünen telif metni"
                   fullWidth
                   flexLabel
                   required
@@ -123,26 +126,24 @@ const AppSettings = (props: { app: AppSettingProps }) => {
                   rows={3}
                   cols={10}
                   name="description"
-                  label="App Description"
+                  label="Uygulama Açıklaması"
                   value={data.description}
                   error={errors.description}
                   onChange={onHandleChange}
-                  placeholder="Enter the description text. (Show on footer)"
+                  placeholder="Footer’da görünen açıklama metni"
                   fullWidth
                   flexLabel
                   required
                />
             </div>
 
-            <div className="flex items-center mt-7 md:pl-[164px]">
-               <Button
+            <div className="mt-7 flex items-center md:pl-[164px]">
+               <button
                   type="submit"
-                  color="blue"
-                  variant="gradient"
-                  className="py-2.5 px-5 rounded-md font-medium capitalize text-sm hover:shadow-md"
+                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                >
-                  Save Changes
-               </Button>
+                  Değişiklikleri Kaydet
+               </button>
             </div>
          </form>
       </div>

@@ -1,8 +1,9 @@
 import Dashboard from "@/Layouts/Dashboard";
 import { Head } from "@inertiajs/react";
-import Breadcrumb from "@/Components/Breadcrumb";
-import Control from "@/Components/Icons/Control";
 import { ReactNode } from "react";
+import PageHeader from "@/Components/Panel/PageHeader";
+import PanelCard from "@/Components/Panel/PanelCard";
+import Badge from "@/Components/Panel/Badge";
 
 interface Props {
    version: string;
@@ -14,17 +15,23 @@ const AppControl = (props: Props) => {
    return (
       <>
          <Head title="Uygulama Kontrolü" />
-         <Breadcrumb Icon={Control} title="Uygulama Kontrolü" />
+         <PageHeader
+            title="Uygulama Kontrolü"
+            description="Kurulu sürüm ve güncelleme durumu."
+         />
 
-         <div className="">
-            <p className="font-medium">
-               {"Yüklü sürüm: "}
-               <span className="font-normal">{version}</span>
+         <PanelCard className="max-w-xl">
+            <div className="flex items-center gap-3">
+               <p className="text-sm font-medium text-slate-700">
+                  Yüklü sürüm
+               </p>
+               <Badge variant="info">{version}</Badge>
+            </div>
+            <p className="mt-4 text-sm text-slate-600">
+               Otomatik güncelleme devre dışı bırakıldı. Veritabanı güvenliği
+               için bu özellik kapatılmıştır.
             </p>
-            <p className="font-medium mt-4 text-gray-600 text-sm">
-               Otomatik güncelleme devre dışı bırakıldı. Veritabanı güvenliği için bu özellik kapatılmıştır.
-            </p>
-         </div>
+         </PanelCard>
       </>
    );
 };

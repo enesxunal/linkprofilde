@@ -1,6 +1,6 @@
 import Input from "../Input";
 import { FormEventHandler, useEffect, useState } from "react";
-import { Avatar, Button, Dialog, IconButton } from "@material-tailwind/react";
+import { Avatar, Dialog } from "@material-tailwind/react";
 import { useForm } from "@inertiajs/react";
 import UserCircle from "../Icons/UserCircle";
 import TextArea from "../TextArea";
@@ -50,63 +50,67 @@ const EditTestimonial = (props: { testimonial: TestimonialProps }) => {
 
    return (
       <>
-         <IconButton
-            variant="text"
-            color="white"
+         <button
+            type="button"
             onClick={handleOpen}
-            className="w-7 h-7 rounded-full bg-blue-50 hover:bg-blue-50 active:bg-blue-50 text-blue-500"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"
+            aria-label="Yorumu düzenle"
          >
             <EditPen className="h-4 w-4" />
-         </IconButton>
+         </button>
 
          <Dialog
             size="sm"
             open={open}
             handler={handleOpen}
-            className="p-6 max-h-[calc(100vh-80px)] overflow-y-auto text-gray-800"
+            className="mx-4 max-h-[calc(100vh-80px)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 text-slate-800 shadow-sm sm:mx-0"
          >
-            <div className="flex items-center justify-between mb-6">
-               <p className="text-xl font-medium">Yeni Link Oluştur</p>
-               <span
+            <div className="mb-6 flex items-center justify-between">
+               <p className="text-lg font-semibold text-slate-900">
+                  Yorumu Düzenle
+               </p>
+               <button
+                  type="button"
                   onClick={handleOpen}
-                  className="text-3xl leading-none cursor-pointer"
+                  className="text-2xl leading-none text-slate-400 hover:text-slate-700"
+                  aria-label="Kapat"
                >
                   ×
-               </span>
+               </button>
             </div>
 
             <form onSubmit={submit}>
-               <div className="flex flex-col items-center mb-4">
+               <div className="mb-4 flex flex-col items-center">
                   {imageUrl ? (
                      <Avatar
                         size="xs"
-                        alt="item-1"
+                        alt="thumbnail"
                         src={imageUrl}
                         variant="circular"
                         className="h-[120px] w-[120px]"
                      />
                   ) : (
-                     <UserCircle className="h-[120px] w-[120px] text-blue-gray-500" />
+                     <UserCircle className="h-[120px] w-[120px] text-slate-400" />
                   )}
                   <div className="mt-4 flex items-center">
                      <label
-                        htmlFor="formFileSm"
-                        className="text-sm font-medium text-gray-900 px-2.5 py-1.5 border border-gray-700 bg-gray-100 whitespace-nowrap"
+                        htmlFor={`edit-testimonial-${id}`}
+                        className="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
                      >
-                        Choose Photo
+                        Fotoğraf Seç
                      </label>
                      <input
                         hidden
                         type="file"
                         onChange={handleImageChange}
-                        id="formFileSm"
+                        id={`edit-testimonial-${id}`}
                      />
                   </div>
-                  <small className="text-gray-500 py-4">
-                     JPG, JPEG, PNG, SVG File, Maximum 2MB
+                  <small className="py-4 text-slate-500">
+                     JPG, JPEG, PNG — maksimum 2MB
                   </small>
                   {errors.thumbnail && (
-                     <p className="text-sm text-red-500">{errors.thumbnail}</p>
+                     <p className="text-sm text-red-600">{errors.thumbnail}</p>
                   )}
                </div>
 
@@ -114,11 +118,11 @@ const EditTestimonial = (props: { testimonial: TestimonialProps }) => {
                   <Input
                      type="text"
                      name="name"
-                     label="Name"
+                     label="İsim"
                      value={data.name}
                      error={errors.name}
                      onChange={onHandleChange}
-                     placeholder="Enter the reviewer name"
+                     placeholder="Yorum yapan kişinin adı"
                      fullWidth
                      required
                   />
@@ -127,11 +131,11 @@ const EditTestimonial = (props: { testimonial: TestimonialProps }) => {
                   <Input
                      type="text"
                      name="title"
-                     label="Designation"
+                     label="Ünvan"
                      value={data.title}
                      error={errors.title}
                      onChange={onHandleChange}
-                     placeholder="Enter the reviewer designation"
+                     placeholder="Ünvan veya rol"
                      fullWidth
                      required
                   />
@@ -141,34 +145,31 @@ const EditTestimonial = (props: { testimonial: TestimonialProps }) => {
                      rows={3}
                      cols={10}
                      name="testimonial"
-                     label="Testimonial"
+                     label="Yorum"
                      value={data.testimonial}
                      error={errors.testimonial}
                      onChange={onHandleChange}
-                     placeholder="Enter the reviewer feedback"
+                     placeholder="Müşteri yorumunu girin"
                      maxLength={180}
                      fullWidth
                      required
                   />
                </div>
 
-               <div className="flex justify-end pt-4">
-                  <Button
-                     color="red"
-                     variant="text"
+               <div className="flex justify-end gap-2 pt-4">
+                  <button
+                     type="button"
                      onClick={handleOpen}
-                     className="py-2 font-medium capitalize text-base mr-2"
+                     className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                   >
-                     <span>Cancel</span>
-                  </Button>
-                  <Button
+                     İptal
+                  </button>
+                  <button
                      type="submit"
-                     color="blue"
-                     variant="gradient"
-                     className="py-2 font-medium capitalize text-base"
+                     className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                   >
-                     <span>Create</span>
-                  </Button>
+                     Kaydet
+                  </button>
                </div>
             </form>
          </Dialog>

@@ -1,6 +1,5 @@
 import Input from "@/Components/Input";
 import { useForm } from "@inertiajs/react";
-import { Button } from "@material-tailwind/react";
 import InputDropdown from "@/Components/InputDropdown";
 import { SMTPProps } from "@/types";
 
@@ -42,18 +41,15 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
    };
 
    return (
-      <div className="card max-w-[1000px] w-full mx-auto">
-         <div className="px-7 pt-7 pb-4 border-b border-b-gray-200">
-            <p className="text18 font-bold text-gray-900">
-               Setup SMTP Settings
-            </p>
-            <p className="text-xs text-red-300 italic mt-1">
-               Without SMTP credentials new users will can't register in your
-               app.
+      <div className="card mx-auto w-full max-w-[1000px]">
+         <div className="border-b border-slate-200 px-5 pb-4 pt-5 sm:px-6">
+            <p className="text-lg font-semibold text-slate-900">SMTP Ayarları</p>
+            <p className="mt-1 text-sm text-amber-700">
+               SMTP bilgileri olmadan yeni kullanıcılar kayıt olamayabilir.
             </p>
          </div>
 
-         <form onSubmit={submit} className="p-7">
+         <form onSubmit={submit} className="p-5 sm:p-6">
             <div className="grid grid-cols-1 gap-7">
                <InputDropdown
                   required
@@ -73,7 +69,7 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
                   value={data.host}
                   error={errors.host}
                   onChange={onHandleChange}
-                  placeholder="Your smtp host"
+                  placeholder="SMTP sunucu adresi"
                   fullWidth
                   flexLabel
                   required
@@ -86,7 +82,7 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
                   value={data.port as any}
                   error={errors.port}
                   onChange={onHandleChange}
-                  placeholder="Your smtp port"
+                  placeholder="SMTP port"
                   fullWidth
                   flexLabel
                   required
@@ -95,11 +91,11 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
                <Input
                   type="password"
                   name="username"
-                  label="SMTP Username"
+                  label="SMTP Kullanıcı Adı"
                   value={data.username}
                   error={errors.username}
                   onChange={onHandleChange}
-                  placeholder="Your smtp username"
+                  placeholder="SMTP kullanıcı adı"
                   fullWidth
                   flexLabel
                   required
@@ -108,11 +104,11 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
                <Input
                   type="password"
                   name="password"
-                  label="SMTP Password"
+                  label="SMTP Şifre"
                   value={data.password}
                   error={errors.password}
                   onChange={onHandleChange}
-                  placeholder="Leave blank to keep the current password"
+                  placeholder="Değiştirmek istemiyorsanız boş bırakın"
                   fullWidth
                   flexLabel
                   autoComplete="new-password"
@@ -121,11 +117,11 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
                <Input
                   type="text"
                   name="from_address"
-                  label="Sender Email Address"
+                  label="Gönderen E-posta"
                   value={data.from_address}
                   error={errors.from_address}
                   onChange={onHandleChange}
-                  placeholder="Sender email address"
+                  placeholder="Gönderen e-posta adresi"
                   fullWidth
                   flexLabel
                   required
@@ -134,11 +130,11 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
                <Input
                   type="text"
                   name="from_name"
-                  label="Sender Name"
+                  label="Gönderen Adı"
                   value={data.from_name}
                   error={errors.from_name}
                   onChange={onHandleChange}
-                  placeholder="Email seder name"
+                  placeholder="Gönderen adı"
                   fullWidth
                   flexLabel
                   required
@@ -149,7 +145,7 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
                   flexLabel
                   fullWidth
                   name="encryption"
-                  label="SMTP Encryption"
+                  label="SMTP Şifreleme"
                   error={errors.encryption}
                   defaultValue="tls"
                   itemList={[
@@ -162,26 +158,24 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
                <Input
                   type="email"
                   name="admin_email"
-                  label="Admin Email"
+                  label="Admin E-posta"
                   value={data.admin_email}
                   error={errors.admin_email}
                   onChange={onHandleChange}
-                  placeholder="Admin email for smtp connection check"
+                  placeholder="Bağlantı testi için admin e-posta"
                   fullWidth
                   flexLabel
                   required
                />
             </div>
 
-            <div className="flex items-center mt-7 md:pl-[164px]">
-               <Button
+            <div className="mt-7 flex items-center md:pl-[164px]">
+               <button
                   type="submit"
-                  color="blue"
-                  variant="gradient"
-                  className="py-2.5 px-5 rounded-md font-medium capitalize text-sm hover:shadow-md"
+                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                >
-                  Save Changes
-               </Button>
+                  Değişiklikleri Kaydet
+               </button>
             </div>
          </form>
       </div>

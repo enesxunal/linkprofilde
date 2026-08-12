@@ -1,23 +1,27 @@
 import { ReactNode } from "react";
 import { Head } from "@inertiajs/react";
 import Dashboard from "@/Layouts/Dashboard";
-import Breadcrumb from "@/Components/Breadcrumb";
 import ProfileUpdate from "@/Components/Settings/ProfileUpdate";
 import ForgetPassword from "@/Components/Settings/ForgetPassword";
 import ChangePassword from "@/Components/Settings/ChangePassword";
 import ChangeEmail from "@/Components/Settings/ChangeEmail";
-import Setting from "@/Components/Icons/Setting";
+import PageHeader from "@/Components/Panel/PageHeader";
 
 const Settings = () => {
    return (
       <>
          <Head title="Ayarlar" />
-         <Breadcrumb Icon={Setting} title="Ayarlar" />
+         <PageHeader
+            title="Ayarlar"
+            description="Profil, e-posta ve şifre bilgilerinizi güncelleyin."
+         />
 
-         <ProfileUpdate />
-         <ForgetPassword />
-         <ChangePassword />
-         <ChangeEmail />
+         <div className="space-y-6">
+            <ProfileUpdate />
+            <ForgetPassword />
+            <ChangePassword />
+            <ChangeEmail />
+         </div>
       </>
    );
 };

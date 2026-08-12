@@ -1,67 +1,78 @@
-import Page from "@/Components/Icons/Page";
 import Dashboard from "@/Layouts/Dashboard";
 import { Head, Link, router } from "@inertiajs/react";
 import Delete from "@/Components/Icons/Delete";
-import Breadcrumb from "@/Components/Breadcrumb";
 import EditFill from "@/Components/Icons/EditPen";
-import { Button, Card, IconButton } from "@material-tailwind/react";
 import { CustomPageProps } from "@/types";
 import { ReactNode } from "react";
+import PageHeader from "@/Components/Panel/PageHeader";
+import PanelCard from "@/Components/Panel/PanelCard";
+import EmptyState from "@/Components/Panel/EmptyState";
+import Page from "@/Components/Icons/Page";
 
 const Show = ({ custom_pages }: { custom_pages: CustomPageProps[] }) => {
    return (
       <>
          <Head title="Sayfa Yönetimi" />
-         <Breadcrumb Icon={Page} title="Sayfa Yönetimi" />
-
-         <Card className="!shadow-card p-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-            <div className="col-span-1 md:col-span-2 lg:col-span-3">
-               <Link href={route("custom-page.create")}>
-                  <Button
-                     type="submit"
-                     color="white"
-                     className="float-right capitalize bg-blue-500 text-white text-sm !rounded-lg px-5"
-                  >
-                     Create New Page
-                  </Button>
-               </Link>
-            </div>
-
-            {custom_pages.map((item) => (
-               <div
-                  key={item.id}
-                  className="shadow-card relative p-6 mt-10 rounded-lg border border-gray-100"
+         <PageHeader
+            title="Sayfa Yönetimi"
+            description="Özel sayfaları oluşturun ve düzenleyin."
+            actions={
+               <Link
+                  href={route("custom-page.create")}
+                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                >
-                  <div className="mb-4">
-                     <Link href={route("custom-page.update", item.id)}>
-                        <IconButton
-                           variant="text"
-                           color="white"
-                           className="w-7 h-7 rounded-full bg-blue-50 hover:bg-blue-50 text-blue-500"
+                  Yeni Sayfa Oluştur
+               </Link>
+            }
+         />
+
+         {custom_pages.length === 0 ? (
+            <PanelCard>
+               <EmptyState
+                  icon={<Page className="h-6 w-6" />}
+                  title="Özel sayfa yok"
+                  description="İlk özel sayfanızı oluşturarak başlayın."
+                  action={
+                     <Link
+                        href={route("custom-page.create")}
+                        className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                     >
+                        Yeni Sayfa Oluştur
+                     </Link>
+                  }
+               />
+            </PanelCard>
+         ) : (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+               {custom_pages.map((item) => (
+                  <PanelCard key={item.id}>
+                     <div className="mb-4 flex items-center gap-2">
+                        <Link
+                           href={route("custom-page.update", item.id)}
+                           className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"
                         >
                            <EditFill className="h-4 w-4" />
-                        </IconButton>
-                     </Link>
-
-                     <IconButton
-                        variant="text"
-                        color="white"
-                        className="w-7 h-7 rounded-full bg-red-50 hover:bg-red-50 text-red-500 ml-3"
-                        onClick={() =>
-                           router.delete(route("custom-page.delete", item.id))
-                        }
-                     >
-                        <Delete className="h-4 w-4" />
-                     </IconButton>
-                  </div>
-
-                  <p className="text18 font-medium mb-1.5">{item.name}</p>
-                  <small className="text-gray-500  dark:text-gray-300">
-                     {item.route}
-                  </small>
-               </div>
-            ))}
-         </Card>
+                        </Link>
+                        <button
+                           type="button"
+                           className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
+                           onClick={() =>
+                              router.delete(
+                                 route("custom-page.delete", item.id)
+                              )
+                           }
+                        >
+                           <Delete className="h-4 w-4" />
+                        </button>
+                     </div>
+                     <p className="text-base font-semibold text-slate-900">
+                        {item.name}
+                     </p>
+                     <p className="mt-1 text-sm text-slate-500">{item.route}</p>
+                  </PanelCard>
+               ))}
+            </div>
+         )}
       </>
    );
 };

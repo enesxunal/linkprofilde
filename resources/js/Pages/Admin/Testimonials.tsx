@@ -2,14 +2,14 @@ import { ReactNode } from "react";
 import { Head } from "@inertiajs/react";
 import { TestimonialProps } from "@/types";
 import Dashboard from "@/Layouts/Dashboard";
-import Breadcrumb from "@/Components/Breadcrumb";
 import CreateTestimonial from "@/Components/Testimonial/CreateTestimonial";
 import DeleteByInertia from "@/Components/DeleteByInertia";
-import { IconButton } from "@material-tailwind/react";
 import Delete from "@/Components/Icons/Delete";
-import Chat from "@/Components/Icons/Chat";
-import EditPen from "@/Components/Icons/EditPen";
 import EditTestimonial from "@/Components/Testimonial/EditTestimonial";
+import PageHeader from "@/Components/Panel/PageHeader";
+import PanelCard from "@/Components/Panel/PanelCard";
+import EmptyState from "@/Components/Panel/EmptyState";
+import Chat from "@/Components/Icons/Chat";
 
 interface Props {
    testimonials: TestimonialProps[];
@@ -19,48 +19,56 @@ const Testimonials = ({ testimonials }: Props) => {
    return (
       <>
          <Head title="Müşteri Yorumları" />
-         <Breadcrumb
-            Icon={Chat}
+         <PageHeader
             title="Müşteri Yorumları"
-            Component={<CreateTestimonial />}
+            description="Ana sayfada gösterilen müşteri yorumlarını yönetin."
+            actions={<CreateTestimonial />}
          />
 
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((item) => (
-               <div
-                  key={item.id}
-                  className="card relative mt-14 p-6 pt-16 text-center rounded-lg border border-gray-100"
-               >
-                  <div className="absolute top-3 right-3">
-                     <EditTestimonial testimonial={item} />
-
-                     <DeleteByInertia
-                        apiPath={`/admin/testimonials/delete/${item.id}`}
-                        Component={
-                           <IconButton
-                              color="white"
-                              variant="text"
-                              className="w-7 h-7 rounded-full bg-red-50 hover:bg-red-50 active:bg-red-50 text-red-500 ml-3"
-                           >
-                              <Delete className="h-4 w-4" />
-                           </IconButton>
-                        }
+         {testimonials.length === 0 ? (
+            <PanelCard>
+               <EmptyState
+                  icon={<Chat className="h-6 w-6" />}
+                  title="Henüz yorum yok"
+                  description="İlk müşteri yorumunu ekleyerek başlayın."
+                  action={<CreateTestimonial />}
+               />
+            </PanelCard>
+         ) : (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+               {testimonials.map((item) => (
+                  <PanelCard key={item.id} noPadding bodyClassName="relative p-6 pt-14 text-center">
+                     <div className="absolute right-3 top-3 flex items-center gap-2">
+                        <EditTestimonial testimonial={item} />
+                        <DeleteByInertia
+                           apiPath={`/admin/testimonials/delete/${item.id}`}
+                           Component={
+                              <button
+                                 type="button"
+                                 className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
+                              >
+                                 <Delete className="h-4 w-4" />
+                              </button>
+                           }
+                        />
+                     </div>
+                     <img
+                        src={`/${item.thumbnail}`}
+                        className="absolute left-1/2 top-0 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white object-cover shadow-sm"
+                        alt=""
                      />
-                  </div>
-                  <img
-                     src={`/${item.thumbnail}`}
-                     className="w-[100px] h-[100px] border-2 border-white rounded-full absolute -top-[20%] left-1/2 transform -translate-x-1/2"
-                     alt="customer-img"
-                  />
-                  <p>{item.testimonial}</p>
-
-                  <div className="border-t border-gray-200 my-4"></div>
-
-                  <p className="text-blue-500 font-bold text-lg">{item.name}</p>
-                  <p className="text-sm">{item.title}</p>
-               </div>
-            ))}
-         </div>
+                     <p className="mt-2 text-sm text-slate-600">
+                        {item.testimonial}
+                     </p>
+                     <div className="my-4 border-t border-slate-200" />
+                     <p className="text-base font-semibold text-blue-700">
+                        {item.name}
+                     </p>
+                     <p className="text-sm text-slate-500">{item.title}</p>
+                  </PanelCard>
+               ))}
+            </div>
+         )}
       </>
    );
 };
