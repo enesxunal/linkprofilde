@@ -1,4 +1,6 @@
 import { Progress } from "@material-tailwind/react";
+import PanelCard from "@/Components/Panel/PanelCard";
+import EmptyState from "@/Components/Panel/EmptyState";
 
 interface DeviceCount {
    [device: string]: number;
@@ -29,26 +31,32 @@ const Devices = (props: Props) => {
    }
 
    return (
-      <div className="card p-6">
-         <h6>Cihazlar</h6>
-         {values.map(([device, count]) => {
-            const totalWindows = Math.abs((count * 100) / devices.length);
-            return (
-               <div key={device} className="my-3">
-                  <div className="flex items-center justify-between">
-                     <p>{device}</p>
-                     <p>
-                        <span className="text-sm">
-                           {Math.round(totalWindows)}%
-                        </span>
-                        <span className="pl-4">{count}</span>
-                     </p>
+      <PanelCard title="Cihazlar">
+         {values.length === 0 ? (
+            <EmptyState
+               title="Cihaz verisi yok"
+               description="Henüz görüntülenecek cihaz kaydı bulunmuyor."
+            />
+         ) : (
+            values.map(([device, count]) => {
+               const totalWindows = Math.abs((count * 100) / devices.length);
+               return (
+                  <div key={device} className="my-3">
+                     <div className="flex items-center justify-between gap-3">
+                        <p className="min-w-0 truncate text-sm font-medium text-slate-800">
+                           {device}
+                        </p>
+                        <p className="shrink-0 text-sm text-slate-600">
+                           <span>{Math.round(totalWindows)}%</span>
+                           <span className="pl-4">{count}</span>
+                        </p>
+                     </div>
+                     <Progress value={Math.round(totalWindows)} />
                   </div>
-                  <Progress value={Math.round(totalWindows)} />
-               </div>
-            );
-         })}
-      </div>
+               );
+            })
+         )}
+      </PanelCard>
    );
 };
 

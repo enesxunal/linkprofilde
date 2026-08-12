@@ -130,7 +130,12 @@
 }
 
 .draggable.dragging {
-   opacity: 0.5;
+   opacity: 0.55;
+   transform: scale(0.99);
+}
+
+.draggable.dragging > div {
+   @apply border-blue-300 bg-slate-50 ring-2 ring-blue-200;
 }
 
 /* Toggle A */

@@ -4,9 +4,10 @@ import { LinkProps } from "@/types";
 import Move from "../Icons/Move";
 import { error } from "@/utils/toast";
 import icons from "../Icons";
-import Delete from "../Icons/Delete";
 import EditBlock from "./EditBlock";
 import DeleteBlock from "./DeleteBlock";
+import EmptyState from "@/Components/Panel/EmptyState";
+import PanelCard from "@/Components/Panel/PanelCard";
 
 interface Props {
    link: LinkProps;
@@ -91,33 +92,54 @@ const LinkBlocks = (props: Props) => {
    return (
       <div
          id="bioLinkItems"
-         className="bioLinkItems"
+         className="bioLinkItems space-y-3"
          ref={bioLinkItemsRef}
          onDragOver={handleDragOver}
       >
-         {link.items.map((item) => {
-            const Icon = icons[item.item_icon];
-            return (
-               <div
-                  draggable
-                  key={item.id}
-                  data-item_id={item.id}
-                  className="draggable flex items-center mb-6"
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-               >
-                  <Move id="elementMove" className="w-6 h-6 cursor-grab mr-6" />
-                  <div className="w-full card p-5 flex items-center justify-between font-medium">
-                     <Icon className="w-5 h-5" />
-                     <span>{item.item_title}</span>
-                     <div className="flex items-center">
-                        <EditBlock block={item} setLink={setLink} />
-                        <DeleteBlock block={item} setLink={setLink} />
+         {link.items.length === 0 ? (
+            <PanelCard>
+               <EmptyState
+                  title="Henüz blok eklenmedi"
+                  description="Blok Ekle ile link, başlık, görsel veya gömülü içerik ekleyebilirsiniz."
+               />
+            </PanelCard>
+         ) : (
+            link.items.map((item) => {
+               const Icon = icons[item.item_icon];
+               return (
+                  <div
+                     draggable
+                     key={item.id}
+                     data-item_id={item.id}
+                     className="draggable flex items-center gap-3"
+                     onDragStart={handleDragStart}
+                     onDragEnd={handleDragEnd}
+                  >
+                     <Move
+                        id="elementMove"
+                        className="h-5 w-5 shrink-0 cursor-grab text-slate-400"
+                     />
+                     <div className="flex w-full min-w-0 items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition hover:border-blue-200 hover:bg-slate-50">
+                        <div className="flex min-w-0 items-center gap-3">
+                           <Icon className="h-5 w-5 shrink-0 text-slate-600" />
+                           <div className="min-w-0">
+                              <p className="truncate text-sm font-medium text-slate-900">
+                                 {item.item_title}
+                              </p>
+                              <p className="truncate text-xs text-slate-500">
+                                 {item.item_icon}
+                              </p>
+                           </div>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-1">
+                           <EditBlock block={item} setLink={setLink} />
+                           <DeleteBlock block={item} setLink={setLink} />
+                        </div>
                      </div>
                   </div>
-               </div>
-            );
-         })}
+               );
+            })
+         )}
       </div>
    );
 };

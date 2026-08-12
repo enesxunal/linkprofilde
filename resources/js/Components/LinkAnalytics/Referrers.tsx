@@ -1,4 +1,6 @@
 import { Progress } from "@material-tailwind/react";
+import PanelCard from "@/Components/Panel/PanelCard";
+import EmptyState from "@/Components/Panel/EmptyState";
 
 interface RefererCount {
    Refer: number;
@@ -33,33 +35,46 @@ const Referrers = (props: Props) => {
       values = Object.entries(refererCounted);
    }
 
+   const visible = values.filter(
+      ([key, value]) =>
+         (key === "Refer" && value > 0) || (key === "Direct" && value > 0)
+   );
+
    return (
-      <div className="card p-6">
-         <h6>Yönlendirenler</h6>
-         {values.map(([key, value]) => {
-            if (
-               (key === "Refer" && value > 0) ||
-               (key === "Direct" && value > 0)
-            ) {
-               const totalReferer = Math.abs((value * 100) / referers.length);
-               return (
-                  <div key={key} className="my-3">
-                     <div className="flex items-center justify-between">
-                        <p>{key}</p>
-                        <p>
-                           <span className="text-sm">
-                              {Math.round(totalReferer)}%
-                           </span>
-                           <span className="pl-4">{value}</span>
-                        </p>
+      <PanelCard title="Yönlendirenler">
+         {visible.length === 0 ? (
+            <EmptyState
+               title="Yönlendiren verisi yok"
+               description="Henüz görüntülenecek yönlendiren kaydı bulunmuyor."
+            />
+         ) : (
+            values.map(([key, value]) => {
+               if (
+                  (key === "Refer" && value > 0) ||
+                  (key === "Direct" && value > 0)
+               ) {
+                  const totalReferer = Math.abs(
+                     (value * 100) / referers.length
+                  );
+                  return (
+                     <div key={key} className="my-3">
+                        <div className="flex items-center justify-between gap-3">
+                           <p className="min-w-0 truncate break-all text-sm font-medium text-slate-800">
+                              {key === "Refer" ? "Yönlendiren" : "Doğrudan"}
+                           </p>
+                           <p className="shrink-0 text-sm text-slate-600">
+                              <span>{Math.round(totalReferer)}%</span>
+                              <span className="pl-4">{value}</span>
+                           </p>
+                        </div>
+                        <Progress value={Math.round(totalReferer)} />
                      </div>
-                     <Progress value={Math.round(totalReferer)} />
-                  </div>
-               );
-            }
-            return null;
-         })}
-      </div>
+                  );
+               }
+               return null;
+            })
+         )}
+      </PanelCard>
    );
 };
 

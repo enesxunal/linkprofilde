@@ -21,7 +21,7 @@ const LinkThemes = ({ link, themes, setLink }: Props) => {
 
    const activeTheme = (theme: ThemeProps | null) => {
       if (!link.custom_theme_active && theme && theme.id === link.theme.id) {
-         return "outline outline-1 outline-blue-500 !border-blue-500";
+         return "ring-2 ring-blue-500 border-blue-500";
       }
    };
 
@@ -132,9 +132,14 @@ const LinkThemes = ({ link, themes, setLink }: Props) => {
 
    return (
       <div>
-         <div className="card grid grid-cols-2 md:grid-cols-3 gap-6 p-6">
+         <div className="grid grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:gap-6 sm:p-6 md:grid-cols-3">
             <div className="col-span-2 md:col-span-3">
-               <h6 className="text-xl">Mevcut Temalar</h6>
+               <h2 className="text-base font-semibold text-slate-900">
+                  Mevcut Temalar
+               </h2>
+               <p className="mt-0.5 text-sm text-slate-600">
+                  Temayı seçin veya özel tema oluşturun.
+               </p>
             </div>
             {themes.map((theme, ind) => {
                let bgStyle = jsxStyle(stringToCss(theme.background));
@@ -148,7 +153,7 @@ const LinkThemes = ({ link, themes, setLink }: Props) => {
                      <div className="relative">
                         <div
                            onClick={() => updateTheme(theme, link.id)}
-                           className={`h-[220px] 2xl:h-[260px] p-4 py-8 2xl:py-12 rounded-lg flex flex-col justify-between border border-gray-300 hover:border-blue-500 cursor-pointer ${activeTheme(
+                           className={`flex h-[220px] cursor-pointer flex-col justify-between rounded-xl border border-slate-200 p-4 py-8 transition hover:border-blue-300 2xl:h-[260px] 2xl:py-12 ${activeTheme(
                               theme
                            )}`}
                            style={bgStyle}
@@ -163,8 +168,12 @@ const LinkThemes = ({ link, themes, setLink }: Props) => {
                         </div>
                         <ThemeBadge title={theme.type} theme={theme} />
                      </div>
-                     <p className="font-medium text-center mt-1 mb-2">
-                        {({ Basic: "Temel", "Dark Carbon": "Koyu Karbon", Glitch: "Glitch" } as Record<string, string>)[theme.name] || theme.name}
+                     <p className="mb-2 mt-1 text-center text-sm font-medium text-slate-800">
+                        {({
+                           Basic: "Temel",
+                           "Dark Carbon": "Koyu Karbon",
+                           Glitch: "Glitch",
+                        } as Record<string, string>)[theme.name] || theme.name}
                      </p>
                   </div>
                );
@@ -174,31 +183,33 @@ const LinkThemes = ({ link, themes, setLink }: Props) => {
                <div className="relative">
                   <div
                      onClick={() => customThemeHandler(link)}
-                     className={`h-[220px] 2xl:h-[260px] p-4 py-8 2xl:py-12 rounded-lg flex items-center border border-gray-300 hover:border-blue-500 cursor-pointer ${
+                     className={`flex h-[220px] cursor-pointer items-center rounded-xl border border-slate-200 p-4 py-8 transition hover:border-blue-300 2xl:h-[260px] 2xl:py-12 ${
                         link.custom_theme_active &&
-                        "outline outline-1 outline-blue-500 !border-blue-500"
+                        "ring-2 ring-blue-500 border-blue-500"
                      }`}
                   >
-                     <p className="text-center font-medium">
+                     <p className="text-center text-sm font-medium text-slate-800">
                         Özel Tema Oluştur
                      </p>
                   </div>
                   <ThemeBadge title="Pro" />
                </div>
-               <p className="font-medium text-center mt-1 mb-2">Özel Tema</p>
+               <p className="mb-2 mt-1 text-center text-sm font-medium text-slate-800">
+                  Özel Tema
+               </p>
             </div>
 
             <div>
                <div className="relative">
                   <div
-                     className={`h-[220px] 2xl:h-[260px] p-4 py-8 2xl:py-12 rounded-lg flex flex-col items-center justify-center border border-gray-300 hover:border-blue-500`}
+                     className={`flex h-[220px] flex-col items-center justify-center rounded-xl border border-slate-200 p-4 py-8 transition hover:border-blue-300 2xl:h-[260px] 2xl:py-12`}
                   >
-                     <img src={imageUrl} className="w-20 h-20 rounded" alt="" />
+                     <img src={imageUrl} className="h-20 w-20 rounded" alt="" />
                      <label
                         htmlFor="linkBranding"
-                        className="cursor-pointer mt-4"
+                        className="mt-4 cursor-pointer"
                      >
-                        <Camera className="text-blue-500 w-7 h-7" />
+                        <Camera className="h-7 w-7 text-blue-500" />
                      </label>
                      <input
                         hidden
@@ -210,7 +221,9 @@ const LinkThemes = ({ link, themes, setLink }: Props) => {
                   <ThemeBadge title="Pro" />
                </div>
 
-               <p className="font-medium text-center mt-1 mb-2">Logo Değiştir</p>
+               <p className="mb-2 mt-1 text-center text-sm font-medium text-slate-800">
+                  Logo Değiştir
+               </p>
             </div>
          </div>
 

@@ -4,7 +4,7 @@ import EditPen from "../Icons/EditPen";
 import { useForm } from "@inertiajs/react";
 import { FormEventHandler, useEffect, useState } from "react";
 import { LinkProps, PaginationProps } from "@/types";
-import { Button, Dialog, IconButton } from "@material-tailwind/react";
+import { Dialog } from "@material-tailwind/react";
 import { error, success } from "@/utils/toast";
 
 interface Props {
@@ -88,29 +88,33 @@ const EditLink = (props: Props) => {
 
    return (
       <>
-         <IconButton
-            variant="text"
-            color="white"
+         <button
+            type="button"
             onClick={handleOpen}
-            className="w-7 h-7 rounded-full bg-blue-50 hover:bg-blue-50 active:bg-blue-50 text-blue-500"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"
+            aria-label="Linki düzenle"
          >
             <EditPen className="h-4 w-4" />
-         </IconButton>
+         </button>
 
          <Dialog
             size="sm"
             open={open}
             handler={handleOpen}
-            className="p-6 max-h-[calc(100vh-80px)] overflow-y-auto text-gray-800"
+            className="mx-4 max-h-[calc(100vh-80px)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 text-slate-800 shadow-sm sm:mx-0"
          >
-            <div className="flex items-center justify-between mb-6">
-               <p className="text-xl font-medium">Link Güncelle</p>
-               <span
+            <div className="mb-6 flex items-center justify-between">
+               <p className="text-lg font-semibold text-slate-900">
+                  Linki Güncelle
+               </p>
+               <button
+                  type="button"
                   onClick={handleOpen}
-                  className="text-3xl leading-none cursor-pointer"
+                  className="text-2xl leading-none text-slate-400 hover:text-slate-700"
+                  aria-label="Kapat"
                >
                   ×
-               </span>
+               </button>
             </div>
 
             <form onSubmit={submit}>
@@ -122,7 +126,7 @@ const EditLink = (props: Props) => {
                      value={data.link_name}
                      error={errors.link_name}
                      onChange={onHandleChange}
-                     placeholder="Enter your bio link name"
+                     placeholder="Kısa link adını girin"
                      fullWidth
                      required
                   />
@@ -131,33 +135,30 @@ const EditLink = (props: Props) => {
                   <Input
                      type="url"
                      name="external_url"
-                     label="External URL"
+                     label="Harici URL"
                      value={data.external_url}
                      error={errors.external_url}
                      onChange={onHandleChange}
-                     placeholder="Enter external url that will be short"
+                     placeholder="Kısaltılacak harici URL"
                      fullWidth
                      required
                   />
                </div>
 
-               <div className="flex justify-end mt-4">
-                  <Button
-                     color="red"
-                     variant="text"
+               <div className="mt-4 flex justify-end gap-2">
+                  <button
+                     type="button"
                      onClick={handleOpen}
-                     className="py-2 font-medium capitalize text-base mr-2"
+                     className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                   >
-                     <span>Cancel</span>
-                  </Button>
-                  <Button
+                     İptal
+                  </button>
+                  <button
                      type="submit"
-                     color="blue"
-                     variant="gradient"
-                     className="py-2 font-medium capitalize text-base"
+                     className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                   >
-                     <span>Save Changes</span>
-                  </Button>
+                     Kaydet
+                  </button>
                </div>
             </form>
          </Dialog>

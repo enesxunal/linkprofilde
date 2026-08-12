@@ -6,7 +6,7 @@ import TextArea from "../TextArea";
 import EditPen from "../Icons/EditPen";
 import { useForm } from "@inertiajs/react";
 import InputDropdown from "../InputDropdown";
-import { Button, Dialog } from "@material-tailwind/react";
+import { Dialog } from "@material-tailwind/react";
 import { ChangeEvent, FormEventHandler, useState } from "react";
 import { vimeoUrl, spotifyUrl, youTubeUrl, soundCloudUrl } from "@/utils/utils";
 
@@ -24,7 +24,7 @@ const EditBlock = (props: Props) => {
    };
 
    const [blockImage, setBlockImage] = useState(null);
-   const { data, setData, reset } = useForm({
+   const { data, setData } = useForm({
       link_id: block.link_id,
       item_type: block.item_type,
       item_sub_type: block.item_sub_type,
@@ -72,27 +72,33 @@ const EditBlock = (props: Props) => {
 
    return (
       <>
-         <EditPen
+         <button
+            type="button"
             onClick={handleOpen}
-            className="h-5 w-5 cursor-pointer text-blue-500"
-         />
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50"
+            aria-label="Bloğu düzenle"
+         >
+            <EditPen className="h-4 w-4" />
+         </button>
 
          <Dialog
             size="sm"
             open={open}
             handler={handleOpen}
-            className="p-6 max-h-[calc(100vh-80px)] overflow-y-auto text-gray-800"
+            className="mx-4 max-h-[calc(100vh-80px)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 text-slate-800 shadow-sm sm:mx-0"
          >
-            <div className="flex items-center justify-between mb-6">
-               <p className="text-xl font-medium">
+            <div className="mb-6 flex items-center justify-between">
+               <p className="text-lg font-semibold text-slate-900">
                   {block.item_title} Öğesini Düzenle
                </p>
-               <span
+               <button
+                  type="button"
                   onClick={handleOpen}
-                  className="text-3xl leading-none cursor-pointer"
+                  className="text-2xl leading-none text-slate-400 hover:text-slate-700"
+                  aria-label="Kapat"
                >
                   ×
-               </span>
+               </button>
             </div>
 
             <form onSubmit={submit}>
@@ -195,13 +201,13 @@ const EditBlock = (props: Props) => {
                ) : block.item_icon === "Image" ? (
                   <>
                      <div className="mb-4">
-                        <label className="block text-sm mb-2 font-medium text-gray-500">
-                           Select Image
+                        <label className="mb-2 block text-sm font-medium text-slate-700">
+                           Görsel Seç
                         </label>
                         <input
                            type="file"
                            onChange={handleImageChange}
-                           className="!h-10 !p-0 outline-none focus:outline-none"
+                           className="block w-full max-w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700"
                         />
                      </div>
                      <div className="mb-4">
@@ -382,23 +388,20 @@ const EditBlock = (props: Props) => {
                   </div>
                ) : null}
 
-               <div className="flex justify-end mt-4">
-                  <Button
-                     color="red"
-                     variant="text"
+               <div className="mt-4 flex flex-wrap justify-end gap-2">
+                  <button
+                     type="button"
                      onClick={handleOpen}
-                     className="py-2 font-medium capitalize text-base mr-2"
+                     className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                   >
-                     <span>İptal</span>
-                  </Button>
-                  <Button
+                     İptal
+                  </button>
+                  <button
                      type="submit"
-                     color="blue"
-                     variant="gradient"
-                     className="py-2 font-medium capitalize text-base"
+                     className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                   >
-                     <span>Değişiklikleri Kaydet</span>
-                  </Button>
+                     Kaydet
+                  </button>
                </div>
             </form>
          </Dialog>

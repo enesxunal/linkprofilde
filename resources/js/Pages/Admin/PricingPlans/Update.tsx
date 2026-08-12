@@ -1,12 +1,11 @@
 import Input from "@/Components/Input";
-import Breadcrumb from "@/Components/Breadcrumb";
 import { Head, useForm } from "@inertiajs/react";
 import InputDropdown from "@/Components/InputDropdown";
-import { Button, Card, Checkbox } from "@material-tailwind/react";
+import { Checkbox } from "@material-tailwind/react";
 import Dashboard from "@/Layouts/Dashboard";
 import { ReactNode, FormEventHandler } from "react";
 import { PlanProps } from "@/types";
-import Pricing from "@/Components/Icons/Pricing";
+import PageHeader from "@/Components/Panel/PageHeader";
 
 const LimitsizCheckBox = ({
    onHandler,
@@ -16,15 +15,15 @@ const LimitsizCheckBox = ({
    name: string;
 }) => {
    return (
-      <div className="flex items-center absolute top-0 right-0">
-         <label className="text-sm whitespace-nowrap flex items-center font-medium text-gray-500 mr-2">
+      <div className="absolute right-0 top-0 flex items-center">
+         <label className="mr-2 flex items-center whitespace-nowrap text-sm font-medium text-slate-500">
             Limitsiz
          </label>
          <Checkbox
             ripple={false}
             color="indigo"
             name={name}
-            className="hover:before:opacity-0 w-3.5 h-3.5 rounded"
+            className="h-3.5 w-3.5 rounded hover:before:opacity-0"
             containerProps={{ className: "p-0" }}
             onChange={onHandler}
          />
@@ -70,42 +69,39 @@ const Create = ({ plan }: { plan: PlanProps }) => {
    };
 
    const planType = [
-      { key: "Basic", value: "BASIC" },
-      { key: "Standard", value: "STANDARD" },
+      { key: "Temel", value: "BASIC" },
+      { key: "Standart", value: "STANDARD" },
       { key: "Premium", value: "PREMIUM" },
    ];
 
    const themesList = [
-      { key: "Basic Only", value: "Free" },
-      { key: "Standard (Free Themes Included)", value: "Standard" },
-      { key: "Premium (All Themes Included)", value: "Premium" },
+      { key: "Yalnızca Temel", value: "Free" },
+      { key: "Standart (Ücretsiz temalar dahil)", value: "Standard" },
+      { key: "Premium (Tüm temalar dahil)", value: "Premium" },
    ];
-
-   let blockList = [];
-   for (let i = 0; i < 10; i++) {
-      const obj = { key: i, value: i };
-      blockList.push(obj);
-   }
 
    return (
       <>
          <Head title="Abonelik Planı Güncelle" />
-         <Breadcrumb Icon={Pricing} title="Abonelik Planı Güncelle" />
+         <PageHeader
+            title="Abonelik Planı Güncelle"
+            description="Mevcut abonelik planını düzenleyin."
+         />
 
-         <Card className="shadow-card max-w-[1000px] w-full mx-auto">
-            <div className="px-7 pt-7 pb-4 border-b border-b-gray-200">
-               <p className="text18 font-bold text-gray-900">
-                  Create New Subscription Plan
+         <div className="card mx-auto w-full max-w-[1000px]">
+            <div className="border-b border-slate-200 px-5 pb-4 pt-5 sm:px-6">
+               <p className="text-lg font-semibold text-slate-900">
+                  Plan Bilgileri
                </p>
             </div>
-            <form onSubmit={submit} className="p-7">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <form onSubmit={submit} className="p-5 sm:p-6">
+               <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
                      <InputDropdown
                         required
                         fullWidth
                         name="name"
-                        label="Plan Name"
+                        label="Plan Adı"
                         error={errors.name}
                         defaultValue={data.name}
                         onChange={(e: any) => setData("name", e.value)}
@@ -117,10 +113,10 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                         type="text"
                         fullWidth
                         name="description"
-                        label="Description"
+                        label="Açıklama"
                         value={data.description}
                         error={errors.description}
-                        placeholder="Write a short description"
+                        placeholder="Kısa bir açıklama yazın"
                         onChange={onHandleChange}
                         maxLength={100}
                         required
@@ -131,10 +127,10 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                         fullWidth
                         type="number"
                         name="monthly_price"
-                        label="Monthly Price"
+                        label="Aylık Fiyat"
                         value={data.monthly_price as any}
                         error={errors.monthly_price}
-                        placeholder="Monthly subscription plan"
+                        placeholder="Aylık abonelik fiyatı"
                         onChange={onHandleChange}
                         required
                      />
@@ -144,10 +140,10 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                         fullWidth
                         type="number"
                         name="yearly_price"
-                        label="Yearly Price"
+                        label="Yıllık Fiyat"
                         value={data.yearly_price as any}
                         error={errors.yearly_price}
-                        placeholder="Yearly subscription plan"
+                        placeholder="Yıllık abonelik fiyatı"
                         onChange={onHandleChange}
                         required
                      />
@@ -157,7 +153,7 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                         required
                         fullWidth
                         name="currency"
-                        label="Currency"
+                        label="Para Birimi"
                         error={errors.currency}
                         defaultValue={data.currency}
                         onChange={(e: any) => setData("currency", e.value)}
@@ -169,22 +165,22 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                         required
                         fullWidth
                         name="status"
-                        label="Plan Status"
+                        label="Plan Durumu"
                         error={errors.status}
                         defaultValue={data.status}
                         onChange={(e: any) => setData("status", e.value)}
                         itemList={[
-                           { key: "Active", value: "active" },
-                           { key: "Deactive", value: "deactive" },
+                           { key: "Aktif", value: "active" },
+                           { key: "Pasif", value: "deactive" },
                         ]}
                      />
                   </div>
                </div>
 
-               <p className="text18 font-bold text-gray-900 mb-4">
-                  Subscription Plan Features
+               <p className="mb-4 text-lg font-semibold text-slate-900">
+                  Plan Özellikleri
                </p>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+               <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="relative">
                      <LimitsizCheckBox
                         name={"biolinks"}
@@ -203,7 +199,7 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                         disabled={data.biolinks === "Limitsiz" ? true : false}
                      />
                   </div>
-                  
+
                   <div className="relative">
                      <LimitsizCheckBox
                         name={"shortlinks"}
@@ -226,7 +222,7 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                         }
                      />
                   </div>
-                  
+
                   <div className="relative">
                      <LimitsizCheckBox
                         name={"qrcodes"}
@@ -254,7 +250,7 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                         defaultValue={data.themes}
                         onChange={(e: any) => setData("themes", e.value)}
                         itemList={themesList}
-                        label="Theme Access"
+                        label="Tema Erişimi"
                      />
                   </div>
                   <div>
@@ -265,10 +261,10 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                         error={errors.custom_theme}
                         defaultValue={data.custom_theme as any}
                         onChange={(e: any) => setData("custom_theme", e.value)}
-                        label="Custom Theme Create Access"
+                        label="Özel Tema Oluşturma"
                         itemList={[
-                           { key: "True", value: 1 },
-                           { key: "False", value: 0 },
+                           { key: "Evet", value: 1 },
+                           { key: "Hayır", value: 0 },
                         ]}
                      />
                   </div>
@@ -280,7 +276,7 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                         error={errors.support}
                         defaultValue={data.support}
                         onChange={(e: any) => setData("support", e.value)}
-                        label="Support"
+                        label="Destek (saat)"
                         itemList={[
                            { key: "24", value: 24 },
                            { key: "48", value: 48 },
@@ -290,18 +286,14 @@ const Create = ({ plan }: { plan: PlanProps }) => {
                   </div>
                </div>
 
-               <div className="flex items-center">
-                  <Button
-                     type="submit"
-                     color="blue"
-                     variant="gradient"
-                     className="py-2.5 px-5 rounded-md font-medium capitalize text-sm hover:shadow-md"
-                  >
-                     Save Changes
-                  </Button>
-               </div>
+               <button
+                  type="submit"
+                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+               >
+                  Değişiklikleri Kaydet
+               </button>
             </form>
-         </Card>
+         </div>
       </>
    );
 };

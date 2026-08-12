@@ -57,10 +57,12 @@ const CustomThemeCreate = ({ link, setLink }: Props) => {
    return (
       <Fragment>
          {link.custom_theme_active && link.custom_theme ? (
-            <div className="card p-6 mt-7">
-               <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-7">
+            <div className="mt-7 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+               <div className="mb-7 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3">
                   <div className="col-span-2 md:col-span-3">
-                     <h6 className="text-xl">Custom Theme</h6>
+                     <h2 className="text-base font-semibold text-slate-900">
+                        Özel Tema
+                     </h2>
                   </div>
                   <div>
                      <div className="relative">
@@ -87,8 +89,8 @@ const CustomThemeCreate = ({ link, setLink }: Props) => {
                            }
                         />
                      </div>
-                     <p className="font-medium text-center mt-1 mb-2">
-                        Background Color
+                     <p className="mb-2 mt-1 text-center text-sm font-medium text-slate-800">
+                        Arka Plan Rengi
                      </p>
                   </div>
 
@@ -117,8 +119,8 @@ const CustomThemeCreate = ({ link, setLink }: Props) => {
                            id="customThemeBg"
                         ></input>
                      </div>
-                     <p className="font-medium text-center mt-1 mb-2">
-                        Background Image
+                     <p className="mb-2 mt-1 text-center text-sm font-medium text-slate-800">
+                        Arka Plan Görseli
                      </p>
                   </div>
 
@@ -147,14 +149,16 @@ const CustomThemeCreate = ({ link, setLink }: Props) => {
                            }
                         />
                      </div>
-                     <p className="font-medium text-center mt-1 mb-2">
-                        Theme Text Color
+                     <p className="mb-2 mt-1 text-center text-sm font-medium text-slate-800">
+                        Metin Rengi
                      </p>
                   </div>
                </div>
                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-7">
                   <div className="col-span-2 md:col-span-3">
-                     <h6 className="text-xl">Button Type</h6>
+                     <h2 className="text-base font-semibold text-slate-900">
+                        Buton Tipi
+                     </h2>
                   </div>
                   {buttonTypes.map((button, ind) => {
                      return (
@@ -201,8 +205,8 @@ const CustomThemeCreate = ({ link, setLink }: Props) => {
                            }
                         />
                      </div>
-                     <p className="font-medium text-center mt-1 mb-2">
-                        Button Background
+                     <p className="mb-2 mt-1 text-center text-sm font-medium text-slate-800">
+                        Buton Arka Planı
                      </p>
                   </div>
                   <div>
@@ -229,14 +233,16 @@ const CustomThemeCreate = ({ link, setLink }: Props) => {
                            }
                         />
                      </div>
-                     <p className="font-medium text-center mt-1 mb-2">
-                        Button Text
+                     <p className="mb-2 mt-1 text-center text-sm font-medium text-slate-800">
+                        Buton Metni
                      </p>
                   </div>
                </div>
                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                   <div className="col-span-2 md:col-span-3">
-                     <h6 className="text-xl">Font Family</h6>
+                     <h2 className="text-base font-semibold text-slate-900">
+                        Yazı Tipi
+                     </h2>
                   </div>
                   {fontFamily.map((font, ind) => {
                      return (

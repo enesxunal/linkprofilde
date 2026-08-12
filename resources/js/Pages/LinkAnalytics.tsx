@@ -1,15 +1,8 @@
-import {
-   Tab,
-   Tabs,
-   TabsBody,
-   TabPanel,
-   TabsHeader,
-} from "@material-tailwind/react";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Head } from "@inertiajs/react";
 import Dashboard from "@/Layouts/Dashboard";
-import Breadcrumb from "@/Components/Breadcrumb";
-import ChartLineUp from "@/Components/Icons/ChartLineUp";
+import PageHeader from "@/Components/Panel/PageHeader";
+import PanelCard from "@/Components/Panel/PanelCard";
 import Devices from "@/Components/LinkAnalytics/Devices";
 import Overview from "@/Components/LinkAnalytics/Overview";
 import Countries from "@/Components/LinkAnalytics/Countries";
@@ -25,6 +18,7 @@ interface Props {
 
 const LinkAnalytics = (props: Props) => {
    const { languages, analytics } = props;
+   const [activeTab, setActiveTab] = useState("overview");
 
    const headers = [
       { id: "overview", title: "Özet", Component: Overview },
@@ -36,42 +30,51 @@ const LinkAnalytics = (props: Props) => {
       { id: "languages", title: "Diller", Component: Languages },
    ];
 
+   const ActiveComponent =
+      headers.find((header) => header.id === activeTab)?.Component ?? Overview;
+
    return (
       <>
          <Head title="Link Ziyaretçi Analitiği" />
-         <Breadcrumb Icon={ChartLineUp} title="Link Ziyaretçi Analitiği" />
+         <PageHeader
+            title="Link Ziyaretçi Analitiği"
+            description="Ziyaretçi kaynaklarını ve cihaz dağılımını inceleyin."
+         />
 
-         <div className="">
-            <Tabs value="overview">
-               <TabsHeader
-                  className="bg-transparent w-full mx-auto mb-3 px-2"
-                  indicatorProps={{ className: "bg-blue-500 text-white" }}
-               >
-                  {headers.map((header) => (
-                     <Tab
-                        key={header.id}
-                        value={header.id}
-                        className="py-2 transition-colors duration-300"
-                        activeClassName="text-white"
-                     >
-                        {header.title}
-                     </Tab>
-                  ))}
-               </TabsHeader>
-               <TabsBody>
-                  {headers.map((header) => {
-                     const { id, Component } = header;
-                     return (
-                        <TabPanel key={id} value={id} className="px-2">
-                           <Component
-                              analytics={analytics}
-                              languages={languages}
-                           />
-                        </TabPanel>
-                     );
-                  })}
-               </TabsBody>
-            </Tabs>
+         <div className="space-y-6">
+            <PanelCard noPadding>
+               <div className="overflow-x-auto">
+                  <div
+                     className="flex min-w-max gap-1 border-b border-slate-200 px-3 sm:px-4"
+                     role="tablist"
+                     aria-label="Analitik sekmeleri"
+                  >
+                     {headers.map((header) => {
+                        const isActive = activeTab === header.id;
+                        return (
+                           <button
+                              key={header.id}
+                              type="button"
+                              role="tab"
+                              aria-selected={isActive}
+                              onClick={() => setActiveTab(header.id)}
+                              className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition-colors ${
+                                 isActive
+                                    ? "border-blue-600 text-blue-600"
+                                    : "border-transparent text-slate-500 hover:text-slate-800"
+                              }`}
+                           >
+                              {header.title}
+                           </button>
+                        );
+                     })}
+                  </div>
+               </div>
+            </PanelCard>
+
+            <div role="tabpanel">
+               <ActiveComponent analytics={analytics} languages={languages} />
+            </div>
          </div>
       </>
    );

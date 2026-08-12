@@ -1,12 +1,11 @@
 import { ChangeEvent, FormEventHandler, useState } from "react";
-import { Button, Dialog } from "@material-tailwind/react";
-import { LinkProps, SocialLinkProps } from "@/types";
+import { Dialog } from "@material-tailwind/react";
+import { LinkProps } from "@/types";
 import Input from "../Input";
 import { useForm } from "@inertiajs/react";
 import axios from "axios";
 import { error } from "@/utils/toast";
 import {
-   getLink,
    soundCloudUrl,
    spotifyUrl,
    vimeoUrl,
@@ -98,81 +97,89 @@ const AddBlocks = (props: Props) => {
 
    return (
       <>
-         <Button
-            variant="text"
-            color="white"
+         <button
+            type="button"
             onClick={() => handleOpen({ parent: true })}
-            className="py-2 px-3 md:px-4 rounded-md bg-blue-500 active:bg-blue-500 hover:bg-blue-500 font-medium text-base shadow-sm shadow-blue-500/20 active:opacity-[0.85] capitalize whitespace-nowrap"
+            className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 whitespace-nowrap"
          >
             Blok Ekle
-         </Button>
+         </button>
 
          <Dialog
             size="sm"
             open={open.parent}
             handler={() => handleOpen({ parent: false })}
-            className="p-6 max-h-[calc(100vh-80px)] overflow-y-auto text-gray-800"
+            className="mx-4 max-h-[calc(100vh-80px)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 text-slate-800 shadow-sm sm:mx-0"
          >
-            <div className="flex items-center justify-between mb-6">
-               <p className="text-xl font-medium">Blok Ekle</p>
-               <span
+            <div className="mb-6 flex items-center justify-between">
+               <p className="text-lg font-semibold text-slate-900">Blok Ekle</p>
+               <button
+                  type="button"
                   onClick={() => handleOpen({ parent: false })}
-                  className="text-3xl leading-none cursor-pointer"
+                  className="text-2xl leading-none text-slate-400 hover:text-slate-700"
+                  aria-label="Kapat"
                >
                   ×
-               </span>
+               </button>
             </div>
 
-            {blockItems.map((item) => (
-               <Button
-                  variant="text"
-                  color="white"
-                  key={item.type}
-                  onClick={() => {
-                     reset();
-                     setBlock(item);
-                     setBlockImage(null);
-                     handleOpen({ parent: false, child: true });
-                     setData((prev: any) => ({
-                        ...prev,
-                        item_icon: item.title,
-                        item_type: item.content,
-                     }));
-                  }}
-                  className="py-2.5 px-4 block w-full my-4 rounded-md bg-gray-100 active:bg-gray-100 hover:bg-gray-200/80 font-medium text-base shadow-sm shadow-gray-100/20 active:opacity-[0.85] capitalize text-gray-800"
-               >
-                  {item.title}
-               </Button>
-            ))}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+               {blockItems.map((item) => (
+                  <button
+                     type="button"
+                     key={item.type}
+                     onClick={() => {
+                        reset();
+                        setBlock(item);
+                        setBlockImage(null);
+                        handleOpen({ parent: false, child: true });
+                        setData((prev: any) => ({
+                           ...prev,
+                           item_icon: item.title,
+                           item_type: item.content,
+                        }));
+                     }}
+                     className="rounded-xl border border-slate-200 bg-white px-3 py-4 text-sm font-medium text-slate-800 shadow-sm transition hover:border-blue-200 hover:bg-slate-50"
+                  >
+                     {item.title}
+                  </button>
+               ))}
+            </div>
          </Dialog>
 
          <Dialog
             size="sm"
             open={open.child}
             handler={() => handleOpen({ child: false })}
-            className="p-6 max-h-[calc(100vh-80px)] overflow-y-auto text-gray-800"
+            className="mx-4 max-h-[calc(100vh-80px)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 text-slate-800 shadow-sm sm:mx-0"
          >
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-6 flex items-center justify-between">
                <div className="flex items-center">
-                  <div
+                  <button
+                     type="button"
                      onClick={() => {
                         reset();
                         setBlockImage(null);
                         handleOpen({ parent: true, child: false });
                      }}
-                     className="flex items-center cursor-pointer w-10"
+                     className="flex w-10 cursor-pointer items-center text-slate-600"
+                     aria-label="Geri"
                   >
-                     <LeftArrow className="w-6 h-6" />
-                     <LeftArrow className="w-6 h-6 -ml-4" />
-                  </div>
-                  <p className="text-xl font-medium">Blok</p>
+                     <LeftArrow className="h-6 w-6" />
+                     <LeftArrow className="-ml-4 h-6 w-6" />
+                  </button>
+                  <p className="text-lg font-semibold text-slate-900">
+                     {block.title || "Blok"}
+                  </p>
                </div>
-               <span
+               <button
+                  type="button"
                   onClick={() => handleOpen({ child: false })}
-                  className="text-3xl leading-none cursor-pointer"
+                  className="text-2xl leading-none text-slate-400 hover:text-slate-700"
+                  aria-label="Kapat"
                >
                   ×
-               </span>
+               </button>
             </div>
 
             <form onSubmit={submit}>
@@ -275,13 +282,13 @@ const AddBlocks = (props: Props) => {
                ) : block.type === "imageItem" ? (
                   <>
                      <div className="mb-4">
-                        <label className="block text-sm mb-2 font-medium text-gray-500">
-                           Select Image
+                        <label className="mb-2 block text-sm font-medium text-slate-700">
+                           Görsel Seç
                         </label>
                         <input
                            type="file"
                            onChange={handleImageChange}
-                           className="!h-10 !p-0 outline-none focus:outline-none"
+                           className="block w-full max-w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700"
                         />
                      </div>
                      <div className="mb-4">
@@ -462,23 +469,20 @@ const AddBlocks = (props: Props) => {
                   </div>
                ) : null}
 
-               <div className="flex justify-end mt-4">
-                  <Button
-                     color="red"
-                     variant="text"
+               <div className="mt-4 flex flex-wrap justify-end gap-2">
+                  <button
+                     type="button"
                      onClick={() => handleOpen({ child: false })}
-                     className="py-2 font-medium capitalize text-base mr-2"
+                     className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                   >
-                     <span>İptal</span>
-                  </Button>
-                  <Button
+                     İptal
+                  </button>
+                  <button
                      type="submit"
-                     color="blue"
-                     variant="gradient"
-                     className="py-2 font-medium capitalize text-base"
+                     className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                   >
-                     <span>Değişiklikleri Kaydet</span>
-                  </Button>
+                     Kaydet
+                  </button>
                </div>
             </form>
          </Dialog>

@@ -9,41 +9,31 @@ interface Props {
 const QRCorner = (props: Props) => {
    const { state, title, name, onChange, className } = props;
 
-   //    return (
-   //       <input
-   //          min={0}
-   //          max={50}
-   //          type="range"
-   //          name={name}
-   //          value={value}
-   //          onChange={onChange}
-   //          className={`w-full ${className}`}
-   //       />
-   //    );
-
-   const buildEyeRadiusInput = (name: string) => {
+   const buildEyeRadiusInput = (inputName: string) => {
       return (
          <input
             min={0}
             max={50}
             type="range"
-            name={name}
-            value={state[name]}
+            name={inputName}
+            value={state[inputName]}
             onChange={onChange}
-            className="w-full"
+            className="w-full accent-blue-600"
          />
       );
    };
 
    return (
-      <div>
-         <small className="w-full mb-1 whitespace-nowrap flex items-center font-medium text-gray-500">
+      <div className={`min-w-0 ${className ?? ""}`}>
+         <small className="mb-1.5 flex w-full items-center text-sm font-medium text-slate-700">
             {title}
          </small>
-         {buildEyeRadiusInput(`eyeradius_${name}_0`)}
-         {buildEyeRadiusInput(`eyeradius_${name}_1`)}
-         {buildEyeRadiusInput(`eyeradius_${name}_2`)}
-         {buildEyeRadiusInput(`eyeradius_${name}_3`)}
+         <div className="space-y-1.5 rounded-lg border border-slate-200 bg-slate-50/60 p-2.5">
+            {buildEyeRadiusInput(`eyeradius_${name}_0`)}
+            {buildEyeRadiusInput(`eyeradius_${name}_1`)}
+            {buildEyeRadiusInput(`eyeradius_${name}_2`)}
+            {buildEyeRadiusInput(`eyeradius_${name}_3`)}
+         </div>
       </div>
    );
 };

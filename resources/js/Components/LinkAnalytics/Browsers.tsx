@@ -1,4 +1,6 @@
 import { Progress } from "@material-tailwind/react";
+import PanelCard from "@/Components/Panel/PanelCard";
+import EmptyState from "@/Components/Panel/EmptyState";
 
 interface BrowserCount {
    [browser: string]: number;
@@ -29,26 +31,32 @@ const Browsers = (props: Props) => {
    }
 
    return (
-      <div className="card p-6">
-         <h6>Tarayıcılar</h6>
-         {values.map(([browser, count]) => {
-            const totalWindows = Math.abs((count * 100) / browsers.length);
-            return (
-               <div key={browser} className="my-3">
-                  <div className="flex items-center justify-between">
-                     <p>{browser}</p>
-                     <p>
-                        <span className="text-sm">
-                           {Math.round(totalWindows)}%
-                        </span>
-                        <span className="pl-4">{count}</span>
-                     </p>
+      <PanelCard title="Tarayıcılar">
+         {values.length === 0 ? (
+            <EmptyState
+               title="Tarayıcı verisi yok"
+               description="Henüz görüntülenecek tarayıcı kaydı bulunmuyor."
+            />
+         ) : (
+            values.map(([browser, count]) => {
+               const totalWindows = Math.abs((count * 100) / browsers.length);
+               return (
+                  <div key={browser} className="my-3">
+                     <div className="flex items-center justify-between gap-3">
+                        <p className="min-w-0 truncate text-sm font-medium text-slate-800">
+                           {browser}
+                        </p>
+                        <p className="shrink-0 text-sm text-slate-600">
+                           <span>{Math.round(totalWindows)}%</span>
+                           <span className="pl-4">{count}</span>
+                        </p>
+                     </div>
+                     <Progress value={Math.round(totalWindows)} />
                   </div>
-                  <Progress value={Math.round(totalWindows)} />
-               </div>
-            );
-         })}
-      </div>
+               );
+            })
+         )}
+      </PanelCard>
    );
 };
 

@@ -10,19 +10,34 @@ const ColorInput = (props: Props) => {
    const { name, label, value, onChange, className } = props;
 
    return (
-      <div>
+      <div className={`min-w-0 ${className ?? ""}`}>
          {label && (
-            <small className="w-full mb-1 whitespace-nowrap flex items-center font-medium text-gray-500">
+            <label className="mb-1.5 flex w-full items-center text-sm font-medium text-slate-700">
                {label}
-            </small>
+            </label>
          )}
-         <input
-            type="color"
-            name={name}
-            value={value}
-            onChange={onChange}
-            className={`w-full p-0 h-11 ${className}`}
-         />
+         <div className="flex items-center gap-2">
+            <input
+               type="color"
+               name={name}
+               value={value}
+               onChange={onChange}
+               className="h-11 w-full min-w-0 cursor-pointer rounded-lg border border-slate-200 bg-white p-1 hover:border-slate-300"
+            />
+            <span
+               className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-medium text-slate-600"
+               title={value}
+            >
+               <span
+                  className="h-4 w-4 shrink-0 rounded border border-slate-200"
+                  style={{ backgroundColor: value }}
+                  aria-hidden
+               />
+               <span className="max-w-[4.5rem] truncate uppercase">
+                  {value}
+               </span>
+            </span>
+         </div>
       </div>
    );
 };

@@ -1,7 +1,6 @@
 import {
    Tab,
    Tabs,
-   Button,
    TabsBody,
    TabPanel,
    TabsHeader,
@@ -22,6 +21,7 @@ import LinkThemes from "@/Components/BioLink/LinkThemes";
 import AddBlocks from "@/Components/BioLink/AddBlocks";
 import LinkBlocks from "@/Components/BioLink/LinkBlocks";
 import LinkPreview from "@/Components/BioLink/LinkPreview";
+import PageHeader from "@/Components/Panel/PageHeader";
 
 interface Props extends PageProps {
    link: LinkProps;
@@ -90,41 +90,47 @@ const AddItem = (props: Props) => {
 
    return (
       <>
-         <Head title="Profil Linki Özelleştir" />
-         <div className="lg:grid lg:grid-cols-12 lg:gap-12">
-            <div className="w-full lg:col-span-7">
-               <Tabs value="settings">
-                  <div className="flex items-center justify-between mb-7">
-                     <TabsHeader className="p-0 bg-transparent tabs-header">
-                        <Tab
-                           ref={settingRaf}
-                           value="settings"
-                           onClick={() => refHandler("setting")}
-                           className="py-[7px] px-3 md:px-4 active"
-                        >
-                           Ayarlar
-                        </Tab>
-                        <Tab
-                           ref={blockRaf}
-                           value="blocks"
-                           onClick={() => refHandler("block")}
-                           className="py-[7px] px-3 md:px-4"
-                        >
-                           Bloklar
-                        </Tab>
-                     </TabsHeader>
-                     <div className="flex items-center">
-                        <a href={`/${link.url_name}`} target="_blank">
-                           <Button
-                              variant="text"
-                              color="white"
-                              className="py-2 px-3 md:px-4 rounded-md bg-white active:bg-white hover:bg-white font-medium text-base shadow-sm shadow-white/20 active:opacity-[0.85] capitalize text-gray-800 mr-3"
-                           >
-                              <span className="hidden md:block">Görüntüle</span>
-                              <span className="block md:hidden">W</span>
-                           </Button>
-                        </a>
+         <Head title="Bio Link'i Düzenle" />
+         <PageHeader
+            title="Bio Link'i Düzenle"
+            description="Profil, bloklar ve temayı düzenleyin; sağda canlı önizlemeyi görün."
+            actions={
+               <a
+                  href={`/${link.url_name}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+               >
+                  Görüntüle
+               </a>
+            }
+         />
 
+         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="min-w-0">
+               <Tabs value="settings">
+                  <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                     <div className="max-w-full overflow-x-auto">
+                        <TabsHeader className="tabs-header min-w-max bg-transparent p-0">
+                           <Tab
+                              ref={settingRaf}
+                              value="settings"
+                              onClick={() => refHandler("setting")}
+                              className="active px-3 py-[7px] md:px-4"
+                           >
+                              Ayarlar
+                           </Tab>
+                           <Tab
+                              ref={blockRaf}
+                              value="blocks"
+                              onClick={() => refHandler("block")}
+                              className="px-3 py-[7px] md:px-4"
+                           >
+                              Bloklar
+                           </Tab>
+                        </TabsHeader>
+                     </div>
+                     <div className="flex flex-wrap items-center gap-2">
                         <AddBlocks
                            link={link}
                            setLink={setLink}
@@ -135,13 +141,15 @@ const AddItem = (props: Props) => {
 
                   <TabsBody>
                      <TabPanel value="settings" className="p-0">
-                        <LinkProfile link={link} setLink={setLink} />
-                        <AddSocialLinks link={link} setLink={setLink} />
-                        <LinkThemes
-                           link={link}
-                           themes={themes}
-                           setLink={setLink}
-                        />
+                        <div className="space-y-6">
+                           <LinkProfile link={link} setLink={setLink} />
+                           <AddSocialLinks link={link} setLink={setLink} />
+                           <LinkThemes
+                              link={link}
+                              themes={themes}
+                              setLink={setLink}
+                           />
+                        </div>
                      </TabPanel>
                      <TabPanel value="blocks" className="p-0">
                         <LinkBlocks link={link} setLink={setLink} />
@@ -150,12 +158,17 @@ const AddItem = (props: Props) => {
                </Tabs>
             </div>
 
-            <div className="hidden lg:block col-span-12 lg:col-span-5 relative">
-               <div
-                  style={parsedStyle}
-                  className="h-[calc(100vh-150px)] lg:fixed lg:w-[300px] xl:w-[360px] 2xl:w-[400px] rounded-3xl border-[8px] border-gray-800 overflow-y-auto bg-cover bg-center object-contain"
-               >
-                  <LinkPreview link={link} buttonStyle={buttonStyle} />
+            <div className="min-w-0">
+               <div className="lg:sticky lg:top-24">
+                  <p className="mb-3 text-sm font-medium text-slate-600">
+                     Canlı önizleme
+                  </p>
+                  <div
+                     style={parsedStyle}
+                     className="mx-auto h-[min(720px,calc(100vh-10rem))] w-full max-w-[360px] overflow-y-auto rounded-[2rem] border-[8px] border-slate-800 bg-cover bg-center object-contain shadow-sm"
+                  >
+                     <LinkPreview link={link} buttonStyle={buttonStyle} />
+                  </div>
                </div>
             </div>
          </div>

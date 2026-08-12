@@ -1,4 +1,3 @@
-import { Button } from "@material-tailwind/react";
 import InputDropdown from "../InputDropdown";
 import { useState } from "react";
 
@@ -44,18 +43,15 @@ const QRCodeDownloader = (props: Props) => {
    }
 
    return (
-      <>
-         <div className="flex items-center border border-blue-500 bg-blue-500 rounded-md">
-            <Button
-               type="button"
-               variant="text"
-               color="white"
-               onClick={() => qrcodeDownload(imageBlogData(), downloadType)}
-               className="w-full py-2.5 px-1 border-none rounded-md rounded-r-none font-medium capitalize text-sm hover:shadow-none"
-            >
-               {buttonText}
-            </Button>
-
+      <div className="flex min-w-0 flex-wrap items-stretch overflow-hidden rounded-lg border border-slate-300 bg-white">
+         <button
+            type="button"
+            onClick={() => qrcodeDownload(imageBlogData(), downloadType)}
+            className="inline-flex min-w-0 flex-1 items-center justify-center px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+         >
+            {buttonText}
+         </button>
+         <div className="w-[5.5rem] shrink-0 border-l border-slate-300">
             <InputDropdown
                name="qr_download"
                defaultValue="png"
@@ -64,10 +60,10 @@ const QRCodeDownloader = (props: Props) => {
                   { key: "JPEG", value: "jpeg" },
                ]}
                onChange={(e: any) => setDownloadType(e.value)}
-               className="!w-20 rounded-l-none border-none outline-none bg-blue-600 text-white font-medium"
+               className="!w-full rounded-none border-none bg-slate-50 text-sm font-medium text-slate-700"
             />
          </div>
-      </>
+      </div>
    );
 };
 

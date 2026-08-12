@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { error } from "@/utils/toast";
 import { LinkItemProps } from "@/types";
-import { Button, Dialog } from "@material-tailwind/react";
+import { Dialog } from "@material-tailwind/react";
 import Delete from "../Icons/Delete";
 
 interface Props {
@@ -33,37 +33,39 @@ const DeleteBlock = (props: Props) => {
 
    return (
       <>
-         <Delete
+         <button
+            type="button"
             onClick={handleOpen}
-            className="w-5 h-5 cursor-pointer text-red-500 ml-2"
-         />
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+            aria-label="Bloğu sil"
+         >
+            <Delete className="h-4 w-4" />
+         </button>
 
          <Dialog
             size="xs"
             open={open}
             handler={handleOpen}
-            className="px-6 py-10 max-h-[calc(100vh-80px)] overflow-y-auto text-gray-800"
+            className="mx-4 max-h-[calc(100vh-80px)] overflow-y-auto rounded-xl border border-slate-200 bg-white px-6 py-8 text-slate-800 shadow-sm sm:mx-0"
          >
-            <h6 className="text-red-500 text-center text-xl mb-10">
+            <p className="mb-8 text-center text-lg font-semibold text-red-600">
                Silmek istediğinize emin misiniz?
-            </h6>
-            <div className="flex items-center justify-center">
-               <Button
-                  color="blue"
-                  variant="gradient"
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+               <button
+                  type="button"
                   onClick={handleOpen}
-                  className="py-2 font-medium capitalize text-base mr-6"
+                  className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                >
-                  <span>İptal</span>
-               </Button>
-               <Button
-                  color="red"
-                  variant="gradient"
-                  className="py-2 font-medium capitalize text-base"
+                  İptal
+               </button>
+               <button
+                  type="button"
+                  className="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
                   onClick={deleteHandler}
                >
-                  <span>Sil</span>
-               </Button>
+                  Sil
+               </button>
             </div>
          </Dialog>
       </>

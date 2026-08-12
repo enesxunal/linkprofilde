@@ -1,5 +1,5 @@
 import { FormEventHandler, useState } from "react";
-import { Button, Dialog } from "@material-tailwind/react";
+import { Dialog } from "@material-tailwind/react";
 import { LinkProps } from "@/types";
 import CirclePlus from "../Icons/CirclePlus";
 import Input from "../Input";
@@ -45,7 +45,7 @@ const AddSocialLinks = (props: Props) => {
    const [open, setOpen] = useState(false);
    const handleOpen = () => setOpen(!open);
 
-   const { data, setData, post, processing, errors, reset } = useForm({
+   const { data, setData } = useForm({
       email: getLink(link, "email"),
       telephone: getLink(link, "telephone"),
       telegram: getLink(link, "telegram"),
@@ -106,7 +106,7 @@ const AddSocialLinks = (props: Props) => {
       : "#101828";
 
    return (
-      <div className="card flex items-center justify-center flex-wrap gap-4 p-6 mb-7">
+      <div className="mb-0 flex flex-wrap items-center justify-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
          {socials.map((item, ind) => {
             const Icon = icons[item.icon];
             if (!Icon) return null;
@@ -134,30 +134,34 @@ const AddSocialLinks = (props: Props) => {
                      ? { target: "_blank", rel: "noopener noreferrer" }
                      : {})}
                >
-                  <Icon className="w-7 h-7" style={{ color: socialColor }} />
+                  <Icon className="h-7 w-7" style={{ color: socialColor }} />
                </a>
             );
          })}
 
          <CirclePlus
             onClick={handleOpen}
-            className="w-8 h-8 text-blue-500 cursor-pointer mx-2"
+            className="mx-2 h-8 w-8 cursor-pointer text-blue-500"
          />
 
          <Dialog
             open={open}
             size="sm"
             handler={handleOpen}
-            className="p-6 max-h-[calc(100vh-80px)] overflow-y-auto"
+            className="mx-4 max-h-[calc(100vh-80px)] overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 text-slate-800 shadow-sm sm:mx-0"
          >
-            <div className="flex items-center justify-between mb-6">
-               <p className="text-xl font-medium">Sosyal Bağlantılar</p>
-               <span
+            <div className="mb-6 flex items-center justify-between">
+               <p className="text-lg font-semibold text-slate-900">
+                  Sosyal Bağlantılar
+               </p>
+               <button
+                  type="button"
                   onClick={handleOpen}
-                  className="text-3xl leading-none cursor-pointer"
+                  className="text-2xl leading-none text-slate-400 hover:text-slate-700"
+                  aria-label="Kapat"
                >
                   ×
-               </span>
+               </button>
             </div>
 
             <form onSubmit={submit}>
@@ -388,23 +392,20 @@ const AddSocialLinks = (props: Props) => {
                   <Discord className="absolute top-1/2 -translate-y-1/2 left-4 h-4 w-4" />
                </div>
 
-               <div className="flex justify-end mt-4">
-                  <Button
-                     color="red"
-                     variant="text"
+               <div className="mt-4 flex flex-wrap justify-end gap-2">
+                  <button
+                     type="button"
                      onClick={handleOpen}
-                     className="py-2 font-medium capitalize text-base mr-2"
+                     className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                   >
-                     <span>İptal</span>
-                  </Button>
-                  <Button
+                     İptal
+                  </button>
+                  <button
                      type="submit"
-                     color="blue"
-                     variant="gradient"
-                     className="py-2 font-medium capitalize text-base"
+                     className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                   >
-                     <span>Değişiklikleri Kaydet</span>
-                  </Button>
+                     Kaydet
+                  </button>
                </div>
             </form>
          </Dialog>

@@ -1,4 +1,6 @@
 import { Progress } from "@material-tailwind/react";
+import PanelCard from "@/Components/Panel/PanelCard";
+import EmptyState from "@/Components/Panel/EmptyState";
 
 interface Language {
    code: string;
@@ -55,26 +57,32 @@ const Languages = (props: Props) => {
    }
 
    return (
-      <div className="card p-6">
-         <h6>Diller</h6>
-         {values.map(([language, count]) => {
-            const totalLanguages = Math.abs((count * 100) / lanCodes.length);
-            return (
-               <div key={language} className="my-3">
-                  <div className="flex items-center justify-between">
-                     <p>{language}</p>
-                     <p>
-                        <span className="text-sm">
-                           {Math.round(totalLanguages)}%
-                        </span>
-                        <span className="pl-4">{count}</span>
-                     </p>
+      <PanelCard title="Diller">
+         {values.length === 0 ? (
+            <EmptyState
+               title="Dil verisi yok"
+               description="Henüz görüntülenecek dil kaydı bulunmuyor."
+            />
+         ) : (
+            values.map(([language, count]) => {
+               const totalLanguages = Math.abs((count * 100) / lanCodes.length);
+               return (
+                  <div key={language} className="my-3">
+                     <div className="flex items-center justify-between gap-3">
+                        <p className="min-w-0 truncate text-sm font-medium text-slate-800">
+                           {language}
+                        </p>
+                        <p className="shrink-0 text-sm text-slate-600">
+                           <span>{Math.round(totalLanguages)}%</span>
+                           <span className="pl-4">{count}</span>
+                        </p>
+                     </div>
+                     <Progress value={Math.round(totalLanguages)} />
                   </div>
-                  <Progress value={Math.round(totalLanguages)} />
-               </div>
-            );
-         })}
-      </div>
+               );
+            })
+         )}
+      </PanelCard>
    );
 };
 

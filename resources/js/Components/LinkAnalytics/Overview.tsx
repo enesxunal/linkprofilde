@@ -12,7 +12,7 @@ interface Props {
 
 const Overview = ({ languages, analytics }: Props) => {
    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
          <Countries analytics={analytics} overview />
          <Referrers analytics={analytics} overview />
          <Devices analytics={analytics} overview />
