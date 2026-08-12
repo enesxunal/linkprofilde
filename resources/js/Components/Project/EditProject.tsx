@@ -2,7 +2,7 @@ import axios from "axios";
 import Input from "../Input";
 import EditPen from "../Icons/EditPen";
 import { useForm } from "@inertiajs/react";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { PaginationProps, ProjectProps } from "@/types";
 import { Button, Dialog, IconButton } from "@material-tailwind/react";
 import { error, success } from "@/utils/toast";
@@ -25,11 +25,18 @@ const EditProject = (props: Props) => {
       project_name: project.project_name,
    });
 
+   const [nameError, setNameError] = useState<string | null>(null);
+
+   useEffect(() => {
+      setData({
+         project_name: project.project_name,
+      });
+      setNameError(null);
+   }, [project.id]);
+
    const onHandleChange = (event: any) => {
       setData(event.target.name, event.target.value);
    };
-
-   const [nameError, setNameError] = useState<string | null>(null);
 
    const submit: FormEventHandler = async (e) => {
       e.preventDefault();

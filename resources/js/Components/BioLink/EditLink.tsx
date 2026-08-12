@@ -2,7 +2,7 @@ import axios from "axios";
 import Input from "../Input";
 import EditPen from "../Icons/EditPen";
 import { useForm } from "@inertiajs/react";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { LinkProps, PaginationProps } from "@/types";
 import { Button, Dialog, IconButton } from "@material-tailwind/react";
 import { error, success } from "@/utils/toast";
@@ -28,6 +28,24 @@ const EditLink = (props: Props) => {
       url_name: link.url_name,
    });
 
+   const [errors, setErrors] = useState({
+      link_name: null,
+      url_name: null,
+   });
+
+   useEffect(() => {
+      setData({
+         link_name: link.link_name,
+         link_type: "biolink",
+         url_name: link.url_name,
+      });
+      setNewUrlName(false);
+      setErrors({
+         link_name: null,
+         url_name: null,
+      });
+   }, [link.id]);
+
    const onHandleChange = (event: any) => {
       setData(event.target.name, event.target.value);
       if (event.target.name === "url_name") {
@@ -38,11 +56,6 @@ const EditLink = (props: Props) => {
          }
       }
    };
-
-   const [errors, setErrors] = useState({
-      link_name: null,
-      url_name: null,
-   });
 
    const submit: FormEventHandler = async (e) => {
       e.preventDefault();

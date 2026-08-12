@@ -73,7 +73,12 @@ class SuperAdminController extends Controller
                 ->when($suspiciousOnly, fn ($q) => $q->suspicious())
                 ->orderBy('created_at', 'desc')
                 ->with('pricing_plan')
-                ->paginate($page);
+                ->paginate($page)
+                ->withQueryString();
+
+            if ($req->inertia()) {
+                return Inertia::render('Admin/Users', compact('users', 'suspiciousOnly'));
+            }
 
             return $users;
         } catch (\Throwable $th) {

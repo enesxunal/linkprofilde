@@ -3,7 +3,7 @@ import Search from "@/Components/Icons/Search";
 import TablePageSize from "@/Components/Table/TablePageSize";
 import debounce from "@/utils/debounce";
 import { PaginationProps } from "@/types";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useMemo, useRef } from "react";
 
 interface Props {
    data: PaginationProps;
@@ -29,23 +29,77 @@ const TableNav = (props: Props) => {
       extraSearchParams,
    } = props;
 
-   const searchHandler = debounce(async (e: any) => {
-      const query = e.target.value;
-      const params: Record<string, string> = {
-         page: "1",
-         per_page: String(data.per_page),
-         value: query,
+   const abortRef = useRef<AbortController | null>(null);
+   const seqRef = useRef(0);
+   const latestRef = useRef({
+      data,
+      setSearchData,
+      searchPath,
+      extraSearchParams,
+   });
+   latestRef.current = {
+      data,
+      setSearchData,
+      searchPath,
+      extraSearchParams,
+   };
+
+   useEffect(() => {
+      return () => {
+         abortRef.current?.abort();
       };
-      if (extraSearchParams) {
-         Object.entries(extraSearchParams).forEach(([k, v]) => {
-            params[k] = String(v);
-         });
-      }
-      const res = await axios.get(
-         `${searchPath}?${new URLSearchParams(params)}`
-      );
-      setSearchData(res.data);
-   }, 300);
+   }, []);
+
+   const searchHandler = useMemo(
+      () =>
+         debounce(async (e: any) => {
+            const {
+               data: pageData,
+               setSearchData: applySearch,
+               searchPath: path,
+               extraSearchParams: extra,
+            } = latestRef.current;
+
+            abortRef.current?.abort();
+            const controller = new AbortController();
+            abortRef.current = controller;
+            const seq = ++seqRef.current;
+
+            const query = e.target.value;
+            const params: Record<string, string> = {
+               page: "1",
+               per_page: String(pageData.per_page),
+               value: query,
+            };
+            if (extra) {
+               Object.entries(extra).forEach(([k, v]) => {
+                  params[k] = String(v);
+               });
+            }
+
+            try {
+               const res = await axios.get(
+                  `${path}?${new URLSearchParams(params)}`,
+                  { signal: controller.signal }
+               );
+               if (seq !== seqRef.current) {
+                  return;
+               }
+               if (res.data && Array.isArray(res.data.data)) {
+                  applySearch(res.data);
+               }
+            } catch (err: any) {
+               if (
+                  err?.code === "ERR_CANCELED" ||
+                  err?.name === "CanceledError" ||
+                  axios.isCancel?.(err)
+               ) {
+                  return;
+               }
+            }
+         }, 300),
+      []
+   );
 
    return (
       <div className="p-7 md:flex items-center justify-between">

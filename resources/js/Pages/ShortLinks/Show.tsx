@@ -18,6 +18,7 @@ import DeleteByInertia from "@/Components/DeleteByInertia";
 import { pageChange } from "@/utils/utils";
 import { QRCode } from "react-qrcode-logo";
 import LimitWarning from "@/Components/LimitWarning";
+import { getTableRowId } from "@/utils/table-row";
 
 interface Props extends PageProps {
    links: PaginationProps;
@@ -35,7 +36,7 @@ const Show = (props: Props) => {
    });
 
    const { rows, getTableProps, getTableBodyProps, headerGroups, prepareRow } =
-      useTable({ columns, data }, useSortBy);
+      useTable({ columns, data, getRowId: getTableRowId }, useSortBy);
 
    const handleCopy = (id: number, url_name: number) => {
       navigator.clipboard
@@ -119,9 +120,11 @@ const Show = (props: Props) => {
                   <tbody {...getTableBodyProps()}>
                      {rows.map((row) => {
                         prepareRow(row);
+                        const recordId = (row.original as LinkProps).id;
                         return (
                            <tr
                               {...row.getRowProps()}
+                              key={recordId}
                               className="border-b border-gray-200 dark:border-neutral-500"
                            >
                               {row.cells.map((cell) => {
@@ -205,6 +208,7 @@ const Show = (props: Props) => {
                                        ) : column.id === "action" ? (
                                           <div className="flex justify-end items-center">
                                              <EditLink
+                                                key={recordId}
                                                 links={links}
                                                 setLinks={setLinks}
                                                 link={row.original as LinkProps}

@@ -8,6 +8,7 @@ import {
 import SimpleBar from "simplebar-react";
 import { router } from "@inertiajs/react";
 import { PaginationProps } from "@/types";
+import { buildPaginatorUrl, withPerPage } from "./paginatorQuery";
 
 interface Props {
    className: string;
@@ -16,7 +17,6 @@ interface Props {
 
 const TablePagination = (props: Props) => {
    const {
-      path,
       per_page,
       last_page,
       current_page,
@@ -42,11 +42,11 @@ const TablePagination = (props: Props) => {
    }
 
    const gotoPage = (e: number) => {
-      router.get(`${path}?page=${e}&per_page=${per_page}`);
+      router.get(buildPaginatorUrl(props.paginationInfo, e, per_page));
    };
 
-   const gotoRoute = (path: string) => {
-      router.get(`${path}&per_page=${per_page}`);
+   const gotoRoute = (url: string) => {
+      router.get(withPerPage(url, per_page));
    };
 
    const menuItem = (e: number) => {
