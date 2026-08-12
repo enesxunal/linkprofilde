@@ -22,6 +22,7 @@ use App\Http\Controllers\Gateways\RazorpayController;
 use App\Http\Controllers\Gateways\StripeController;
 use App\Http\Controllers\Gateways\ToslaController;
 use App\Http\Controllers\LinkAnalyticsController;
+use App\Http\Controllers\QrRedirectController;
 use App\Http\Controllers\InstallerController;
 use App\Http\Controllers\InstallerDBController;
 use App\Http\Controllers\VersionController;
@@ -270,6 +271,12 @@ if ($installed) {
         Route::get('/version/current', [VersionController::class, 'getCurrentVersion']);
         Route::get('/version/update', [VersionController::class, 'updateVersion']);
     });
+
+    // Dynamic QR public redirect (MUST stay above /{linkName} catch-all)
+    // No route throttle: scanning must never return 429; soft limits live in QrScanRecorder.
+    Route::get('/q/{publicCode}', QrRedirectController::class)
+        ->where('publicCode', '[A-Za-z0-9]{12}')
+        ->name('qr.redirect');
 
     // Accessing biolink by link name
     Route::get('/{linkName}', [BioLinkController::class, 'bioLinkView']);
