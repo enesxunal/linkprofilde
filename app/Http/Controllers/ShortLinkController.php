@@ -6,10 +6,8 @@ use App\Helpers\AppHelper;
 use Illuminate\Http\Request;
 use App\Models\Link;
 use App\Models\QRCode;
-use App\Models\Language;
 use App\Models\LinkItem;
 use App\Models\PricingPlan;
-use App\Models\ShetabitVisit;
 use App\Rules\CheckLinkName;
 use App\Rules\XSSPurifier;
 use Illuminate\Validation\Rule;
@@ -162,27 +160,6 @@ class ShortLinkController extends Controller
     }
     //--------------------------------------------------
 
-
-    //--------------------------------------------------
-    // Bio-link analytics for tracking bio-link
-    public function analytics($id)
-    {
-        $query = Link::where('id', $id)->where('link_type', 'shortlink');
-        if (!auth()->user()->hasRole('SUPER-ADMIN')) {
-            $query->where('user_id', auth()->id());
-        }
-        $link = $query->firstOrFail();
-
-        try {
-            $languages = Language::get();
-            $analytics = ShetabitVisit::where('link_id', $link->id)->get();
-
-            return Inertia::render('LinkAnalytics', compact('analytics', 'languages'));
-        } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
-        }
-    }
-    //--------------------------------------------------
 
 
     //--------------------------------------------------

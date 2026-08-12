@@ -518,7 +518,12 @@ class BioLinkController extends Controller
                 $model = new ShetabitVisit;
                 $result = $req->visitor()->visit($model);
 
-                ShetabitVisit::where('id', $result->id)->update(['link_id' => $link->id]);
+                ShetabitVisit::where('id', $result->id)->update([
+                    'link_id' => $link->id,
+                    // Privacy quick win: drop bulky/sensitive request dumps from new rows.
+                    'request' => null,
+                    'headers' => null,
+                ]);
 
                 UpdateVisitLocationJob::dispatch($result->id, $req->ip());
 

@@ -21,6 +21,7 @@ use App\Http\Controllers\Gateways\PaystackController;
 use App\Http\Controllers\Gateways\RazorpayController;
 use App\Http\Controllers\Gateways\StripeController;
 use App\Http\Controllers\Gateways\ToslaController;
+use App\Http\Controllers\LinkAnalyticsController;
 use App\Http\Controllers\InstallerController;
 use App\Http\Controllers\InstallerDBController;
 use App\Http\Controllers\VersionController;
@@ -93,7 +94,7 @@ if ($installed) {
             Route::get('/search', [ShortLinkController::class, 'search']);
         });
         // Short-links routes end
-        Route::get('/link/analytics/{id}', [ShortLinkController::class, 'analytics']);
+        Route::get('/link/analytics/{id}', [LinkAnalyticsController::class, 'show']);
 
 
         // QR-Code routes start

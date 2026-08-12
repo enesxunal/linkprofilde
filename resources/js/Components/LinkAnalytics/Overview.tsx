@@ -4,21 +4,33 @@ import Devices from "./Devices";
 import Operating from "./Operating";
 import Browsers from "./Browsers";
 import Languages from "./Languages";
+import { BreakdownItem } from "./BreakdownList";
 
 interface Props {
-   languages: any[];
-   analytics: any[];
+   countries: BreakdownItem[];
+   referrers: BreakdownItem[];
+   devices: BreakdownItem[];
+   operating_systems: BreakdownItem[];
+   browsers: BreakdownItem[];
+   languages: BreakdownItem[];
 }
 
-const Overview = ({ languages, analytics }: Props) => {
+const Overview = ({
+   countries,
+   referrers,
+   devices,
+   operating_systems,
+   browsers,
+   languages,
+}: Props) => {
    return (
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-         <Countries analytics={analytics} overview />
-         <Referrers analytics={analytics} overview />
-         <Devices analytics={analytics} overview />
-         <Operating analytics={analytics} overview />
-         <Browsers analytics={analytics} overview />
-         <Languages analytics={analytics} languages={languages} overview />
+         <Countries items={countries} overview />
+         <Referrers items={referrers} overview />
+         <Devices items={devices} overview />
+         <Operating items={operating_systems} overview />
+         <Browsers items={browsers} overview />
+         <Languages items={languages} overview />
       </div>
    );
 };
