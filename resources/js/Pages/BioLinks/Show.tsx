@@ -18,6 +18,7 @@ import TablePagination from "@/Components/Table/TablePagination";
 import { ReactNode, useMemo, useState, useEffect, useRef } from "react";
 import { QRCode } from "react-qrcode-logo";
 import LimitWarning from "@/Components/LimitWarning";
+import { getTableRowId } from "@/utils/table-row";
 
 interface Props extends PageProps {
    links: PaginationProps;
@@ -51,7 +52,7 @@ const Show = (props: Props) => {
    });
 
    const { rows, getTableProps, getTableBodyProps, headerGroups, prepareRow } =
-      useTable({ columns, data }, useSortBy);
+      useTable({ columns, data, getRowId: getTableRowId }, useSortBy);
 
    const handleCopy = (id: number, url_name: number) => {
       const baseUrl = props.ziggy?.url ?? window.location.origin;
@@ -135,12 +136,14 @@ const Show = (props: Props) => {
                      <TableHead justifyHead headerGroups={headerGroups} />
                   </thead>
                   <tbody {...getTableBodyProps()}>
-                     {(rows ?? []).map((row, rowIndex) => {
+                     {(rows ?? []).map((row) => {
                         prepareRow(row);
                         const cells = row.cells ?? [];
+                        const recordId = (row.original as LinkProps).id;
                         return (
                            <tr
                               {...row.getRowProps()}
+                              key={recordId}
                               className="border-b border-gray-200 dark:border-neutral-500"
                            >
                               {cells.map((cell) => {
@@ -226,6 +229,7 @@ const Show = (props: Props) => {
                                        ) : column.id === "action" ? (
                                           <div className="flex justify-end items-center">
                                              <EditLink
+                                                key={recordId}
                                                 links={links}
                                                 setLinks={setLinks}
                                                 link={row.original as LinkProps}

@@ -9,20 +9,19 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
       host,
       port,
       username,
-      password,
       sender_email,
       sender_name,
       encryption,
    } = props.smtp;
 
    const { data, setData, patch, errors, clearErrors } = useForm({
-      host: host,
+      host: host ?? "",
       port: port,
       encryption: encryption,
-      username: username,
-      password: password,
-      from_address: sender_email,
-      from_name: sender_name,
+      username: username ?? "",
+      password: "",
+      from_address: sender_email ?? "",
+      from_name: sender_name ?? "",
       admin_email: "",
    });
 
@@ -113,10 +112,10 @@ const SMTPSettings = (props: { smtp: SMTPProps }) => {
                   value={data.password}
                   error={errors.password}
                   onChange={onHandleChange}
-                  placeholder="Your smtp password"
+                  placeholder="Leave blank to keep the current password"
                   fullWidth
                   flexLabel
-                  required
+                  autoComplete="new-password"
                />
 
                <Input

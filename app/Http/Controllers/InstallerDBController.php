@@ -10,6 +10,13 @@ class InstallerDBController extends Controller
 {
     protected $mydb;
 
+    public function __construct()
+    {
+        if (app()->environment('production')) {
+            abort(404);
+        }
+    }
+
     public function databaseChecker(Request $request)
     {
         $request->session()->put('env.DB_CONNECTION', $request->db_connection);

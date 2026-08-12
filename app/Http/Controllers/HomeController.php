@@ -8,8 +8,8 @@ use App\Models\AppSetting;
 use App\Models\CustomPage;
 use App\Models\PricingPlan;
 use App\Models\Testimonial;
+use App\Support\SafeUrl;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 
 
 class HomeController extends Controller
@@ -44,37 +44,32 @@ class HomeController extends Controller
     // Section edit or update of home page
     public function EditHomeSection(Request $req, $sectionId)
     {
-        $thumbnail = $req->new_thumbnail;
+        $section = AppSection::find($sectionId);
+        if (!$section) {
+            abort(404);
+        }
+
         $section_title = ucfirst($req->section_title);
 
-        if ($thumbnail) {
+        if ($req->hasFile('new_thumbnail')) {
             $rules = [
                 'section_title' => 'required',
-                'new_thumbnail' => 'image|mimes:jpg,png,jpeg|max:5120',
+                'new_thumbnail' => AppHelper::imageRules(5120),
             ];
             $messages = [
                 'section_title.required' => 'Section Title is require',
-                'new_thumbnail.mimes' => 'Allow only jpg,png,jpeg type image',
+                'new_thumbnail.mimes' => 'Allow only jpg, png, jpeg type image',
                 'new_thumbnail.max' => 'Image size will be 5MB',
             ];
             $this->validate($req, $rules, $messages);
-            $image = explode("/", $req->current_thumbnail);
-            if ($image[0] != 'assets') {
-                File::delete($req->current_thumbnail);
-            }
-            $imgUrl = AppHelper::image_uploader($thumbnail);
 
-            AppSection::where('id', $sectionId)->update([
-                'title' => $section_title,
-                'description' => $req->description ? $req->description : null,
-                'thumbnail' => $imgUrl,
-            ]);
-        } else {
-            AppSection::where('id', $sectionId)->update([
-                'title' => $section_title,
-                'description' => $req->description ? $req->description : null,
-            ]);
+            AppHelper::safeDeleteUpload($section->thumbnail);
+            $section->thumbnail = AppHelper::image_uploader($req->file('new_thumbnail'));
         }
+
+        $section->title = $section_title;
+        $section->description = $req->description ? $req->description : null;
+        $section->save();
 
         return back();
     }
@@ -105,6 +100,11 @@ class HomeController extends Controller
             if ($oneList['content'] == '' && $oneList['icon'] == '' && $oneList['url'] == '') {
                 break;
             } else {
+                $safeUrl = SafeUrl::href(is_string($oneList['url']) ? $oneList['url'] : null);
+                if ($safeUrl === null) {
+                    return back()->with('error', 'Geçersiz bağlantı adresi.');
+                }
+                $oneList['url'] = $safeUrl === '' ? null : $safeUrl;
                 array_push($allList, $oneList);
                 $oneList = ['content' => '', 'icon' => '', 'url' => ''];
             }

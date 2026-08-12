@@ -2,7 +2,7 @@ import axios from "axios";
 import Input from "../Input";
 import EditPen from "../Icons/EditPen";
 import { useForm } from "@inertiajs/react";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { LinkProps, PaginationProps } from "@/types";
 import { Button, Dialog, IconButton } from "@material-tailwind/react";
 import { error, success } from "@/utils/toast";
@@ -27,14 +27,26 @@ const EditLink = (props: Props) => {
       external_url: link.external_url || "",
    });
 
-   const onHandleChange = (event: any) => {
-      setData(event.target.name, event.target.value);
-   };
-
    const [errors, setErrors] = useState({
       link_name: null,
       external_url: null,
    });
+
+   useEffect(() => {
+      setData({
+         link_name: link.link_name,
+         link_type: "shortlink",
+         external_url: link.external_url || "",
+      });
+      setErrors({
+         link_name: null,
+         external_url: null,
+      });
+   }, [link.id]);
+
+   const onHandleChange = (event: any) => {
+      setData(event.target.name, event.target.value);
+   };
 
    const submit: FormEventHandler = async (e) => {
       e.preventDefault();

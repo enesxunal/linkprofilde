@@ -17,6 +17,7 @@ import CreateProject from "@/Components/Project/CreateProject";
 import EditProject from "@/Components/Project/EditProject";
 import { parseISO, format } from "date-fns";
 import LimitWarning from "@/Components/LimitWarning";
+import { getTableRowId } from "@/utils/table-row";
 
 interface Props extends PageProps {
    projects: PaginationProps;
@@ -29,7 +30,7 @@ const Projects = (props: Props) => {
    const columns = useMemo(() => projectsHead, []);
 
    const { rows, getTableProps, getTableBodyProps, headerGroups, prepareRow } =
-      useTable({ columns, data }, useSortBy);
+      useTable({ columns, data, getRowId: getTableRowId }, useSortBy);
 
    const stringToDate = (str: string) => {
       const time = format(parseISO(str), "hh:mm aa");
@@ -72,9 +73,11 @@ const Projects = (props: Props) => {
                   <tbody {...getTableBodyProps()}>
                      {rows.map((row) => {
                         prepareRow(row);
+                        const recordId = (row.original as ProjectProps).id;
                         return (
                            <tr
                               {...row.getRowProps()}
+                              key={recordId}
                               className="border-b border-gray-200 dark:border-neutral-500"
                            >
                               {row.cells.map((cell) => {
@@ -123,6 +126,7 @@ const Projects = (props: Props) => {
                                        ) : column.id === "action" ? (
                                           <div className="flex justify-end items-center">
                                              <EditProject
+                                                key={recordId}
                                                 projects={projects}
                                                 setProjects={setProjects}
                                                 project={

@@ -8,7 +8,6 @@ use App\Rules\XSSPurifier;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ChangeEmailVerification;
 use App\Models\AppSetting;
@@ -37,9 +36,9 @@ class SettingsController extends Controller
                 'phone' => ['string', 'max:20', new XSSPurifier],
             ]);
         }
-        if ($req->image) {
+        if ($req->hasFile('image')) {
             $req->validate([
-                'image' => ['image', 'mimes:jpeg,png,jpg,svg', 'max:2048'],
+                'image' => AppHelper::imageRules(2048),
             ]);
         }
 
@@ -48,11 +47,9 @@ class SettingsController extends Controller
             $user->name = $req->name;
             $user->phone = $req->phone;
 
-            if ($req->image) {
-                if ($user->image) File::delete($user->image);
-
-                $imgUrl = AppHelper::image_uploader($req->image);
-                $user->image = $imgUrl;
+            if ($req->hasFile('image')) {
+                AppHelper::safeDeleteUpload($user->image);
+                $user->image = AppHelper::image_uploader($req->file('image'));
             }
             $user->save();
 

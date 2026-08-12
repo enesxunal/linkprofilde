@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\AppSection;
 use App\Models\AppSetting;
 use App\Models\CustomPage;
+use App\Support\PageHtml;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class CustomPageController extends Controller
@@ -34,14 +36,10 @@ class CustomPageController extends Controller
 
     function store(Request $request)
     {
-        try {
-            $request->validate([
-                'name' => ['required', 'max:30'],
-                'route' => ['required', 'max:30'],
-                'content' => ['required'],
-            ]);
+        $data = $this->validatedPage($request);
 
-            CustomPage::create($request->all());
+        try {
+            CustomPage::create($data);
 
             return redirect()
                 ->route('custom-page')
@@ -54,13 +52,21 @@ class CustomPageController extends Controller
 
     function pageView(Request $request, $page)
     {
+        $currentPage = CustomPage::where('route', $page)->first();
+        if (!$currentPage) {
+            abort(404);
+        }
+
         try {
             $app = AppSetting::first();
             $customPages = CustomPage::all();
             $appSections = AppSection::all();
-            $currentPage = CustomPage::where('route', $page)->first();
+            $safeContent = PageHtml::sanitize((string) $currentPage->content);
 
-            return view('custom-page', compact('app', 'customPages', 'currentPage', 'appSections'));
+            return view(
+                'custom-page',
+                compact('app', 'customPages', 'currentPage', 'appSections', 'safeContent')
+            );
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
         }
@@ -81,8 +87,15 @@ class CustomPageController extends Controller
 
     function save(Request $request, $id)
     {
+        $page = CustomPage::find($id);
+        if (!$page) {
+            abort(404);
+        }
+
+        $data = $this->validatedPage($request);
+
         try {
-            CustomPage::find($id)->update($request->all());
+            $page->update($data);
 
             return redirect()
                 ->route('custom-page')
@@ -102,5 +115,27 @@ class CustomPageController extends Controller
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
         }
+    }
+
+    private function validatedPage(Request $request): array
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:30'],
+            'route' => ['required', 'string', 'max:30', 'regex:/^[a-z]+(?:-[a-z]+)*$/'],
+            'content' => ['required', 'string'],
+        ]);
+
+        $html = PageHtml::sanitize($data['content']);
+        if ($html === '') {
+            throw ValidationException::withMessages([
+                'content' => 'The content contains invalid HTML.',
+            ]);
+        }
+
+        return [
+            'name' => $data['name'],
+            'route' => $data['route'],
+            'content' => $html,
+        ];
     }
 }

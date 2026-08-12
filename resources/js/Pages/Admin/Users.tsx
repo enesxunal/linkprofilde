@@ -6,11 +6,13 @@ import Breadcrumb from "@/Components/Breadcrumb";
 import { useTable, useSortBy } from "react-table";
 import TableNav from "@/Components/Table/TableNav";
 import TableHead from "@/Components/Table/TableHead";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import UserCircle from "@/Components/Icons/UserCircle";
 import { PageProps, PaginationProps, UserProps } from "@/types";
 import TablePagination from "@/Components/Table/TablePagination";
 import UpdateUser from "@/Components/Admin/UpdateUser";
+import { getTableRowId } from "@/utils/table-row";
+import { pageChange } from "@/utils/utils";
 
 interface Props extends PageProps {
    users: PaginationProps;
@@ -24,7 +26,14 @@ const Users = (props: Props) => {
    const columns = useMemo(() => usersHead, []);
 
    const { rows, getTableProps, getTableBodyProps, headerGroups, prepareRow } =
-      useTable({ columns, data }, useSortBy);
+      useTable({ columns, data, getRowId: getTableRowId }, useSortBy);
+
+   useEffect(() => {
+      const change = pageChange(props.users, users);
+      if (change) {
+         setUsers(props.users);
+      }
+   }, [props.users]);
 
    return (
       <>
@@ -71,9 +80,11 @@ const Users = (props: Props) => {
                   <tbody {...getTableBodyProps()}>
                      {rows.map((row) => {
                         prepareRow(row);
+                        const recordId = (row.original as UserProps).id;
                         return (
                            <tr
                               {...row.getRowProps()}
+                              key={recordId}
                               className="border-b border-gray-200 dark:border-neutral-500"
                            >
                               {row.cells.map((cell) => {
@@ -105,6 +116,7 @@ const Users = (props: Props) => {
                                        ) : column.id === "action" ? (
                                           <div className="flex justify-end items-center">
                                              <UpdateUser
+                                                key={recordId}
                                                 user={row.original as UserProps}
                                                 users={users}
                                                 setUsers={setUsers}

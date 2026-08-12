@@ -9,6 +9,7 @@ import SimpleBar from "simplebar-react";
 import ArrowDown from "../Icons/ArrowDown";
 import { router } from "@inertiajs/react";
 import { PaginationProps } from "@/types";
+import { buildPaginatorUrl } from "./paginatorQuery";
 
 interface Props {
    className?: string;
@@ -18,10 +19,10 @@ interface Props {
 
 const TablePageSize = (props: Props) => {
    const { pageData, dropdownList, className } = props;
-   const { path, per_page, current_page } = pageData;
+   const { per_page, current_page } = pageData;
 
    const gotoPage = (current: number, size: number) => {
-      router.get(`${path}?page=${current}&per_page=${size}`);
+      router.get(buildPaginatorUrl(pageData, current, size));
    };
 
    return (

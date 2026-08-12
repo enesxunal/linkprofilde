@@ -7,7 +7,12 @@ import {
    TabsHeader,
 } from "@material-tailwind/react";
 import { Head } from "@inertiajs/react";
-import { jsxStyle, stringToCss } from "@/utils/utils";
+import {
+   customThemeButtonStyle,
+   customThemePageStyle,
+   jsxStyle,
+   stringToCss,
+} from "@/utils/utils";
 import Dashboard from "@/Layouts/Dashboard";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { LinkProps, PageProps, SocialLinkProps, ThemeProps } from "@/types";
@@ -52,17 +57,8 @@ const AddItem = (props: Props) => {
 
    if (link.custom_theme && link.custom_theme_active) {
       const theme = link.custom_theme;
-      parsedStyle = jsxStyle(stringToCss(theme.background));
-      parsedStyle.color = theme.text_color;
-      parsedStyle.fontFamily = theme.font_family;
-
-      buttonStyle = {
-         color: theme.btn_text_color,
-         borderRadius: theme.btn_radius,
-         background: theme.btn_transparent
-            ? theme.btn_transparent
-            : theme.btn_bg_color,
-      };
+      parsedStyle = customThemePageStyle(theme);
+      buttonStyle = customThemeButtonStyle(theme);
    } else {
       const { background, text_color, font_family, bg_image, button_style } =
          link.theme;
@@ -77,18 +73,8 @@ const AddItem = (props: Props) => {
 
    useEffect(() => {
       if (link.custom_theme && link.custom_theme_active) {
-         const theme = link.custom_theme;
-         parsedStyle = jsxStyle(stringToCss(link.custom_theme.background));
-         parsedStyle.color = link.custom_theme.text_color;
-         parsedStyle.fontFamily = link.custom_theme.font_family;
-
-         buttonStyle = {
-            color: theme.btn_text_color,
-            borderRadius: theme.btn_radius,
-            background: theme.btn_transparent
-               ? theme.btn_transparent
-               : theme.btn_bg_color,
-         };
+         parsedStyle = customThemePageStyle(link.custom_theme);
+         buttonStyle = customThemeButtonStyle(link.custom_theme);
       } else {
          const { background, text_color, font_family, bg_image, button_style } =
             link.theme;

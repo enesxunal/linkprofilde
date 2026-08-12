@@ -246,6 +246,9 @@ export interface PaymentProps extends TableCommon {
    active: boolean;
    key: string;
    secret?: string;
+   client_id?: string;
+   api_user?: string;
+   api_pass?: string;
 }
 
 export interface SocialLoginProps extends TableCommon {
@@ -263,11 +266,11 @@ export interface AppSettingProps extends TableCommon {
    copyright: string;
 }
 
-export interface SMTPProps extends TableCommon {
+export interface SMTPProps {
+   id?: number | null;
    host: string;
-   port: number;
+   port: number | string;
    username: string;
-   password: string;
    sender_email: string;
    sender_name: string;
    encryption: string;

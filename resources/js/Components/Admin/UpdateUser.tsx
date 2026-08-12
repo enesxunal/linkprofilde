@@ -2,7 +2,7 @@ import axios from "axios";
 import Input from "../Input";
 import EditPen from "../Icons/EditPen";
 import { useForm } from "@inertiajs/react";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { LinkProps, PaginationProps, UserProps } from "@/types";
 import { Button, Dialog, IconButton } from "@material-tailwind/react";
 import { error, success } from "@/utils/toast";
@@ -24,8 +24,13 @@ const UpdateUser = (props: Props) => {
    };
 
    const { data, setData } = useForm({
-      status: "",
+      status: user.status ?? "",
    });
+
+   useEffect(() => {
+      setData("status", user.status ?? "");
+      setStatusError(null);
+   }, [user.id]);
 
    const submit: FormEventHandler = async (e) => {
       e.preventDefault();

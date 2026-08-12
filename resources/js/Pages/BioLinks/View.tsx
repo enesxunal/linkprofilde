@@ -1,5 +1,15 @@
 import SimpleBar from "simplebar-react";
-import { jsxStyle, stringToCss } from "@/utils/utils";
+import {
+   customThemeButtonStyle,
+   customThemePageStyle,
+   isSafeHex,
+   jsxStyle,
+   safeHttpUrl,
+   safeMailtoHref,
+   safeTelHref,
+   stringToCss,
+   whatsappHref,
+} from "@/utils/utils";
 import { useEffect, useState } from "react";
 import { LinkProps, PageProps } from "@/types";
 import { Head, usePage } from "@inertiajs/react";
@@ -20,17 +30,8 @@ const View = (props: { link: LinkProps }) => {
 
    if (link.custom_theme && link.custom_theme_active) {
       const theme = link.custom_theme;
-      parsedStyle = jsxStyle(stringToCss(theme.background));
-      parsedStyle.color = theme.text_color;
-      parsedStyle.fontFamily = theme.font_family;
-
-      buttonStyle = {
-         color: theme.btn_text_color,
-         borderRadius: theme.btn_radius,
-         background: theme.btn_transparent
-            ? theme.btn_transparent
-            : theme.btn_bg_color,
-      };
+      parsedStyle = customThemePageStyle(theme);
+      buttonStyle = customThemeButtonStyle(theme);
    } else {
       const { background, text_color, font_family, bg_image, button_style } =
          link.theme;
@@ -60,7 +61,9 @@ const View = (props: { link: LinkProps }) => {
       socials = JSON.parse(link.socials);
    }
 
-   const socialColor = link.social_color ? link.social_color : "#101828";
+   const socialColor = isSafeHex(link.social_color)
+      ? link.social_color
+      : "#101828";
 
    // Rehbere ekle: isim + telefon varsa vCard indir
    const contactPhone = socials.find(
@@ -123,63 +126,39 @@ const View = (props: { link: LinkProps }) => {
                      <div className="flex items-center justify-center flex-wrap gap-4 mt-2 mb-8">
                         {socials.map((item, ind) => {
                            const Icon = icons[item.icon];
+                           if (!Icon) return null;
+
+                           const href =
+                              item.name === "email"
+                                 ? safeMailtoHref(item.link)
+                                 : item.name === "telephone"
+                                 ? safeTelHref(item.link)
+                                 : item.name === "whatsapp"
+                                 ? whatsappHref(item.link)
+                                 : safeHttpUrl(item.link);
+
+                           if (!href) return null;
+
+                           const external =
+                              item.name !== "email" && item.name !== "telephone";
 
                            return (
-                              <>
-                                 {item.name === "email" ? (
-                                    <a
-                                       key={ind}
-                                       href={("mailto:" + item.link) as any}
-                                       className="mx-2"
-                                    >
-                                       <Icon
-                                          className="w-6 h-6"
-                                          style={{ color: socialColor }}
-                                       />
-                                    </a>
-                                 ) : item.name === "telephone" ? (
-                                    <a
-                                       key={ind}
-                                       href={("tel:" + item.link) as any}
-                                       className="mx-2"
-                                    >
-                                       <Icon
-                                          className="w-6 h-6"
-                                          style={{ color: socialColor }}
-                                       />
-                                    </a>
-                                 ) : item.name === "whatsapp" ? (
-                                    <a
-                                       key={ind}
-                                       target="_blank"
-                                       href={
-                                          (() => {
-                                             const d = (item.link || "").replace(/\D/g, "");
-                                             const num = d.startsWith("0") ? "90" + d.slice(1) : d;
-                                             return "https://wa.me/" + num;
-                                          })() as any
-                                       }
-                                       className="mx-2"
-                                    >
-                                       <Icon
-                                          className="w-6 h-6"
-                                          style={{ color: socialColor }}
-                                       />
-                                    </a>
-                                 ) : (
-                                    <a
-                                       key={ind}
-                                       target="_blank"
-                                       href={item.link as any}
-                                       className="mx-2"
-                                    >
-                                       <Icon
-                                          className="w-6 h-6"
-                                          style={{ color: socialColor }}
-                                       />
-                                    </a>
-                                 )}
-                              </>
+                              <a
+                                 key={ind}
+                                 href={href}
+                                 className="mx-2"
+                                 {...(external
+                                    ? {
+                                         target: "_blank",
+                                         rel: "noopener noreferrer",
+                                      }
+                                    : {})}
+                              >
+                                 <Icon
+                                    className="w-6 h-6"
+                                    style={{ color: socialColor }}
+                                 />
+                              </a>
                            );
                         })}
                      </div>

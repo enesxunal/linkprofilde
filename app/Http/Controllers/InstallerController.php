@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Storage;
 
 class InstallerController extends Controller
 {
+    public function __construct()
+    {
+        if (app()->environment('production')) {
+            abort(404);
+        }
+    }
+
     // redirecting to setup route
     public function backToSetup()
     {
@@ -134,6 +141,10 @@ class InstallerController extends Controller
 
     public function installVersion()
     {
+        if (app()->environment('production')) {
+            abort(404);
+        }
+
         ini_set('max_execution_time', 600);
 
         if (!session('verify_purchase')) {

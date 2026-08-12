@@ -8,7 +8,6 @@ use App\Models\Theme;
 use App\Models\Testimonial;
 use App\Rules\XSSPurifier;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 
 class SuperAdminController extends Controller
@@ -74,7 +73,12 @@ class SuperAdminController extends Controller
                 ->when($suspiciousOnly, fn ($q) => $q->suspicious())
                 ->orderBy('created_at', 'desc')
                 ->with('pricing_plan')
-                ->paginate($page);
+                ->paginate($page)
+                ->withQueryString();
+
+            if ($req->inertia()) {
+                return Inertia::render('Admin/Users', compact('users', 'suspiciousOnly'));
+            }
 
             return $users;
         } catch (\Throwable $th) {
@@ -129,7 +133,7 @@ class SuperAdminController extends Controller
             'name' => ['required', 'max:50', new XSSPurifier],
             'title' => ['required', 'max:50', new XSSPurifier],
             'testimonial' => ['required', 'max:180', new XSSPurifier],
-            'thumbnail' => ['required', 'image', 'mimes:jpeg,png,jpg,svg', 'max:2048'],
+            'thumbnail' => array_merge(['required'], AppHelper::imageRules(2048)),
         ]);
 
         try {
@@ -158,8 +162,8 @@ class SuperAdminController extends Controller
             'testimonial' => ['required', 'max:180', new XSSPurifier],
         ]);
 
-        if ($req->thumbnail) {
-            $req->validate(['thumbnail' => ['image', 'mimes:jpeg,png,jpg,svg', 'max:2048']]);
+        if ($req->hasFile('thumbnail')) {
+            $req->validate(['thumbnail' => AppHelper::imageRules(2048)]);
         }
 
         try {
@@ -168,9 +172,9 @@ class SuperAdminController extends Controller
             $tes->title = $req->title;
             $tes->testimonial = $req->testimonial;
 
-            if ($req->thumbnail) {
-                if ($tes->thumbnail) File::delete($tes->thumbnail);
-                $tes->thumbnail = AppHelper::image_uploader($req->thumbnail);
+            if ($req->hasFile('thumbnail')) {
+                AppHelper::safeDeleteUpload($tes->thumbnail);
+                $tes->thumbnail = AppHelper::image_uploader($req->file('thumbnail'));
             }
 
             $tes->save();
@@ -187,7 +191,7 @@ class SuperAdminController extends Controller
     {
         try {
             $testimonial = Testimonial::find($testimonialId);
-            File::delete($testimonial->thumbnail);
+            AppHelper::safeDeleteUpload($testimonial->thumbnail);
             $testimonial->delete();
 
             return back()->with('success', "Müşteri yorumu başarıyla silindi.");

@@ -71,12 +71,18 @@ class QRCodeController extends Controller
             'name' => ['nullable', 'string', 'max:100', new XSSPurifier],
         ]);
 
-        try {
-            $user = auth()->user();
+        $user = auth()->user();
 
+        $projectQuery = Project::where('id', $req->project_id);
+        if (!$user->hasRole('SUPER-ADMIN')) {
+            $projectQuery->where('user_id', $user->id);
+        }
+        $project = $projectQuery->firstOrFail();
+
+        try {
             $result = new QRCode;
             $result->user_id = $user->id;
-            $result->project_id = $req->project_id;
+            $result->project_id = $project->id;
             $result->name = $req->name ? trim($req->name) : null;
             $result->qr_type = $req->qr_type;
             $result->content = $req->content;
@@ -103,10 +109,15 @@ class QRCodeController extends Controller
             'name' => ['nullable', 'string', 'max:100', new XSSPurifier],
         ]);
 
-        try {
-            $user = auth()->user();
-            $link = Link::find($req->link_id);
+        $user = auth()->user();
 
+        $linkQuery = Link::where('id', $req->link_id);
+        if (!$user->hasRole('SUPER-ADMIN')) {
+            $linkQuery->where('user_id', $user->id);
+        }
+        $link = $linkQuery->firstOrFail();
+
+        try {
             $qrCode = new QRCode;
             $qrCode->user_id = $user->id;
             $qrCode->link_id = $link->id;
@@ -131,10 +142,23 @@ class QRCodeController extends Controller
     // Delete qr code from bio-link or project
     function delete($id)
     {
+        $query = QRCode::where('id', $id);
+        if (!auth()->user()->hasRole('SUPER-ADMIN')) {
+            $query->where('user_id', auth()->id());
+        }
+        $qrCode = $query->firstOrFail();
+
         try {
-            $qrCode = QRCode::find($id);
             if ($qrCode->link_id) {
-                Link::where('id', $qrCode->link_id)->update(['qrcode_id' => NULL]);
+                $linkQuery = Link::where('id', $qrCode->link_id);
+
+                if (!auth()->user()->hasRole('SUPER-ADMIN')) {
+                    $linkQuery->where('user_id', auth()->id());
+                }
+
+                $linkQuery
+                    ->where('qrcode_id', $qrCode->id)
+                    ->update(['qrcode_id' => null]);
             }
 
             $qrCode->delete();
