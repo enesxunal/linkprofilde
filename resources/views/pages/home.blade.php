@@ -3,29 +3,26 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="description" content="{{ $app->description }}">
 
-        <title>{{ $app->title }} - {{__('Your Link Management in one place')}}</title>
+        <title>{{ $app->title }} — Tek link. Tüm dijital dünyan.</title>
 
-        <!-- Styles -->
-        <link rel="stylesheet" href="{{asset('style/aos.css')}}">
-        <link rel="stylesheet" href="{{asset('style/swiper-slider.css')}}">
+        <link rel="stylesheet" href="{{ asset('style/aos.css') }}">
+        <link rel="stylesheet" href="{{ asset('style/swiper-slider.css') }}">
+        <link rel="stylesheet" href="{{ asset('style/toastify.css') }}">
 
-        <!-- Scripts -->
         @routes
         @viteReactRefresh
         @vite(['resources/js/app.tsx'])
 
-        <script src="{{asset('script/aos.js')}}" ></script>
-        <script src="{{asset('script/swiper-slider.js')}}"></script>
-        <script src="{{asset('script/smooth-scroll.js')}}"></script>
+        <script src="{{ asset('script/aos.js') }}"></script>
+        <script src="{{ asset('script/swiper-slider.js') }}"></script>
+        <script src="{{ asset('script/smooth-scroll.js') }}"></script>
+        <script src="{{ asset('script/toastify.js') }}"></script>
     </head>
 
-    <body class="text-gray-800">
-        <div id="preloader">
-            <div id="loader"></div>
-        </div>
+    <body class="home-landing text-slate-800 antialiased bg-white">
         @include('components.home.navbar')
 
         <main class="overflow-x-hidden">
@@ -34,21 +31,22 @@
             @endif
 
             @include('components.home.Header')
-            @include('components.home.Features')
+            @include('components.home.ProductPillars')
             @include('components.home.CreateLink')
-            @include('components.home.Blocks')
+            @include('components.home.LinkManagement')
             @include('components.home.CreateQR')
+            @include('components.home.Analytics')
+            @include('components.home.UseCases')
             @include('components.home.Pricing')
             @include('components.home.Testimonials')
+            @include('components.home.FAQ')
+            @include('components.home.FinalCTA')
             @include('components.home.Footer')
         </main>
 
         <script>
-            AOS.init({
-                once: true,
-            });
+            AOS.init({ once: true, duration: 700, easing: 'ease-out-cubic' });
         </script>
-
         <script src="{{ asset('script/index.js') }}"></script>
         <script src="{{ asset('script/collapse.js') }}"></script>
         <script src="{{ asset('script/ripple.js') }}"></script>

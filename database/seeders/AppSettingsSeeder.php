@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\AppSetting;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class AppSettingsSeeder extends Seeder
@@ -15,13 +14,16 @@ class AppSettingsSeeder extends Seeder
      */
     public function run()
     {
-        AppSetting::create([
+        if (AppSetting::query()->exists()) {
+            return;
+        }
+
+        $setting = new AppSetting();
+        $setting->forceFill([
             'title' => 'LinkProfilde',
             'logo' => 'assets/icons/link-drop.png',
-            'copyright' => '3 Kare Yazılım ve Tasarım Ajansı Limited Şirketi
-            Telif hakları © 2023 LinkBurada. Tüm hakları saklıdır.',
-            'description' => 'Link Profilde, takipçilerinizin önemli içeriklerinizi kolayca takip etmeleri için özel bağlantılar
-            oluşturmanıza ve QR kodları oluşturup düzenlemenize yardımcı olur.',
-        ]);
+            'copyright' => '3 Kare Yazılım ve Tasarım Ajansı Limited Şirketi. Tüm hakları saklıdır.',
+            'description' => 'LinkProfilde; kişisel dijital profil, kısa link, QR kod ve analytics özelliklerini tek panelde birleştirir.',
+        ])->save();
     }
 }

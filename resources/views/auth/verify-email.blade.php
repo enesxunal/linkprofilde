@@ -68,7 +68,7 @@
          margin-top: 1.5rem;
       "
    >
-      © 2023 {{$app->title}}. Tüm hakları saklıdır.
+      © {{ date('Y') }} {{$app->title}}. Tüm hakları saklıdır.
    </p>
 </body>
 </html>

@@ -40,18 +40,30 @@
    }
 }
 
-/* Intro Page Custom Style */
+/* Intro / Landing Page */
 .home-edit {
-   @apply border border-dashed border-gray-500 relative;
+   @apply border border-dashed border-gray-500 relative rounded-xl;
 }
-#home h1.slogan-text {
-   background: linear-gradient(
-      to right,
-      #2e90fa 0%,
-      hsl(11deg, 100%, 62%) 100%
-   );
-   -webkit-background-clip: text;
-   -webkit-text-fill-color: transparent;
+
+.home-landing h1.home-hero-title {
+   font-size: clamp(2rem, 5vw, 3.75rem);
+   line-height: 1.12;
+   font-weight: 700;
+   letter-spacing: -0.03em;
+   background: none;
+   -webkit-text-fill-color: unset;
+   color: #0f172a;
+}
+
+.home-landing h2.home-section-title {
+   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+   line-height: 1.2;
+   font-weight: 700;
+   letter-spacing: -0.02em;
+}
+
+.home-landing details summary::-webkit-details-marker {
+   display: none;
 }
 
 .pricing [aria-selected="true"] {
@@ -62,7 +74,7 @@
    @apply !max-w-[220px];
 }
 .pricing [moving-tab] a {
-   @apply !max-w-[220px] !bg-blue-500 !text-blue-500;
+   @apply !max-w-[220px] !bg-blue-600 !text-blue-600;
 }
 
 /* Themes custom styles */

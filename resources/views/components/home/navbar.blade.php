@@ -1,171 +1,137 @@
-<nav id="navbar" class="fixed z-10 block h-max w-full max-w-full rounded-none bg-transparent py-0.5">
-    <div class="max-w-[1200px] w-full mx-auto overflow-hidden px-4 py-2 lg:py-4">
-        <div class="flex items-center text-gray-900">
-            <div class="flex items-center">
-                <img width="48px" height="48px" class="rounded" src="{{asset($app->logo)}}" alt="">
-                <p class="ml-2 text-lg font-medium text-gray-700">
-                    <a href="/">{{$app->title}}</a>
+<nav id="navbar" class="fixed z-50 block h-max w-full max-w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80 py-0.5">
+    <div class="max-w-[1200px] w-full mx-auto px-4 py-2 lg:py-3">
+        <div class="flex items-center text-slate-900">
+            <div class="flex items-center min-w-0">
+                <img
+                    width="40"
+                    height="40"
+                    class="rounded-lg shrink-0"
+                    src="{{ asset($app->logo) }}"
+                    alt="{{ $app->title }} logo"
+                >
+                <p class="ml-2.5 text-base sm:text-lg font-semibold text-slate-800 truncate">
+                    <a href="/" class="focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">
+                        {{ $app->title }}
+                    </a>
                 </p>
             </div>
 
-            <ul class="ml-auto mr-8 hidden items-center gap-6 lg:flex">
-                <li>
-                    <a href="#home">{{__('Anasayfa')}}</a>
-                </li>
-                <li class="mr-2 xl:mr-6">
-                    <a href="#create-link">{{__('Profil')}}</a>
-                </li>
-                <li class="mr-2 xl:mr-6">
-                    <a href="#create-block">{{__('Blok')}}</a>
-                </li>
-                <li class="mr-2 xl:mr-6">
-                    <a href="#create-qrcode">{{__('QR Code')}}</a>
-                </li>
-                <li class="mr-2 xl:mr-6">
-                    <a href="#pricing">{{__('Fiyatlar')}}</a>
-                </li>
-                <li class="mr-8 xl:mr-14">
-                    <a data-scroll href="#testimonials">{{__('Yorumlar')}}</a>
-                </li>
-                <li>
-                    @if (auth()->user())
-                        @if ($SA)
-                            @if ($customize)
-                                <a
-                                    href="/"
-                                    data-ripple-light="true"
-                                    class="py-2.5 px-5 rounded font-medium border border-blue-500 text-blue-500 mr-4"
-                                >
-                                    {{__('Görüntüle')}}
-                                </a>
-                            @else
-                                <a
-                                    href="?customize=intro"
-                                    data-ripple-light="true"
-                                    class="py-2.5 px-5 rounded font-medium border border-blue-500 text-blue-500 mr-4"
-                                >
-                                    {{__('Özelleştir')}}
-                                </a>
-                            @endif
-                        @endif
-
-                        <a
-                            href="/register"
-                            data-ripple-light="true"
-                            class="py-2.5 px-5 rounded bg-blue-500 font-medium text-white shadow-md hover:shadow-lg hover:shadow-blue-500/40  shadow-blue-500/20 transition-all active:opacity-[0.85]"
-                        >
-                            {{__('Yönetici Paneli')}}
-                        </a>
-                    @else
-                        <a
-                            href="/login"
-                            data-ripple-light="true"
-                            class="py-2.5 px-5 rounded bg-gray-100 font-medium text-gray-900 transition-all active:opacity-[0.85] mr-3 border border-gray-200"
-                        >
-                            {{__('Giriş Yap')}}
-                        </a>
-                        <a
-                            href="/register"
-                            data-ripple-light="true"
-                            class="py-2.5 px-5 rounded bg-blue-500 font-medium text-white shadow-md hover:shadow-lg hover:shadow-blue-500/40  shadow-blue-500/20 transition-all active:opacity-[0.85]"
-                        >
-                            {{__('Ücretsiz Kaydol')}}
-                        </a>
-                    @endif
-                </li>
+            <ul class="ml-auto mr-4 hidden items-center gap-5 xl:gap-6 lg:flex text-sm font-medium text-slate-600">
+                <li><a href="#features" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Özellikler') }}</a></li>
+                <li><a href="#bio-link" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Bio Link') }}</a></li>
+                <li><a href="#short-links" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Kısa Link') }}</a></li>
+                <li><a href="#qr" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('QR Kod') }}</a></li>
+                <li><a href="#pricing" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Fiyatlandırma') }}</a></li>
             </ul>
 
-            <button
-                id="navbar-menu"
-                class="middle none relative ml-auto h-6 max-h-[40px] w-6 max-w-[40px] rounded-lg text-center font-sans text-xs font-medium uppercase text-blue-gray-500 transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"
-                data-collapse-target="sticky-navar"
-            >
-                <span class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                    >
-                        <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4 6h16M4 12h16M4 18h16"
-                        ></path>
-                    </svg>
-                </span>
-            </button>
-        </div>
-
-        <div
-            id="mobile-nav"
-            data-collapse="sticky-navar"
-            class="block h-0 w-full basis-full overflow-hidden text-blue-gray-900 transition-all duration-300 ease-in lg:hidden"
-        >
-            <ul class="flex flex-col gap-4 pt-6 pb-5">
-                <li>
-                    <a href="#home">{{__('Anasayfa')}}</a>
-                </li>
-                <li>
-                    <a href="#create-link">{{__('Profil')}}</a>
-                </li>
-                <li>
-                    <a href="#create-link">{{__('Blok')}}</a>
-                </li>
-                <li>
-                    <a href="#create-project">{{__('QR Kod')}}</a>
-                </li>
-                <li>
-                    <a href="#pricing">{{__('Fiyatlandırma')}}</a>
-                </li>
-                <li>
-                    <a data-scroll href="#testimonials">{{__('Yorumlar')}}</a>
-                </li>
-
+            <div class="ml-auto lg:ml-0 flex items-center gap-2">
                 @if (auth()->user())
                     @if ($SA)
                         @if ($customize)
                             <a
                                 href="/"
                                 data-ripple-light="true"
-                                class="py-2.5 px-5 rounded font-medium border border-blue-500 text-blue-500"
+                                class="hidden sm:inline-flex py-2 px-4 rounded-lg font-medium border border-blue-500 text-blue-600 text-sm hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                             >
-                                {{__('Görüntüle')}}
+                                {{ __('Görüntüle') }}
                             </a>
                         @else
                             <a
                                 href="?customize=intro"
                                 data-ripple-light="true"
-                                class="py-2.5 px-5 rounded font-medium border border-blue-500 text-blue-500"
+                                class="hidden sm:inline-flex py-2 px-4 rounded-lg font-medium border border-blue-500 text-blue-600 text-sm hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                             >
-                                {{__('Özelleştir')}}
+                                {{ __('Özelleştir') }}
                             </a>
                         @endif
                     @endif
 
                     <a
-                        href="/register"
+                        href="/dashboard"
                         data-ripple-light="true"
-                        class="py-2.5 px-5 rounded bg-blue-500 font-medium text-white shadow-md hover:shadow-lg hover:shadow-blue-500/40  shadow-blue-500/20 transition-all active:opacity-[0.85]"
+                        class="hidden sm:inline-flex py-2.5 px-5 rounded-lg bg-blue-600 font-medium text-white text-sm shadow-sm hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors"
                     >
-                        {{__('Yönetici Paneli')}}
+                        {{ __('Yönetim Paneli') }}
                     </a>
                 @else
                     <a
                         href="/login"
                         data-ripple-light="true"
-                        class="py-2.5 px-5 rounded bg-gray-100 font-medium text-gray-900 transition-all active:opacity-[0.85] mr-3 border border-gray-200"
+                        class="hidden sm:inline-flex py-2.5 px-4 rounded-lg font-medium text-slate-800 text-sm border border-slate-200 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-colors"
                     >
-                        {{__('Giriş Yap')}}
+                        {{ __('Giriş Yap') }}
                     </a>
                     <a
                         href="/register"
                         data-ripple-light="true"
-                        class="py-2.5 px-5 rounded bg-blue-500 font-medium text-white shadow-md hover:shadow-lg hover:shadow-blue-500/40  shadow-blue-500/20 transition-all active:opacity-[0.85]"
+                        class="hidden sm:inline-flex py-2.5 px-5 rounded-lg bg-blue-600 font-medium text-white text-sm shadow-sm hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors"
                     >
-                        {{__('Ücretsiz Kaydol')}}
+                        {{ __('Ücretsiz Başla') }}
                     </a>
+                @endif
+
+                <button
+                    id="navbar-menu"
+                    type="button"
+                    class="relative ml-1 h-10 w-10 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 lg:hidden"
+                    data-collapse-target="sticky-navar"
+                    aria-label="Menüyü aç"
+                    aria-expanded="false"
+                    aria-controls="mobile-nav"
+                >
+                    <span class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <div
+            id="mobile-nav"
+            data-collapse="sticky-navar"
+            class="block h-0 w-full basis-full overflow-hidden text-slate-800 transition-all duration-300 ease-in lg:hidden"
+        >
+            <ul class="flex flex-col gap-4 pt-5 pb-4 text-sm font-medium">
+                <li><a href="#features">{{ __('Özellikler') }}</a></li>
+                <li><a href="#bio-link">{{ __('Bio Link') }}</a></li>
+                <li><a href="#short-links">{{ __('Kısa Link') }}</a></li>
+                <li><a href="#qr">{{ __('QR Kod') }}</a></li>
+                <li><a href="#pricing">{{ __('Fiyatlandırma') }}</a></li>
+
+                @if (auth()->user())
+                    @if ($SA)
+                        @if ($customize)
+                            <li>
+                                <a href="/" class="inline-flex py-2.5 px-5 rounded-lg font-medium border border-blue-500 text-blue-600">
+                                    {{ __('Görüntüle') }}
+                                </a>
+                            </li>
+                        @else
+                            <li>
+                                <a href="?customize=intro" class="inline-flex py-2.5 px-5 rounded-lg font-medium border border-blue-500 text-blue-600">
+                                    {{ __('Özelleştir') }}
+                                </a>
+                            </li>
+                        @endif
+                    @endif
+                    <li>
+                        <a href="/dashboard" class="inline-flex w-full justify-center py-2.5 px-5 rounded-lg bg-blue-600 font-medium text-white">
+                            {{ __('Yönetim Paneli') }}
+                        </a>
+                    </li>
+                @else
+                    <li>
+                        <a href="/login" class="inline-flex w-full justify-center py-2.5 px-5 rounded-lg border border-slate-200 font-medium text-slate-900">
+                            {{ __('Giriş Yap') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/register" class="inline-flex w-full justify-center py-2.5 px-5 rounded-lg bg-blue-600 font-medium text-white">
+                            {{ __('Ücretsiz Başla') }}
+                        </a>
+                    </li>
                 @endif
             </ul>
         </div>
