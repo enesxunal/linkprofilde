@@ -72,12 +72,12 @@ export const qrCodesHead = [
       id: "name",
    },
    {
-      Header: "Proje Adı",
-      id: "project",
+      Header: "Hedef",
+      id: "destination",
    },
    {
-      Header: "Link Adı",
-      id: "link",
+      Header: "Durum",
+      id: "status",
    },
    {
       Header: "Oluşturulma Tarihi",
@@ -85,7 +85,7 @@ export const qrCodesHead = [
       id: "created",
    },
    {
-      Header: "Düzenle",
+      Header: "İşlemler",
       id: "action",
    },
 ];

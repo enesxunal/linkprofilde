@@ -46,13 +46,19 @@ class QRCode extends Model
     protected static function booted(): void
     {
         static::updating(function (QRCode $qrCode) {
-            if (! $qrCode->isDirty('public_code')) {
-                return;
+            if ($qrCode->isDirty('public_code')) {
+                $originalCode = $qrCode->getOriginal('public_code');
+                if ($originalCode !== null && $originalCode !== '') {
+                    throw new LogicException('QR public_code is immutable once assigned.');
+                }
             }
 
-            $original = $qrCode->getOriginal('public_code');
-            if ($original !== null && $original !== '') {
-                throw new LogicException('QR public_code is immutable once assigned.');
+            // Dynamic QR encoded URL must stay stable so printed codes keep working.
+            if ($qrCode->is_dynamic && $qrCode->isDirty('content')) {
+                $originalContent = $qrCode->getOriginal('content');
+                if (is_string($originalContent) && $originalContent !== '') {
+                    throw new LogicException('Dynamic QR content is immutable once assigned.');
+                }
             }
         });
     }

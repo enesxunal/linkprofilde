@@ -21,6 +21,7 @@ import { getTableRowId } from "@/utils/table-row";
 import PageHeader from "@/Components/Panel/PageHeader";
 import PanelCard from "@/Components/Panel/PanelCard";
 import EmptyState from "@/Components/Panel/EmptyState";
+import axios from "axios";
 
 interface Props extends PageProps {
    links: PaginationProps;
@@ -32,10 +33,14 @@ const Show = (props: Props) => {
    const data = useMemo(() => links.data, [links]);
    const columns = useMemo(() => shortLinksHead, []);
    const [copied, setCopied] = useState<number | null>(null);
-   const [createQR, setCreateQR] = useState({
-      link_id: null,
-      link_url: null,
+   const [createQR, setCreateQR] = useState<{
+      qr_id: number | null;
+      public_url: string | null;
+   }>({
+      qr_id: null,
+      public_url: null,
    });
+   const [creatingLinkId, setCreatingLinkId] = useState<number | null>(null);
 
    const { rows, getTableProps, getTableBodyProps, headerGroups, prepareRow } =
       useTable({ columns, data, getRowId: getTableRowId }, useSortBy);
@@ -44,7 +49,7 @@ const Show = (props: Props) => {
       navigator.clipboard
          .writeText(`${props.ziggy.url}/${url_name}`)
          .then(() => setCopied(id))
-         .catch((err) => setCopied(null));
+         .catch(() => setCopied(null));
    };
 
    useEffect(() => {
@@ -63,26 +68,59 @@ const Show = (props: Props) => {
    }, [props]);
 
    const qrCodeRef: any = useRef(null);
-   useEffect(() => {
-      if (createQR.link_id && createQR.link_url) {
-         const qrCode = qrCodeRef.current.canvas.current.toDataURL();
-         if (qrCode) {
-            router.post("/qrcodes/create/link-qr", {
-               qr_code: qrCode,
-               qr_type: "link_qr",
-               link_id: createQR.link_id,
-               content: `${props.ziggy.url}/${createQR.link_url}`,
-            });
+
+   const startCreateQR = async (linkId: number) => {
+      if (creatingLinkId) return;
+      setCreatingLinkId(linkId);
+      try {
+         const prep = await axios.post("/qrcodes/prepare/link-qr", {
+            link_id: linkId,
+            qr_type: "link_qr",
+         });
+         const publicUrl = prep.data.public_url;
+         const qrId = prep.data.id;
+         // Must be a string URL — never pass objects into QR value.
+         if (typeof publicUrl !== "string" || !qrId) {
+            throw new Error("invalid prepare response");
          }
-         setTimeout(
-            () =>
-               setCreateQR({
-                  link_id: null,
-                  link_url: null,
-               }),
-            500
-         );
+         setCreateQR({ qr_id: qrId, public_url: publicUrl });
+      } catch {
+         setCreatingLinkId(null);
       }
+   };
+
+   useEffect(() => {
+      if (!createQR.qr_id || !createQR.public_url) return;
+
+      const finalize = async () => {
+         await new Promise<void>((resolve) => {
+            requestAnimationFrame(() => {
+               requestAnimationFrame(() => {
+                  setTimeout(() => resolve(), 50);
+               });
+            });
+         });
+
+         try {
+            const canvas = qrCodeRef.current?.canvas?.current;
+            const qrCode = canvas?.toDataURL?.();
+            if (
+               qrCode &&
+               typeof createQR.public_url === "string" &&
+               !createQR.public_url.includes("[object Object]")
+            ) {
+               await axios.post(`/qrcodes/${createQR.qr_id}/finalize`, {
+                  qr_code: qrCode,
+               });
+               router.reload({ only: ["links", "limit"] });
+            }
+         } finally {
+            setCreateQR({ qr_id: null, public_url: null });
+            setCreatingLinkId(null);
+         }
+      };
+
+      void finalize();
    }, [createQR]);
 
    return (
@@ -95,14 +133,13 @@ const Show = (props: Props) => {
          />
          <LimitWarning limit={props.limit} />
 
-         {createQR && (
+         {createQR.qr_id &&
+         createQR.public_url &&
+         typeof createQR.public_url === "string" ? (
             <div className="absolute invisible">
-               <QRCode
-                  ref={qrCodeRef}
-                  value={`${props.ziggy.url}/${createQR}`}
-               />
+               <QRCode ref={qrCodeRef} value={createQR.public_url} />
             </div>
-         )}
+         ) : null}
 
          <PanelCard noPadding>
             <TableNav
@@ -179,7 +216,7 @@ const Show = (props: Props) => {
                                              <div className="flex justify-center">
                                                 {qrcode ? (
                                                    <img
-                                                      className="w-10 h-10 rounded-sm"
+                                                      className="h-10 w-10 rounded-sm"
                                                       src={qrcode.img_data}
                                                       alt=""
                                                    />
@@ -187,15 +224,17 @@ const Show = (props: Props) => {
                                                    <Button
                                                       variant="text"
                                                       color="white"
+                                                      disabled={
+                                                         creatingLinkId === id
+                                                      }
                                                       onClick={() =>
-                                                         setCreateQR({
-                                                            link_id: id,
-                                                            link_url: url_name,
-                                                         })
+                                                         startCreateQR(id)
                                                       }
                                                       className="flex items-center justify-center whitespace-nowrap rounded-lg bg-slate-50 px-2.5 py-1 text-sm font-medium capitalize text-slate-700 hover:bg-slate-100 active:bg-slate-100"
                                                    >
-                                                      Qr Oluştur
+                                                      {creatingLinkId === id
+                                                         ? "Oluşturuluyor..."
+                                                         : "Qr Oluştur"}
                                                    </Button>
                                                 )}
                                              </div>
@@ -215,12 +254,14 @@ const Show = (props: Props) => {
                                                 </Button>
                                              </div>
                                           ) : column.id === "action" ? (
-                                             <div className="flex justify-end items-center">
+                                             <div className="flex items-center justify-end">
                                                 <EditLink
                                                    key={recordId}
                                                    links={links}
                                                    setLinks={setLinks}
-                                                   link={row.original as LinkProps}
+                                                   link={
+                                                      row.original as LinkProps
+                                                   }
                                                 />
 
                                                 <DeleteByInertia

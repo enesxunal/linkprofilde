@@ -102,8 +102,13 @@ if ($installed) {
         Route::prefix('/qrcodes')->group(function () {
             Route::get('/', [QRCodeController::class, 'index']);
             Route::get('/create', [QRCodeController::class, 'create'])->middleware('check_payment');
+            Route::post('/prepare', [QRCodeController::class, 'prepare'])->middleware('check_payment');
+            Route::post('/{id}/finalize', [QRCodeController::class, 'finalize'])->middleware('check_payment');
             Route::post('/save', [QRCodeController::class, 'save_qr'])->middleware('check_payment');
+            Route::post('/prepare/link-qr', [QRCodeController::class, 'prepare_link_qr'])->middleware('check_payment');
             Route::post('/create/link-qr', [QRCodeController::class, 'save_link_qr'])->middleware('check_payment');
+            Route::get('/{id}/destination', [QRCodeController::class, 'editDestination']);
+            Route::patch('/{id}/destination', [QRCodeController::class, 'updateDestination']);
             Route::delete('/delete/{id}', [QRCodeController::class, 'delete']);
         });
         // QR-Code routes end

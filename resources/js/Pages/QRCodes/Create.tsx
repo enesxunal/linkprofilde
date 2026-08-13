@@ -2,14 +2,13 @@ import {
    useRef,
    useState,
    ReactNode,
-   useEffect,
    FormEventHandler,
 } from "react";
+import axios from "axios";
 import Input from "@/Components/Input";
 import { QRCode } from "react-qrcode-logo";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import Dashboard from "@/Layouts/Dashboard";
-import TextArea from "@/Components/TextArea";
 import QRCorner from "@/Components/QRCode/QRCorner";
 import InputDropdown from "@/Components/InputDropdown";
 import LogoUpload from "@/Components/QRCode/LogoUpload";
@@ -18,10 +17,19 @@ import QRCodeDownloader from "@/Components/QRCode/QRCodeDownloader";
 import PageHeader from "@/Components/Panel/PageHeader";
 import PanelCard from "@/Components/Panel/PanelCard";
 import EmptyState from "@/Components/Panel/EmptyState";
+import AlertBanner from "@/Components/Panel/AlertBanner";
 import QRcode from "@/Components/Icons/QRcode";
-import { ProjectProps } from "@/types";
+import { LinkProps, ProjectProps } from "@/types";
 
-const Create = ({ projects }: { projects: ProjectProps[] }) => {
+type DestinationType = "external" | "biolink" | "shortlink";
+
+interface Props {
+   projects: ProjectProps[];
+   biolinks: Pick<LinkProps, "id" | "link_name" | "url_name" | "link_type">[];
+   shortlinks: Pick<LinkProps, "id" | "link_name" | "url_name" | "link_type">[];
+}
+
+const Create = ({ projects, biolinks = [], shortlinks = [] }: Props) => {
    const [state, setState] = useState<{ [key: string]: any }>({
       size: 300,
       quietZone: 20,
@@ -70,6 +78,21 @@ const Create = ({ projects }: { projects: ProjectProps[] }) => {
       eyecolor_2_inner: "#000000",
    });
 
+   const [projectId, setProjectId] = useState<number | null>(
+      projects[0] ? projects[0].id : null
+   );
+   const [name, setName] = useState("");
+   const [destinationType, setDestinationType] =
+      useState<DestinationType>("external");
+   const [destinationUrl, setDestinationUrl] = useState("");
+   const [destinationLinkId, setDestinationLinkId] = useState<number | null>(
+      null
+   );
+   const [errors, setErrors] = useState<Record<string, string>>({});
+   const [saving, setSaving] = useState(false);
+   const [lockedPublicUrl, setLockedPublicUrl] = useState<string | null>(null);
+   const preparedRef = useRef<{ id: number; publicUrl: string } | null>(null);
+
    const handleChange = ({ target }: any) => {
       if (target.type === "checkbox") {
          setState((prevState) => ({
@@ -84,32 +107,35 @@ const Create = ({ projects }: { projects: ProjectProps[] }) => {
       }
    };
 
-   const { data, setData, post, errors, clearErrors } = useForm({
-      content: null,
-      qr_code: null,
-      qr_type: "project_qr",
-      project_id: projects[0] ? projects[0].id : null,
-      name: "",
-   });
-
    const qrCodeRef: any = useRef(null);
    const getImageBlobData = () => {
       return qrCodeRef.current.canvas.current.toDataURL();
    };
 
-   const submit: FormEventHandler = async (e) => {
-      e.preventDefault();
-      const qrCode = getImageBlobData();
-      setData("qr_code", qrCode);
-   };
+   const waitForPaint = () =>
+      new Promise<void>((resolve) => {
+         requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+               setTimeout(() => resolve(), 50);
+            });
+         });
+      });
 
-   useEffect(() => {
-      const { content, qr_code } = data;
-      if (content && qr_code) {
-         clearErrors();
-         post("/qrcodes/save");
-      }
-   }, [data]);
+   const destinationTypeOptions = [
+      { key: "Harici URL", value: "external" },
+      { key: "Bio Link", value: "biolink" },
+      { key: "Kısa Link", value: "shortlink" },
+   ];
+
+   const biolinkOptions = biolinks.map((item) => ({
+      key: item.link_name || item.url_name,
+      value: item.id,
+   }));
+
+   const shortlinkOptions = shortlinks.map((item) => ({
+      key: item.link_name || item.url_name,
+      value: item.id,
+   }));
 
    const project_list = projects.map((item) => {
       return { key: item.project_name, value: item.id };
@@ -125,36 +151,160 @@ const Create = ({ projects }: { projects: ProjectProps[] }) => {
       { key: "Circle", value: "circle" },
    ];
 
+   const previewValue = lockedPublicUrl || "";
+
+   const submit: FormEventHandler = async (e) => {
+      e.preventDefault();
+      if (saving) return;
+
+      setErrors({});
+      setSaving(true);
+
+      try {
+         let qrId: number;
+         let publicUrl: string;
+         const existing = preparedRef.current;
+
+         if (existing) {
+            qrId = existing.id;
+            publicUrl = existing.publicUrl;
+         } else {
+            const payload: Record<string, unknown> = {
+               project_id: projectId,
+               name: name || null,
+               qr_type: "project_qr",
+               destination_type: destinationType,
+               destination_url:
+                  destinationType === "external" ? destinationUrl : null,
+               destination_link_id:
+                  destinationType === "external" ? null : destinationLinkId,
+            };
+
+            const prep = await axios.post("/qrcodes/prepare", payload);
+            publicUrl = prep.data.public_url;
+            qrId = prep.data.id;
+
+            if (!publicUrl || typeof publicUrl !== "string" || !qrId) {
+               throw new Error("Sunucu QR adresi döndürmedi.");
+            }
+
+            preparedRef.current = { id: qrId, publicUrl };
+         }
+
+         setLockedPublicUrl(publicUrl);
+         setState((prev) => ({ ...prev, value: publicUrl }));
+         await waitForPaint();
+
+         const qrCode = getImageBlobData();
+         await axios.post(`/qrcodes/${qrId}/finalize`, {
+            qr_code: qrCode,
+         });
+         preparedRef.current = null;
+         setLockedPublicUrl(null);
+         router.visit("/qrcodes");
+      } catch (err: any) {
+         const bag = err?.response?.data?.errors;
+         if (bag && typeof bag === "object") {
+            const next: Record<string, string> = {};
+            Object.keys(bag).forEach((key) => {
+               const val = bag[key];
+               next[key] = Array.isArray(val) ? val[0] : String(val);
+            });
+            setErrors(next);
+         } else {
+            setErrors({
+               destination_type:
+                  err?.response?.data?.message ||
+                  "QR kod oluşturulamadı. Lütfen tekrar deneyin.",
+            });
+         }
+         setSaving(false);
+      }
+   };
+
    return (
       <>
          <Head title="QR Kod Oluştur" />
          <PageHeader
             title="QR Kod Oluştur"
-            description="Bağlantın için markana uygun bir QR kod tasarla."
+            description="Dinamik QR kod oluşturun. Hedefi sonradan değiştirebilirsiniz."
          />
 
          <form onSubmit={submit}>
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
                <div className="min-w-0 space-y-6">
                   <PanelCard
-                     title="İçerik"
-                     description="QR kodun okuttuğu değeri girin."
+                     title="Hedef"
+                     description="QR okutulunca açılacak adresi seçin."
                   >
-                     <TextArea
-                        rows={3}
-                        cols={10}
-                        name="value"
-                        label="QR İçeriği"
-                        value={state.value}
-                        onChange={(e) => {
-                           handleChange(e);
-                           setData("content", e.target.value);
-                        }}
-                        error={errors.content}
-                        placeholder="qr kod değeri"
-                        fullWidth
-                        required
-                     />
+                     <div className="space-y-4">
+                        <AlertBanner variant="info">
+                           QR görseli sabit bir yönlendirme adresi taşır. Hedefi
+                           sonra değiştirseniz basılı QR’lar yeni adrese gider.
+                        </AlertBanner>
+
+                        <InputDropdown
+                           required
+                           fullWidth
+                           name="destination_type"
+                           label="Hedef Türü"
+                           error={errors.destination_type}
+                           defaultValue={destinationType}
+                           itemList={destinationTypeOptions}
+                           onChange={(e: any) => {
+                              const next = e.value as DestinationType;
+                              setDestinationType(next);
+                              setDestinationLinkId(null);
+                              setDestinationUrl("");
+                           }}
+                        />
+
+                        {destinationType === "external" ? (
+                           <Input
+                              fullWidth
+                              required
+                              type="url"
+                              name="destination_url"
+                              label="Hedef URL"
+                              value={destinationUrl}
+                              onChange={(e) =>
+                                 setDestinationUrl(e.target.value)
+                              }
+                              error={errors.destination_url}
+                              placeholder="https://ornek.com/sayfa"
+                           />
+                        ) : null}
+
+                        {destinationType === "biolink" ? (
+                           <InputDropdown
+                              required
+                              fullWidth
+                              name="destination_link_id"
+                              label="Bio Link"
+                              error={errors.destination_link_id}
+                              defaultValue={destinationLinkId}
+                              itemList={biolinkOptions}
+                              onChange={(e: any) =>
+                                 setDestinationLinkId(e.value)
+                              }
+                           />
+                        ) : null}
+
+                        {destinationType === "shortlink" ? (
+                           <InputDropdown
+                              required
+                              fullWidth
+                              name="destination_link_id"
+                              label="Kısa Link"
+                              error={errors.destination_link_id}
+                              defaultValue={destinationLinkId}
+                              itemList={shortlinkOptions}
+                              onChange={(e: any) =>
+                                 setDestinationLinkId(e.value)
+                              }
+                           />
+                        ) : null}
+                     </div>
                   </PanelCard>
 
                   <PanelCard
@@ -482,26 +632,27 @@ const Create = ({ projects }: { projects: ProjectProps[] }) => {
                            name="project_id"
                            label="Proje Seçiniz"
                            error={errors.project_id}
-                           defaultValue={data.project_id}
+                           defaultValue={projectId}
                            itemList={project_list}
-                           onChange={(e: any) => setData("project_id", e.value)}
+                           onChange={(e: any) => setProjectId(e.value)}
                         />
                         <Input
                            fullWidth
                            type="text"
                            name="name"
                            label="QR kod adı (isteğe bağlı)"
-                           value={data.name ?? ""}
-                           onChange={(e) => setData("name", e.target.value)}
+                           value={name}
+                           onChange={(e) => setName(e.target.value)}
                            error={errors.name}
                            placeholder="Örn: Menü, Instagram linki"
                         />
                         <div className="flex flex-wrap gap-3 pt-2">
                            <button
                               type="submit"
-                              className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 sm:w-auto"
+                              disabled={saving}
+                              className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 sm:w-auto"
                            >
-                              QR Kod Oluştur
+                              {saving ? "Oluşturuluyor..." : "QR Kod Oluştur"}
                            </button>
                            <div className="w-full min-w-0 sm:w-auto sm:min-w-[220px]">
                               <QRCodeDownloader
@@ -516,17 +667,17 @@ const Create = ({ projects }: { projects: ProjectProps[] }) => {
 
                <div className="min-w-0 lg:sticky lg:top-6 lg:self-start">
                   <PanelCard title="Önizleme">
-                     {!state.value ? (
+                     {!previewValue ? (
                         <EmptyState
                            icon={<QRcode className="h-6 w-6" />}
-                           title="Önizleme bekleniyor"
-                           description="İçerik alanına bir değer yazdığınızda QR kod burada görünür."
+                           title="Önizleme kayıttan sonra"
+                           description="Stil ayarlarını yapın. Kaydettiğinizde QR, sabit yönlendirme adresini encode eder."
                            className="py-8"
                         />
                      ) : null}
                      <div
                         className={`flex justify-center overflow-x-auto rounded-xl bg-white p-4 ${
-                           !state.value ? "sr-only" : ""
+                           !previewValue ? "sr-only" : ""
                         }`}
                      >
                         <div className="mx-auto shrink-0">
@@ -534,6 +685,7 @@ const Create = ({ projects }: { projects: ProjectProps[] }) => {
                               ref={qrCodeRef}
                               {...{
                                  ...state,
+                                 value: previewValue,
                                  eyeRadius: [
                                     {
                                        outer: [

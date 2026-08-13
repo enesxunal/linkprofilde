@@ -289,4 +289,14 @@ export interface QRCodeProps extends TableCommon {
    img_data: string;
    link_id: null | number;
    project_id: null | number;
+   name?: string | null;
+   public_code?: string | null;
+   is_dynamic?: boolean;
+   is_active?: boolean;
+   destination_type?: string | null;
+   destination_url?: string | null;
+   destination_link_id?: number | null;
+   destination_link?: Pick<LinkProps, "id" | "link_name" | "url_name"> | null;
+   link?: Pick<LinkProps, "id" | "link_name" | "url_name"> | null;
+   project?: { id: number; project_name: string } | null;
 }
