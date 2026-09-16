@@ -1,0 +1,1 @@
+function e(e){return String(e.id)}export{e as t};

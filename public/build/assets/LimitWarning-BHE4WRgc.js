@@ -1,0 +1,1 @@
+import{i as e,s as t}from"./app-CS5VuL7v.js";import{n}from"./Dashboard-D8VqHcWU.js";var r=e(),i=({limit:e})=>(0,r.jsx)(r.Fragment,{children:e&&(0,r.jsx)(n,{variant:`warning`,className:`text-center`,children:(0,r.jsxs)(`p`,{children:[e,` `,(0,r.jsx)(t,{href:`/current-plan`,className:`font-medium text-amber-900 underline`,children:`Buraya Tıklayın`})]})})});export{i as t};

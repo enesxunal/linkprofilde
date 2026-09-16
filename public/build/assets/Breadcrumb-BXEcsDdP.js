@@ -1,0 +1,1 @@
+import{i as e}from"./app-CS5VuL7v.js";var t=e(),n=({Icon:e,title:n,className:r,Component:i})=>(0,t.jsxs)(`div`,{className:`flex items-center justify-between mb-10 ${r}`,children:[(0,t.jsxs)(`div`,{className:`flex items-center`,children:[(0,t.jsx)(e,{className:`text-blue-500 h-6 w-6`}),(0,t.jsx)(`p`,{className:`text-xl font-bold ml-2`,children:n})]}),i]});export{n as t};
