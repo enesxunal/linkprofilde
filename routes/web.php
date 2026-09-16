@@ -228,7 +228,7 @@ if ($installed) {
             Route::get('/', [PlanController::class, 'get_admin_plan'])->name('plans');
             Route::get('/create', [PlanController::class, 'create_plan'])->name('plan.create');
             Route::post('/store', [PlanController::class, 'store_plan'])->name('plan.store');
-            Route::get('/update/{id}', [PlanController::class, 'get_update_plan'])->name('plan.update');
+            Route::get('/update/{id}', [PlanController::class, 'get_update_plan'])->name('plan.edit');
             Route::put('/update/{id}', [PlanController::class, 'update_plan'])->name('plan.update');
         });
         //Plans Routes End
