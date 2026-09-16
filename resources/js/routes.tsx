@@ -81,7 +81,7 @@ export const routes = [
          },
          {
             icon: <Calendar {...icon} />,
-            name: "Pricing Plans",
+            name: "Fiyatlandırma Planları",
             path: "/admin/pricing-plans",
          },
          {
@@ -103,6 +103,11 @@ export const routes = [
             icon: <Page {...icon} />,
             name: "Custom Page",
             path: "/admin/custom-page",
+         },
+         {
+            icon: <Page {...icon} />,
+            name: "Blog / SEO",
+            path: "/admin/blog",
          },
          {
             icon: <Setting {...icon} />,

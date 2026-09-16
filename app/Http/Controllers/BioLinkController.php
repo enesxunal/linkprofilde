@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\CustomTheme;
 use App\Models\PricingPlan;
 use App\Models\ShetabitVisit;
+use App\Models\AnalyticsEvent;
 use App\Rules\CheckLinkName;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
@@ -47,7 +48,7 @@ class BioLinkController extends Controller
 
             return Inertia::render('BioLinks/Show', compact('links', 'limit'));
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -------------------------------------------------
@@ -95,7 +96,7 @@ class BioLinkController extends Controller
 
             return back()->with('success', 'Link başarıyla oluşturuldu.');
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //--------------------------------------------------
@@ -126,7 +127,7 @@ class BioLinkController extends Controller
 
             return response(['success' => 'Bio link başarıyla güncellendi.', 'link' => $link]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------
@@ -150,7 +151,7 @@ class BioLinkController extends Controller
 
             return back()->with('success', 'Link başarıyla silindi.');
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //--------------------------------------------------
@@ -200,7 +201,7 @@ class BioLinkController extends Controller
                 'error' => collect($e->errors())->flatten()->first() ?? 'Geçersiz sosyal bağlantı.',
             ]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------
@@ -245,7 +246,7 @@ class BioLinkController extends Controller
             $updatedLink = AppHelper::get_link($id);
             return response(['success' => true, 'link' => $updatedLink]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------
@@ -276,7 +277,7 @@ class BioLinkController extends Controller
             $updatedLink = AppHelper::get_link($id);
             return response(['success' => true, 'link' => $updatedLink]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------
@@ -299,7 +300,7 @@ class BioLinkController extends Controller
             $updatedLink = AppHelper::get_link($linkId);
             return response(['success' => true, 'link' => $updatedLink]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------
@@ -344,7 +345,7 @@ class BioLinkController extends Controller
             $updatedLink = AppHelper::get_link($id);
             return response(['success' => true, 'link' => $updatedLink]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------
@@ -366,7 +367,7 @@ class BioLinkController extends Controller
             $updatedLink = AppHelper::get_link($id);
             return response(['success' => true, 'link' => $updatedLink]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------
@@ -468,7 +469,7 @@ class BioLinkController extends Controller
             $updated_link = AppHelper::get_link($linkId);
             return response(['result' => $updated_link]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------
@@ -498,7 +499,7 @@ class BioLinkController extends Controller
 
             return $links;
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()]);
+            return response()->json(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //----------------------------------------------
@@ -540,6 +541,50 @@ class BioLinkController extends Controller
         }
     }
     //--------------------------------------------------
+
+    public function trackPublicEvent(Request $req, string $linkName)
+    {
+        $req->validate([
+            'event_type' => ['required', 'string', Rule::in(['link_click', 'social_click', 'vcard_download', 'share'])],
+            'source_id' => ['nullable', 'integer'],
+            'source_type' => ['nullable', 'string', 'max:50'],
+            'label' => ['nullable', 'string', 'max:120'],
+        ]);
+
+        $link = Link::where('url_name', $linkName)->where('link_type', 'biolink')->firstOrFail();
+
+        if ($req->filled('source_id') && $req->input('source_type') === 'link_item') {
+            $ownedItem = LinkItem::where('id', $req->integer('source_id'))
+                ->where('link_id', $link->id)
+                ->exists();
+            if (! $ownedItem) {
+                abort(422);
+            }
+        }
+
+        $visitorKey = hash('sha256', implode('|', [
+            (string) $req->ip(),
+            (string) $req->userAgent(),
+            now()->format('Y-m-d'),
+            (string) config('app.key'),
+        ]));
+
+        AnalyticsEvent::create([
+            'owner_id' => $link->user_id,
+            'event_type' => $req->string('event_type')->toString(),
+            'subject_type' => 'Link',
+            'subject_id' => $link->id,
+            'source_type' => $req->string('source_type')->toString() ?: null,
+            'source_id' => $req->filled('source_id') ? $req->integer('source_id') : null,
+            'visitor_key' => $visitorKey,
+            'language' => substr((string) $req->header('Accept-Language'), 0, 50) ?: null,
+            'referrer_host' => parse_url((string) $req->headers->get('referer'), PHP_URL_HOST) ?: null,
+            'metadata' => $req->filled('label') ? ['label' => $req->string('label')->toString()] : null,
+            'occurred_at' => now(),
+        ]);
+
+        return response()->json(['ok' => true], 201);
+    }
 
     private function sanitizedSocials(mixed $raw): string
     {

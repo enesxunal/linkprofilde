@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnalyticsEvent;
 use App\Models\Link;
 use App\Models\Project;
 use App\Models\QRCode;
@@ -14,39 +15,12 @@ class DashboardController extends Controller
         private LinkAnalyticsService $analytics
     ) {}
 
-    public static function overview_counter($links, $analytics, $projects, $qrcodes)
-    {
-        $overview = [
-            [
-                'icon' => 'fa-solid fa-link-simple',
-                'title' => 'Toplam link',
-                'total' => count($links),
-            ],
-            [
-                'icon' => 'fa-regular fa-eye',
-                'title' => 'Link sayfa görüntüleme',
-                'total' => count($analytics),
-            ],
-            [
-                'icon' => 'fa-solid fa-list-check',
-                'title' => 'Toplam proje',
-                'total' => count($projects),
-            ],
-            [
-                'icon' => 'fa-regular fa-qrcode',
-                'title' => 'Toplam QR kod',
-                'total' => count($qrcodes),
-            ],
-        ];
-
-        return $overview;
-    }
-
     public function index()
     {
         try {
             $user = auth()->user();
             $isSuperAdmin = $user->hasRole('SUPER-ADMIN');
+            $primary_profile = null;
 
             if ($isSuperAdmin) {
                 $links = Link::query()->count();
@@ -64,14 +38,51 @@ class DashboardController extends Controller
                 $analytics = (clone $visitsQuery)->count();
                 $visitors = $this->analytics->monthlyCounts($linkIds);
                 $page_view = $this->analytics->lastSevenDaysCounts($linkIds);
+                $primary_profile = Link::query()
+                    ->where('user_id', $user->id)
+                    ->where('link_type', 'biolink')
+                    ->orderBy('created_at')
+                    ->first(['id', 'link_name', 'url_name', 'thumbnail', 'short_bio']);
             }
+
+            $eventQuery = AnalyticsEvent::query();
+            if (! $isSuperAdmin) {
+                $eventQuery->where('owner_id', $user->id);
+            }
+
+            $last30Start = now()->subDays(29)->startOfDay();
+            $event30 = (clone $eventQuery)->where('occurred_at', '>=', $last30Start);
+
+            $event_metrics = [
+                'interactions_30d' => (clone $event30)->whereIn('event_type', [
+                    'link_click',
+                    'social_click',
+                    'vcard_download',
+                    'share',
+                    AnalyticsEvent::TYPE_QR_SCAN,
+                ])->count(),
+                'link_clicks_30d' => (clone $event30)->where('event_type', 'link_click')->count(),
+                'social_clicks_30d' => (clone $event30)->where('event_type', 'social_click')->count(),
+                'vcard_downloads_30d' => (clone $event30)->where('event_type', 'vcard_download')->count(),
+                'shares_30d' => (clone $event30)->where('event_type', 'share')->count(),
+                'qr_scans_30d' => (clone $event30)->where('event_type', AnalyticsEvent::TYPE_QR_SCAN)->count(),
+            ];
 
             return Inertia::render(
                 'Dashboard',
-                compact('qrcodes', 'links', 'analytics', 'projects', 'visitors', 'page_view')
+                compact(
+                    'qrcodes',
+                    'links',
+                    'analytics',
+                    'projects',
+                    'visitors',
+                    'page_view',
+                    'primary_profile',
+                    'event_metrics'
+                )
             );
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 }

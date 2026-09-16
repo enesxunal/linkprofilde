@@ -102,6 +102,7 @@
             <div class="md:col-span-3 text-center md:text-start">
                 <p class="font-semibold text-slate-900 mb-4">{{ __('Şirket') }}</p>
                 <ul class="text-slate-500 text-sm space-y-3">
+                    <li><a href="/blog" class="hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">Blog / Rehberler</a></li>
                     @if (count($customPages) > 0)
                         @foreach ($customPages as $page)
                             <li>
@@ -116,13 +117,15 @@
                 </ul>
 
                 <div class="mt-6 flex flex-col items-center md:items-start gap-3">
-                    <img
-                        alt="iyzico"
-                        width="160"
-                        height="56"
-                        class="rounded-lg"
-                        src="{{ asset('assets/iyizico.svg') }}"
+                    <div
+                        class="inline-flex items-center gap-2.5 rounded-lg bg-gray-900 px-4 py-2.5 shadow-sm"
+                        role="img"
+                        aria-label="Tosla güvenli ödeme"
                     >
+                        <span class="text-white text-lg font-bold tracking-wide leading-none">tosla</span>
+                        <span class="h-4 w-px bg-gray-600" aria-hidden="true"></span>
+                        <span class="text-gray-300 text-xs font-medium leading-none">güvenli ödeme</span>
+                    </div>
                     @if (file_exists(public_path('assets/creditcard-logo.png')))
                         <img
                             alt="Kredi kartı ödeme yöntemleri"

@@ -47,7 +47,7 @@ class LinksController extends Controller
 
             return Inertia::render('BioLinks/Show', compact('links'));
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -------------------------------------------------

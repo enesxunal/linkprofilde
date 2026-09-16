@@ -1,12 +1,3 @@
-import {
-   Menu,
-   Avatar,
-   ListItem,
-   MenuList,
-   MenuItem,
-   MenuHandler,
-} from "@material-tailwind/react";
-import axios from "axios";
 import { useState } from "react";
 import { PageProps } from "@/types";
 import MenuIcon from "@/Components/Icons/Menu";
@@ -19,32 +10,35 @@ import Globe from "@/Components/Icons/Globe";
 
 const DashboardNavbar = () => {
    const { props } = usePage<PageProps>();
-
    const user = props.auth.user;
    const [state, dispatch] = useAppContext();
    const { openSidenav, mobileSidenav } = state;
    const [isFullscreen, setIsFullscreen] = useState(false);
 
-   const logout = async () => {
-      const res = await axios.post("/logout");
-      if (res.status === 200) window.location.href = "/";
+   const logout = () => {
+      router.post("/logout", {}, { onSuccess: () => (window.location.href = "/") });
    };
 
-   const handleFullscreenToggle = () => {
-      if (!isFullscreen) {
-         document.documentElement.requestFullscreen();
-      } else {
-         document.exitFullscreen();
+   const handleFullscreenToggle = async () => {
+      try {
+         if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+            setIsFullscreen(true);
+         } else {
+            await document.exitFullscreen();
+            setIsFullscreen(false);
+         }
+      } catch {
+         setIsFullscreen(Boolean(document.fullscreenElement));
       }
-      setIsFullscreen(!isFullscreen);
    };
 
-   const lanSelect = (lang: string): boolean => {
-      if (props.translate.locale === lang) {
-         return true;
-      }
-      return false;
-   };
+   const languageClass = (lang: string) =>
+      `block w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+         props.translate.locale === lang
+            ? "bg-blue-50 font-semibold text-blue-700"
+            : "text-slate-700 hover:bg-slate-50"
+      }`;
 
    return (
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
@@ -67,9 +61,7 @@ const DashboardNavbar = () => {
                   <MenuIcon />
                </button>
                <div className="hidden min-w-0 sm:block">
-                  <p className="truncate text-sm font-medium text-slate-500">
-                     Panel
-                  </p>
+                  <p className="truncate text-sm font-medium text-slate-500">Panel</p>
                </div>
             </div>
 
@@ -78,83 +70,86 @@ const DashboardNavbar = () => {
                   type="button"
                   onClick={handleFullscreenToggle}
                   className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100"
-                  aria-label="Tam ekran"
+                  aria-label={isFullscreen ? "Tam ekrandan çık" : "Tam ekran"}
                >
                   <Expand className="h-5 w-5" />
                </button>
 
-               <Menu placement="bottom-end">
-                  <MenuHandler>
+               <details className="group relative">
+                  <summary className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 [&::-webkit-details-marker]:hidden">
+                     <Globe className="h-5 w-5" />
+                     <span className="sr-only">Dil seç</span>
+                  </summary>
+                  <div className="absolute right-0 top-11 z-50 min-w-[150px] rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
                      <button
                         type="button"
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100"
-                        aria-label="Dil seç"
-                     >
-                        <Globe className="h-5 w-5" />
-                     </button>
-                  </MenuHandler>
-
-                  <MenuList className="min-w-[140px] rounded-xl border border-slate-200 p-1 shadow-sm">
-                     <ListItem
-                        selected={lanSelect("tr")}
                         onClick={() => router.get("/lang/tr")}
-                        className="rounded-lg py-2 text-sm"
+                        className={languageClass("tr")}
                      >
                         Türkçe
-                     </ListItem>
-                     <ListItem
-                        selected={lanSelect("fr")}
-                        onClick={() => router.get("/lang/fr")}
-                        className="rounded-lg py-2 text-sm"
-                     >
-                        Français
-                     </ListItem>
-                     <ListItem
-                        selected={lanSelect("de")}
-                        onClick={() => router.get("/lang/de")}
-                        className="rounded-lg py-2 text-sm"
-                     >
-                        Deutsch
-                     </ListItem>
-                  </MenuList>
-               </Menu>
-
-               <Menu placement="bottom-end">
-                  <MenuHandler>
+                     </button>
                      <button
                         type="button"
-                        className="ml-1 inline-flex items-center justify-center"
-                        aria-label="Kullanıcı menüsü"
+                        onClick={() => router.get("/lang/fr")}
+                        className={languageClass("fr")}
                      >
-                        {user && user.image ? (
-                           <Avatar
-                              src={`/${user.image}`}
-                              alt="user"
-                              size="xs"
-                              variant="circular"
-                              className="h-9 w-9 cursor-pointer"
-                           />
-                        ) : (
-                           <UserCircle className="h-9 w-9 cursor-pointer text-slate-400" />
-                        )}
+                        Français
                      </button>
-                  </MenuHandler>
+                     <button
+                        type="button"
+                        onClick={() => router.get("/lang/de")}
+                        className={languageClass("de")}
+                     >
+                        Deutsch
+                     </button>
+                  </div>
+               </details>
 
-                  <MenuList className="min-w-[140px] rounded-xl border border-slate-200 p-1 shadow-sm">
-                     <MenuItem className="rounded-lg text-sm">
-                        <a href="/">Anasayfa</a>
-                     </MenuItem>
-                     <MenuItem className="rounded-lg text-sm">
-                        <Link href="/settings">Profil</Link>
-                     </MenuItem>
-                     <MenuItem
-                        className="rounded-lg text-sm"
+               <details className="group relative ml-1">
+                  <summary className="flex cursor-pointer list-none items-center justify-center rounded-full [&::-webkit-details-marker]:hidden">
+                     {user?.image ? (
+                        <img
+                           src={`/${user.image}`}
+                           alt={`${user.name || "Kullanıcı"} profil fotoğrafı`}
+                           className="h-9 w-9 rounded-full border border-slate-200 object-cover"
+                        />
+                     ) : (
+                        <UserCircle className="h-9 w-9 text-slate-400" />
+                     )}
+                     <span className="sr-only">Kullanıcı menüsü</span>
+                  </summary>
+                  <div className="absolute right-0 top-11 z-50 min-w-[170px] rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+                     {user?.name ? (
+                        <div className="border-b border-slate-100 px-3 py-2">
+                           <p className="max-w-[180px] truncate text-xs font-semibold text-slate-900">
+                              {user.name}
+                           </p>
+                           <p className="mt-0.5 max-w-[180px] truncate text-[11px] text-slate-500">
+                              {user.email}
+                           </p>
+                        </div>
+                     ) : null}
+                     <a
+                        href="/"
+                        className="mt-1 block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                     >
+                        Anasayfa
+                     </a>
+                     <Link
+                        href="/settings"
+                        className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                     >
+                        Profil Ayarları
+                     </Link>
+                     <button
+                        type="button"
                         onClick={logout}
+                        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
                      >
                         Çıkış Yap
-                     </MenuItem>
-                  </MenuList>
-               </Menu>
+                     </button>
+                  </div>
+               </details>
             </div>
          </div>
       </header>

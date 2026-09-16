@@ -17,6 +17,7 @@ const LinkProfile = (props: Props) => {
    const { link, setLink } = props;
    const { thumbnail, link_name, short_bio } = link;
    const [imageUrl, setImageUrl] = useState(thumbnail ? `/${thumbnail}` : null);
+   const [saving, setSaving] = useState(false);
 
    const { data, setData } = useForm({
       thumbnail: null,
@@ -32,26 +33,52 @@ const LinkProfile = (props: Props) => {
       const files = e.target.files;
       if (files && files[0]) {
          setData("thumbnail", files[0] as any);
-         setImageUrl(URL.createObjectURL(files[0]));
+         setImageUrl((current) => {
+            if (current?.startsWith("blob:")) {
+               URL.revokeObjectURL(current);
+            }
+            return URL.createObjectURL(files[0]);
+         });
       }
    };
 
    const submit: FormEventHandler = async (e) => {
       e.preventDefault();
-      const formData: any = new FormData();
-      formData.append("thumbnail", data.thumbnail);
+      if (saving) return;
+
+      setSaving(true);
+      const formData = new FormData();
+      if (data.thumbnail) {
+         formData.append("thumbnail", data.thumbnail as any);
+      }
       formData.append("link_name", data.link_name);
       formData.append("short_bio", data.short_bio);
 
-      const res = await axios.post(
-         `/bio-links/customize/update-profile/${link.id}`,
-         formData
-      );
+      try {
+         const res = await axios.post(
+            `/bio-links/customize/update-profile/${link.id}`,
+            formData
+         );
 
-      if (res.data.error) {
-         error(res.data.error);
-      } else if (res.data.success) {
-         setLink(res.data.link);
+         if (res.data.error) {
+            error(res.data.error);
+         } else if (res.data.success && res.data.link) {
+            setLink(res.data.link);
+         }
+      } catch (err: any) {
+         const validation = err?.response?.data?.errors;
+         const firstValidation = validation
+            ? Object.values(validation).flat().find(Boolean)
+            : null;
+         error(
+            String(
+               firstValidation ||
+                  err?.response?.data?.error ||
+                  "Profil kaydedilemedi. Lütfen tekrar deneyin."
+            )
+         );
+      } finally {
+         setSaving(false);
       }
    };
 
@@ -71,8 +98,8 @@ const LinkProfile = (props: Props) => {
                <div className="relative">
                   {imageUrl ? (
                      <img
-                        src={`${imageUrl}`}
-                        alt="linkdrop"
+                        src={imageUrl}
+                        alt={`${data.link_name || link.link_name} profil fotoğrafı`}
                         className="h-[120px] w-[120px] rounded-full object-cover"
                      />
                   ) : (
@@ -80,24 +107,26 @@ const LinkProfile = (props: Props) => {
                   )}
                   <label
                      htmlFor="linkProfile"
-                     className="absolute right-1.5 top-1.5 cursor-pointer"
+                     className="absolute right-1.5 top-1.5 cursor-pointer rounded-full bg-white/90 p-1 shadow-sm"
+                     aria-label="Profil fotoğrafını değiştir"
                   >
-                     <Camera className="h-6 w-6 text-blue-500" />
+                     <Camera className="h-5 w-5 text-blue-600" />
                   </label>
                   <input
                      hidden
                      type="file"
                      name="thumbnail"
+                     accept="image/jpeg,image/png"
                      onChange={handleImageChange}
                      id="linkProfile"
-                  ></input>
+                  />
                </div>
             </div>
             <div className="w-full min-w-0">
                <div className="mb-4">
                   <Input
                      type="text"
-                     label="Link Adı"
+                     label="Profil Adı"
                      name="link_name"
                      value={data.link_name}
                      onChange={onHandleChange}
@@ -120,9 +149,10 @@ const LinkProfile = (props: Props) => {
 
          <button
             type="submit"
-            className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+            disabled={saving}
+            className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
          >
-            Kaydet
+            {saving ? "Kaydediliyor…" : "Profili Kaydet"}
          </button>
       </form>
    );

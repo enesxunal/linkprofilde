@@ -17,6 +17,23 @@ class HomeController extends Controller
     public function Home(Request $request)
     {
         $app = AppSetting::first();
+        if (!$app) {
+            $app = (object) [];
+        }
+
+        $app->title = filled($app->title ?? null)
+            ? $app->title
+            : config('app.name', 'LinkProfilde');
+        $app->name = filled($app->name ?? null)
+            ? $app->name
+            : $app->title;
+        $app->description = filled($app->description ?? null)
+            ? $app->description
+            : 'Dijital profil, kısa link, QR kod ve analitik araçlarını tek panelden yönetin.';
+        $app->logo = filled($app->logo ?? null)
+            ? $app->logo
+            : 'assets/icons/link-drop.png';
+
         $appSections = AppSection::all();
         $customPages = CustomPage::all();
         $testimonials = Testimonial::all();
@@ -57,9 +74,9 @@ class HomeController extends Controller
                 'new_thumbnail' => AppHelper::imageRules(5120),
             ];
             $messages = [
-                'section_title.required' => 'Section Title is require',
-                'new_thumbnail.mimes' => 'Allow only jpg, png, jpeg type image',
-                'new_thumbnail.max' => 'Image size will be 5MB',
+                'section_title.required' => 'Bölüm başlığı zorunludur.',
+                'new_thumbnail.mimes' => 'Yalnızca JPG, JPEG veya PNG görseller yüklenebilir.',
+                'new_thumbnail.max' => 'Görsel boyutu en fazla 5 MB olabilir.',
             ];
             $this->validate($req, $rules, $messages);
 
@@ -73,48 +90,37 @@ class HomeController extends Controller
 
         return back();
     }
-    //-------------------------------------------------
 
 
-    //-------------------------------------------------
-    // Section edit or update of home page
-    public function EditSectionList(Request $req, $sectionId)
+    function EditSectionList(Request $req, $sectionId)
     {
-        $allList = [];
-        $oneList = ['content' => '', 'icon' => '', 'url' => ''];
+        try {
+            $section = AppSection::find($sectionId);
+            if (!$section) {
+                abort(404);
+            }
 
-        for ($i = 1; $i <= count($req->all()) - 2; $i++) {
-
-            foreach ($req->all() as $key => $value) {
-                if ($key != '_token' && $key != '_method') {
-                    $str = substr($key, -1);
-                    $newKey = substr($key, 0, -1);
-                    $number =  (int) $str;
-
-                    if ($i == $number) {
-                        $oneList[$newKey] = $value;
+            $section_list = $req->section_list;
+            if (is_array($section_list)) {
+                foreach ($section_list as &$item) {
+                    if (isset($item['url']) && $item['url'] !== null && $item['url'] !== '') {
+                        $safe = SafeUrl::canonicalHttpUrl($item['url']);
+                        if ($safe === null) {
+                            return back()->with('error', 'Geçersiz bağlantı adresi.');
+                        }
+                        $item['url'] = $safe;
                     }
                 }
+                unset($item);
             }
 
-            if ($oneList['content'] == '' && $oneList['icon'] == '' && $oneList['url'] == '') {
-                break;
-            } else {
-                $safeUrl = SafeUrl::href(is_string($oneList['url']) ? $oneList['url'] : null);
-                if ($safeUrl === null) {
-                    return back()->with('error', 'Geçersiz bağlantı adresi.');
-                }
-                $oneList['url'] = $safeUrl === '' ? null : $safeUrl;
-                array_push($allList, $oneList);
-                $oneList = ['content' => '', 'icon' => '', 'url' => ''];
-            }
+            $section->section_list = json_encode($section_list, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            $section->save();
+
+            return back()->with('success', 'Bölüm içeriği güncellendi.');
+        } catch (\Throwable $th) {
+            report($th);
+            return back()->with('error', 'Bölüm güncellenemedi. Lütfen tekrar deneyin.');
         }
-
-        AppSection::where('id', $sectionId)->update([
-            'section_list' => json_encode($allList)
-        ]);
-
-        return back();
     }
-    //-------------------------------------------------
 }

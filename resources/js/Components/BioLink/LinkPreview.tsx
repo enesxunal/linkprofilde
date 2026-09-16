@@ -22,20 +22,23 @@ const LinkPreview = (props: { link: LinkProps; buttonStyle: any }) => {
    const [branding, setBranding] = useState("");
 
    useEffect(() => {
-      if (auth.user.roles[0].name === "BASIC") {
+      if (auth.user?.roles?.[0]?.name === "BASIC") {
          setBranding(`/${app.logo}`);
+      } else if (link.branding) {
+         setBranding(`/${link.branding}`);
       } else {
-         if (link.branding) {
-            setBranding(`/${link.branding}`);
-         } else {
-            setBranding(`/${app.logo}`);
-         }
+         setBranding(`/${app.logo}`);
       }
-   }, [link]);
+   }, [app.logo, auth.user, link.branding]);
 
    let socials: socialType[] = [];
    if (link.socials) {
-      socials = JSON.parse(link.socials);
+      try {
+         const parsed = JSON.parse(link.socials);
+         socials = Array.isArray(parsed) ? parsed : [];
+      } catch {
+         socials = [];
+      }
    }
 
    const socialColor = isSafeHex(link.social_color)
@@ -82,7 +85,7 @@ const LinkPreview = (props: { link: LinkProps; buttonStyle: any }) => {
                   {link.thumbnail ? (
                      <img
                         src={`/${link.thumbnail}`}
-                        alt="linkdrop"
+                        alt={`${link.link_name} profil fotoğrafı`}
                         className="w-[100px] h-[100px] object-cover rounded-full"
                      />
                   ) : (
@@ -115,9 +118,10 @@ const LinkPreview = (props: { link: LinkProps; buttonStyle: any }) => {
 
                         return (
                            <a
-                              key={ind}
+                              key={`${item.name}-${ind}`}
                               href={href}
-                              className="mx-2"
+                              className="mx-2 inline-flex h-9 w-9 items-center justify-center rounded-full"
+                              aria-label={`${item.name} bağlantısını aç`}
                               {...(external
                                  ? {
                                       target: "_blank",
@@ -153,11 +157,11 @@ const LinkPreview = (props: { link: LinkProps; buttonStyle: any }) => {
                )}
 
                {link.items.map((item) => (
-                  <LinkBlock item={item} buttonStyle={buttonStyle} />
+                  <LinkBlock key={item.id} item={item} buttonStyle={buttonStyle} />
                ))}
             </div>
 
-            <img src={branding} alt="" className="w-10 mx-auto" />
+            <img src={branding} alt="LinkProfilde" className="w-10 mx-auto" />
          </div>
       </SimpleBar>
    );

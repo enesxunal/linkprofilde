@@ -34,6 +34,13 @@ interface AnalyticsPayload {
       selected_period_total: number;
       previous_period_total: number;
       period_change_percent: number | null;
+      interactions_total: number;
+      link_clicks: number;
+      social_clicks: number;
+      vcard_downloads: number;
+      shares: number;
+      qr_scans: number;
+      interaction_rate: number;
    };
    timeseries: { date: string; count: number }[];
    countries: BreakdownItem[];
@@ -155,14 +162,39 @@ const LinkAnalytics = ({ analytics }: Props) => {
          hint: "Tüm zamanlar",
       },
       {
-         title: "Seçili Dönem",
+         title: "Dönem Görüntülenmesi",
          value: analytics.overview.selected_period_total,
          hint: analytics.range.label,
       },
       {
-         title: "Bugün",
-         value: analytics.overview.today,
-         hint: "Bugünkü görüntülenme",
+         title: "Toplam Etkileşim",
+         value: analytics.overview.interactions_total,
+         hint: `${analytics.overview.interaction_rate}% etkileşim oranı`,
+      },
+      {
+         title: "Link Tıklaması",
+         value: analytics.overview.link_clicks,
+         hint: "Profildeki bağlantılar",
+      },
+      {
+         title: "Sosyal Tıklama",
+         value: analytics.overview.social_clicks,
+         hint: "Sosyal medya ve iletişim",
+      },
+      {
+         title: "Rehbere Ekle",
+         value: analytics.overview.vcard_downloads,
+         hint: "vCard indirmeleri",
+      },
+      {
+         title: "Paylaşım",
+         value: analytics.overview.shares,
+         hint: "Profil paylaşma aksiyonu",
+      },
+      {
+         title: "QR Taraması",
+         value: analytics.overview.qr_scans,
+         hint: "Bu profile bağlı QR kodlar",
       },
       {
          title: "Önceki Döneme Göre",
@@ -170,7 +202,7 @@ const LinkAnalytics = ({ analytics }: Props) => {
             changePercent === null
                ? "—"
                : `${changePositive ? "+" : ""}${changePercent}%`,
-         hint: `Önceki: ${analytics.overview.previous_period_total}`,
+         hint: `Önceki görüntülenme: ${analytics.overview.previous_period_total}`,
       },
    ];
 
@@ -248,7 +280,7 @@ const LinkAnalytics = ({ analytics }: Props) => {
                </div>
             </PanelCard>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                {cards.map((card) => (
                   <PanelCard key={card.title} noPadding bodyClassName="p-5">
                      <p className="text-sm font-medium text-slate-500">

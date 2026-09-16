@@ -1,6 +1,6 @@
 import Input from "../Input";
 import { FormEventHandler, useEffect, useState } from "react";
-import { Avatar, Dialog } from "@material-tailwind/react";
+import { Avatar, Dialog } from "@/Components/MaterialLite";
 import { useForm } from "@inertiajs/react";
 import UserCircle from "../Icons/UserCircle";
 import TextArea from "../TextArea";

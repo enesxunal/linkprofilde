@@ -11,7 +11,7 @@ import { Head, Link, router } from "@inertiajs/react";
 import ChartLineUp from "@/Components/Icons/ChartLineUp";
 import CreateLink from "@/Components/BioLink/CreateLink";
 import DeleteByInertia from "@/Components/DeleteByInertia";
-import { Button } from "@material-tailwind/react";
+import { Button } from "@/Components/MaterialLite";
 import { LinkProps, PageProps, PaginationProps } from "@/types";
 import TablePagination from "@/Components/Table/TablePagination";
 import { ReactNode, useMemo, useState, useEffect, useRef } from "react";
@@ -171,7 +171,74 @@ const Show = (props: Props) => {
                   description="Arama kriterlerinize uygun profil yok."
                />
             ) : (
-               <div className="overflow-x-auto">
+               <>
+                  <div className="divide-y divide-slate-100 md:hidden">
+                     {data.map((profile: any) => (
+                        <article key={profile.id} className="p-4 sm:p-5">
+                           <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                 <h3 className="truncate text-sm font-semibold text-slate-900">
+                                    {profile.link_name}
+                                 </h3>
+                                 <p className="mt-1 truncate text-xs text-slate-500">
+                                    /{profile.url_name}
+                                 </p>
+                              </div>
+                              <Link
+                                 href={`/bio-links/customize/${profile.id}`}
+                                 className="shrink-0 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-100"
+                              >
+                                 Düzenle
+                              </Link>
+                           </div>
+
+                           <div className="mt-4 grid grid-cols-2 gap-2">
+                              <a
+                                 href={`/${profile.url_name}`}
+                                 target="_blank"
+                                 rel="noopener noreferrer"
+                                 className="inline-flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                              >
+                                 Profili Gör
+                              </a>
+                              <button
+                                 type="button"
+                                 onClick={() => handleCopy(profile.id, profile.url_name)}
+                                 className="inline-flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                              >
+                                 {copied === profile.id ? "Kopyalandı" : "Linki Kopyala"}
+                              </button>
+                              <Link
+                                 href={`/link/analytics/${profile.id}`}
+                                 className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                              >
+                                 <ChartLineUp className="h-4 w-4 text-slate-500" />
+                                 {profile.visited_count ?? 0} görüntülenme
+                              </Link>
+                              {profile.qrcode ? (
+                                 <div className="flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2">
+                                    <img
+                                       className="h-8 w-8 rounded-sm"
+                                       src={profile.qrcode.img_data}
+                                       alt={`${profile.link_name} QR kodu`}
+                                    />
+                                 </div>
+                              ) : (
+                                 <button
+                                    type="button"
+                                    disabled={creatingLinkId === profile.id}
+                                    onClick={() => startCreateQR(profile.id)}
+                                    className="inline-flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                                 >
+                                    {creatingLinkId === profile.id ? "Oluşturuluyor..." : "QR Oluştur"}
+                                 </button>
+                              )}
+                           </div>
+                        </article>
+                     ))}
+                  </div>
+
+                  <div className="hidden overflow-x-auto md:block">
                   <table {...getTableProps()} className="w-full min-w-[1000px]">
                      <thead>
                         <TableHead justifyHead headerGroups={headerGroups} />
@@ -214,6 +281,7 @@ const Show = (props: Props) => {
                                              <div className="text-center">
                                                 <a
                                                    target="_blank"
+                                                   rel="noopener noreferrer"
                                                    href={`/${url_name}`}
                                                    className="rounded-lg bg-green-50 px-2.5 py-1 text-sm font-medium text-green-600 hover:bg-green-100"
                                                 >
@@ -307,7 +375,8 @@ const Show = (props: Props) => {
                         })}
                      </tbody>
                   </table>
-               </div>
+                  </div>
+               </>
             )}
 
             <TablePagination

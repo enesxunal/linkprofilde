@@ -1,6 +1,6 @@
 import { PageProps, PlanProps } from "@/types";
 import BadgeCheck from "../Icons/BadgeCheck";
-import { Button } from "@material-tailwind/react";
+import { Button } from "@/Components/MaterialLite";
 import { usePage } from "@inertiajs/react";
 import BasicPlanSelect from "./BasicPlanSelect";
 

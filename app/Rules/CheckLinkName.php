@@ -7,6 +7,13 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class CheckLinkName implements ValidationRule
 {
+    private const RESERVED = [
+        'admin', 'app', 'assets', 'billing', 'blog', 'build', 'currentplan', 'dashboard',
+        'forgotpassword', 'login', 'logout', 'password', 'projects', 'q', 'qrcodes',
+        'register', 'resetpassword', 'robots', 'settings', 'shortlinks', 'sitemap',
+        'storage', 'tosla', 'verifyemail', 'version', 'llms', 'homesection', 'biolinks',
+    ];
+
     /**
      * Run the validation rule.
      *
@@ -14,21 +21,16 @@ class CheckLinkName implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $check1 = strpos($value, 'http') !== false;
-        $check2 = strpos($value, 'https') !== false;
+        $value = (string) $value;
 
-        $check3 = '';
-        $chars = str_split($value);
-        foreach ($chars as $ch) {
-            if ($ch >= 'a' && $ch <= 'z' || $ch >= 'A' && $ch <= 'Z' || $ch >= '0' && $ch <= '9') {
-                $check3 = $check3 . $ch;
-            }
+        if (preg_match('/^[A-Za-z0-9]+$/', $value) !== 1) {
+            $fail('Profil adresi yalnızca harf ve rakamlardan oluşabilir; boşluk veya özel karakter kullanılamaz.');
+            return;
         }
 
-        if (!$check1 && !$check2 && $check3 == $value) {
-            return;
-        } else {
-            $fail('The url name should be characters or numbers without space.');
+        $normalized = strtolower($value);
+        if (in_array($normalized, self::RESERVED, true)) {
+            $fail('Bu profil adresi sistem tarafından ayrılmıştır. Lütfen farklı bir adres seçin.');
         }
     }
 }

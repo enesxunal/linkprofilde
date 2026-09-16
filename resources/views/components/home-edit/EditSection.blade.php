@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header border-0">
-                <h5 class="modal-title">Update {{$sections->name}} Section</h5>
+                <h5 class="modal-title">{{$sections->name}} Bölümünü Güncelle</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -59,7 +59,7 @@
                             <input name="current_thumbnail" value="{{$sections->thumbnail}}" hidden>
 
                             <label style="display: block; margin-top: 12px">
-                                {{__('Change Thumbnail')}}
+                                {{__('Görseli Değiştir')}}
                             </label>
                             
                             <input 

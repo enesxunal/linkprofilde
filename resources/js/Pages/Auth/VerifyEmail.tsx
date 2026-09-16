@@ -1,27 +1,40 @@
 import Dashboard from "@/Layouts/Dashboard";
 import { Head, router } from "@inertiajs/react";
-import { Button } from "@material-tailwind/react";
-import { ReactNode } from "react";
+import { Button } from "@/Components/MaterialLite";
+import { ReactNode, useState } from "react";
 
 const VerifyEmail = () => {
+   const [sending, setSending] = useState(false);
+
+   const resend = () => {
+      if (sending) return;
+      setSending(true);
+      router.post(route("verification.send"), {}, {
+         preserveScroll: true,
+         onFinish: () => setSending(false),
+      });
+   };
+
    return (
       <>
          <Head title="E-posta Doğrula" />
          <div className="mt-10 flex items-center justify-center">
-            <div className="max-w-[600px] card p-5">
-               <p className="text-justify">
-                  We have sent an email verification link to your registered
-                  email. Please check your email to verify your email address.
-                  Otherwise you can't access any feature.
+            <div className="card w-full max-w-[600px] p-5 sm:p-6">
+               <h1 className="text-lg font-semibold text-slate-900">
+                  E-posta adresinizi doğrulayın
+               </h1>
+               <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Kayıtlı e-posta adresinize bir doğrulama bağlantısı gönderdik.
+                  Panel özelliklerini kullanabilmek için e-postanızı kontrol edip
+                  bağlantıya tıklayın.
                </p>
 
                <Button
-                  color="blue"
-                  variant="gradient"
-                  onClick={() => router.post(route("verification.send"))}
-                  className="mt-6 py-2.5 px-5 w-full rounded-md font-medium capitalize text-sm hover:shadow-md"
+                  onClick={resend}
+                  disabled={sending}
+                  className="mt-6 w-full rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                >
-                  Resend Verification Link
+                  {sending ? "Gönderiliyor..." : "Doğrulama Bağlantısını Tekrar Gönder"}
                </Button>
             </div>
          </div>

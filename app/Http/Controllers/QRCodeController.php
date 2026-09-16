@@ -42,7 +42,7 @@ class QRCodeController extends Controller
 
             return Inertia::render('QRCodes/Show', compact('qrcodes', 'limit'));
         } catch (Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //---------------------------------------------------
@@ -73,7 +73,7 @@ class QRCodeController extends Controller
 
             return Inertia::render('QRCodes/Create', compact('projects', 'biolinks', 'shortlinks'));
         } catch (Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //---------------------------------------------------
@@ -174,7 +174,7 @@ class QRCodeController extends Controller
                 return response()->json(['message' => 'QR görseli kaydedilemedi.'], 422);
             }
 
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -276,7 +276,7 @@ class QRCodeController extends Controller
             } catch (Throwable $th) {
                 report($th);
 
-                return back()->with('error', $th->getMessage());
+                return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
             }
         }
 
@@ -362,7 +362,7 @@ class QRCodeController extends Controller
         } catch (Throwable $th) {
             report($th);
 
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //---------------------------------------------------
@@ -390,7 +390,7 @@ class QRCodeController extends Controller
 
             return back()->with('success', 'QR kod başarıyla silindi.');
         } catch (Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //---------------------------------------------------

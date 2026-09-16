@@ -26,7 +26,7 @@ class SubscriptionController extends Controller
                 return redirect()->route('plan')->with('error', 'Geçersiz veya eksik parametre.');
             }
         } catch (\Throwable $th) {
-            return redirect()->route('plan')->with('error', $th->getMessage());
+            return redirect()->route('plan')->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -----------------------------------------
@@ -42,7 +42,7 @@ class SubscriptionController extends Controller
 
             return  Inertia::render('Admin/Subscriptions', compact('subscriptions'));
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -----------------------------------------
@@ -67,7 +67,7 @@ class SubscriptionController extends Controller
 
             return $users;
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()]);
+            return response()->json(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     // -----------------------------------------

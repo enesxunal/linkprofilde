@@ -22,6 +22,7 @@
                 <li><a href="#short-links" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Kısa Link') }}</a></li>
                 <li><a href="#qr" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('QR Kod') }}</a></li>
                 <li><a href="#pricing" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Fiyatlandırma') }}</a></li>
+                <li><a href="/blog" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Blog') }}</a></li>
             </ul>
 
             <div class="ml-auto lg:ml-0 flex items-center gap-2">
@@ -99,6 +100,7 @@
                 <li><a href="#short-links">{{ __('Kısa Link') }}</a></li>
                 <li><a href="#qr">{{ __('QR Kod') }}</a></li>
                 <li><a href="#pricing">{{ __('Fiyatlandırma') }}</a></li>
+                <li><a href="/blog">{{ __('Blog') }}</a></li>
 
                 @if (auth()->user())
                     @if ($SA)

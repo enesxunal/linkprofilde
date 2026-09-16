@@ -12,8 +12,8 @@
         : 'Profilini oluştur, linklerini yönet, QR kodlarını paylaş ve ziyaretçilerini tek panelden analiz et.';
 @endphp
 
-<section id="home" class="relative pt-[88px] sm:pt-[100px] pb-16 sm:pb-24 bg-slate-50 overflow-hidden">
-    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+<section id="home" class="relative pt-[88px] sm:pt-[100px] pb-16 sm:pb-24 bg-slate-50 overflow-x-hidden">
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div class="absolute -top-24 right-0 w-[420px] h-[420px] rounded-full bg-blue-100/50 blur-3xl"></div>
         <div class="absolute bottom-0 left-0 w-[320px] h-[320px] rounded-full bg-slate-200/60 blur-3xl"></div>
     </div>

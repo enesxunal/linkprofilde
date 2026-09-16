@@ -31,7 +31,7 @@ class SuperAdminController extends Controller
 
             return Inertia::render('Admin/Users', compact('users', 'suspiciousOnly'));
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -------------------------------------------
@@ -48,7 +48,7 @@ class SuperAdminController extends Controller
 
             return response(['success' => 'Kullanıcı hesap durumu başarıyla güncellendi.', 'user' => $user]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     // -------------------------------------------
@@ -82,7 +82,7 @@ class SuperAdminController extends Controller
 
             return $users;
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()]);
+            return response()->json(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     // -------------------------------------------
@@ -96,7 +96,7 @@ class SuperAdminController extends Controller
 
             return Inertia::render('Admin/ManageThemes', compact("themes"));
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()]);
+            return response()->json(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
 
@@ -121,7 +121,7 @@ class SuperAdminController extends Controller
             $testimonials = Testimonial::all();
             return Inertia::render('Admin/Testimonials', compact('testimonials'));
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -148,7 +148,7 @@ class SuperAdminController extends Controller
 
             return back()->with('success', "Müşteri yorumu başarıyla eklendi.");
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -181,7 +181,7 @@ class SuperAdminController extends Controller
 
             return back()->with('success', "Müşteri yorumu başarıyla güncellendi.");
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -196,7 +196,7 @@ class SuperAdminController extends Controller
 
             return back()->with('success', "Müşteri yorumu başarıyla silindi.");
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -211,7 +211,7 @@ class SuperAdminController extends Controller
             return back()->with(['success' => 'Kullanıcı durumu başarıyla güncellendi.']);
         } catch (\Throwable $th) {
             //throw $th;
-            return back()->with(['error' => $th->getMessage()]);
+            return back()->with(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
 }

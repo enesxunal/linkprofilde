@@ -2,7 +2,7 @@ import EditPen from "./Icons/EditPen";
 import { ThemeProps } from "@/types";
 import { useForm } from "@inertiajs/react";
 import { FormEventHandler, useState } from "react";
-import { Button, Dialog, IconButton } from "@material-tailwind/react";
+import { Button, Dialog, IconButton } from "@/Components/MaterialLite";
 import InputDropdown from "./InputDropdown";
 
 interface Props {

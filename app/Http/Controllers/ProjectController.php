@@ -32,7 +32,7 @@ class ProjectController extends Controller
 
             return Inertia::render('Projects/Show', compact('projects', 'limit'));
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //-------------------------------------------------------
@@ -61,7 +61,7 @@ class ProjectController extends Controller
 
             return back()->with('success', 'Proje başarıyla oluşturuldu.');
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //-------------------------------------------------------
@@ -87,7 +87,7 @@ class ProjectController extends Controller
 
             return response(['success' => 'Proje başarıyla güncellendi.', 'project' => $project]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //-------------------------------------------------------
@@ -111,7 +111,7 @@ class ProjectController extends Controller
 
             return back()->with('success', 'Proje başarıyla silindi.');
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //-------------------------------------------------------
@@ -137,7 +137,7 @@ class ProjectController extends Controller
 
             return $projects;
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()]);
+            return response()->json(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------
@@ -164,7 +164,7 @@ class ProjectController extends Controller
 
             return Inertia::render('Projects/QRCodes', compact('project'));
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //---------------------------------------------------

@@ -3,7 +3,7 @@ import {
    MenuItem,
    MenuList,
    MenuHandler,
-} from "@material-tailwind/react";
+} from "@/Components/MaterialLite";
 import SimpleBar from "simplebar-react";
 import { router } from "@inertiajs/react";
 import { PaginationProps } from "@/types";

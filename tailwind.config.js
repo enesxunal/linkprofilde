@@ -1,8 +1,7 @@
-import withMT from "@material-tailwind/react/utils/withMT";
 import forms from "@tailwindcss/forms";
 
 /** @type {import('tailwindcss').Config} */
-export default withMT({
+export default {
    content: [
       "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
       "./storage/framework/views/*.php",
@@ -29,7 +28,6 @@ export default withMT({
                800: "#1D2939",
                900: "#101828",
             },
-            // Material Tailwind withMT strips default slate; homepage uses slate-* heavily.
             slate: {
                50: "#f8fafc",
                100: "#f1f5f9",
@@ -62,4 +60,4 @@ export default withMT({
    },
 
    plugins: [forms],
-});
+};

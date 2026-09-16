@@ -2,39 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AppHelper;
 use App\Models\AppSection;
 use App\Models\AppSetting;
 use App\Models\CustomPage;
 use App\Support\PageHtml;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class CustomPageController extends Controller
 {
-    function index()
+    public function index()
     {
         try {
-            $custom_pages = CustomPage::all();
+            $custom_pages = CustomPage::query()->orderBy('created_at', 'desc')->get();
 
             return Inertia::render('Admin/CustomPage/Show', compact('custom_pages'));
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', AppHelper::publicExceptionMessage($th));
         }
     }
 
-
-    function create()
+    public function create()
     {
-        try {
-            return Inertia::render('Admin/CustomPage/Create');
-        } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
-        }
+        return Inertia::render('Admin/CustomPage/Create');
     }
 
-
-    function store(Request $request)
+    public function store(Request $request)
     {
         $data = $this->validatedPage($request);
 
@@ -43,22 +39,29 @@ class CustomPageController extends Controller
 
             return redirect()
                 ->route('custom-page')
-                ->with('success', 'A new page created successfully.');
+                ->with('success', 'Sayfa başarıyla oluşturuldu.');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', AppHelper::publicExceptionMessage(
+                $th,
+                'Sayfa oluşturulamadı. Lütfen tekrar deneyin.'
+            ));
         }
     }
 
-
-    function pageView(Request $request, $page)
+    public function pageView(Request $request, $page)
     {
         $currentPage = CustomPage::where('route', $page)->first();
-        if (!$currentPage) {
+        if (! $currentPage) {
             abort(404);
         }
 
         try {
-            $app = AppSetting::first();
+            $app = AppSetting::first() ?? (object) [
+                'title' => config('app.name', 'LinkProfilde'),
+                'name' => config('app.name', 'LinkProfilde'),
+                'description' => 'Dijital profil ve bağlantı yönetimi.',
+                'logo' => 'favicon.ico',
+            ];
             $customPages = CustomPage::all();
             $appSections = AppSection::all();
             $safeContent = PageHtml::sanitize((string) $currentPage->content);
@@ -68,73 +71,83 @@ class CustomPageController extends Controller
                 compact('app', 'customPages', 'currentPage', 'appSections', 'safeContent')
             );
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            report($th);
+            abort(500);
         }
     }
 
-
-    function update($id)
+    public function update($id)
     {
-        try {
-            $custom_page = CustomPage::find($id);
+        $custom_page = CustomPage::findOrFail($id);
 
-            return Inertia::render('Admin/CustomPage/Update', compact('custom_page'));
-        } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
-        }
+        return Inertia::render('Admin/CustomPage/Update', compact('custom_page'));
     }
 
-
-    function save(Request $request, $id)
+    public function save(Request $request, $id)
     {
-        $page = CustomPage::find($id);
-        if (!$page) {
-            abort(404);
-        }
-
-        $data = $this->validatedPage($request);
+        $page = CustomPage::findOrFail($id);
+        $data = $this->validatedPage($request, (int) $page->id);
 
         try {
             $page->update($data);
 
             return redirect()
                 ->route('custom-page')
-                ->with('success', 'Page updated successfully.');
+                ->with('success', 'Sayfa başarıyla güncellendi.');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', AppHelper::publicExceptionMessage(
+                $th,
+                'Sayfa güncellenemedi. Lütfen tekrar deneyin.'
+            ));
         }
     }
 
-
-    function delete($id)
+    public function delete($id)
     {
+        $page = CustomPage::findOrFail($id);
+
         try {
-            CustomPage::find($id)->delete();
+            $page->delete();
 
-            return back()->with('success', 'Page deleted successfully.');
+            return back()->with('success', 'Sayfa başarıyla silindi.');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', AppHelper::publicExceptionMessage(
+                $th,
+                'Sayfa silinemedi. Lütfen tekrar deneyin.'
+            ));
         }
     }
 
-    private function validatedPage(Request $request): array
+    private function validatedPage(Request $request, ?int $ignoreId = null): array
     {
+        $routeRules = [
+            'required',
+            'string',
+            'max:30',
+            'regex:/^[a-z]+(?:-[a-z]+)*$/',
+            Rule::unique('custom_pages', 'route')->ignore($ignoreId),
+        ];
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:30'],
-            'route' => ['required', 'string', 'max:30', 'regex:/^[a-z]+(?:-[a-z]+)*$/'],
-            'content' => ['required', 'string'],
+            'route' => $routeRules,
+            'content' => ['required', 'string', 'max:200000'],
+        ], [
+            'route.regex' => 'Sayfa yolu yalnızca küçük harf ve tire içerebilir.',
+            'route.unique' => 'Bu sayfa yolu zaten kullanılıyor.',
+            'content.max' => 'Sayfa içeriği çok uzun.',
         ]);
 
         $html = PageHtml::sanitize($data['content']);
         if ($html === '') {
             throw ValidationException::withMessages([
-                'content' => 'The content contains invalid HTML.',
+                'content' => 'Sayfa içeriği boş veya geçersiz HTML içeriyor.',
             ]);
         }
 
         return [
-            'name' => $data['name'],
-            'route' => $data['route'],
+            'name' => trim($data['name']),
+            'route' => strtolower(trim($data['route'])),
             'content' => $html,
         ];
     }

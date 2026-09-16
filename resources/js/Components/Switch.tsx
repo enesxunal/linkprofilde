@@ -1,5 +1,5 @@
 import { ChangeEvent } from "react";
-import { Switch as InputSwitch } from "@material-tailwind/react";
+import { Switch as InputSwitch } from "@/Components/MaterialLite";
 
 interface SwitchProps {
    name: string;

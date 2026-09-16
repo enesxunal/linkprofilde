@@ -28,9 +28,28 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
-        // Sahte hesap önlemi: Aynı IP'den saatte en fazla 5 kayıt
+        // Sahte hesap önlemi: Aynı IP'den saatte en fazla 5 kayıt.
         RateLimiter::for('register', function (Request $request) {
             return Limit::perHour(5)->by($request->ip());
+        });
+
+        // Password reset is intentionally keyed by both IP and normalized e-mail.
+        RateLimiter::for('password-reset', function (Request $request) {
+            $email = strtolower(trim((string) $request->input('email')));
+
+            return [
+                Limit::perMinute(3)->by('password-reset-ip:' . $request->ip()),
+                Limit::perHour(5)->by('password-reset-email:' . hash('sha256', $email)),
+            ];
+        });
+
+        RateLimiter::for('password-reset-submit', function (Request $request) {
+            $email = strtolower(trim((string) $request->input('email')));
+
+            return [
+                Limit::perMinute(5)->by('password-reset-submit-ip:' . $request->ip()),
+                Limit::perHour(10)->by('password-reset-submit-email:' . hash('sha256', $email)),
+            ];
         });
 
         $this->routes(function () {

@@ -30,6 +30,15 @@ interface Props {
 }
 
 const Create = ({ projects, biolinks = [], shortlinks = [] }: Props) => {
+   const requestedLinkId =
+      typeof window !== "undefined"
+         ? Number(new URLSearchParams(window.location.search).get("link_id")) || null
+         : null;
+   const requestedLink = requestedLinkId
+      ? biolinks.find((item) => item.id === requestedLinkId) ?? null
+      : null;
+   const directProfileMode = Boolean(requestedLink);
+
    const [state, setState] = useState<{ [key: string]: any }>({
       size: 300,
       quietZone: 20,
@@ -81,12 +90,15 @@ const Create = ({ projects, biolinks = [], shortlinks = [] }: Props) => {
    const [projectId, setProjectId] = useState<number | null>(
       projects[0] ? projects[0].id : null
    );
-   const [name, setName] = useState("");
-   const [destinationType, setDestinationType] =
-      useState<DestinationType>("external");
+   const [name, setName] = useState(
+      requestedLink ? `${requestedLink.link_name || requestedLink.url_name} QR` : ""
+   );
+   const [destinationType, setDestinationType] = useState<DestinationType>(
+      requestedLink ? "biolink" : "external"
+   );
    const [destinationUrl, setDestinationUrl] = useState("");
    const [destinationLinkId, setDestinationLinkId] = useState<number | null>(
-      null
+      requestedLink?.id ?? null
    );
    const [errors, setErrors] = useState<Record<string, string>>({});
    const [saving, setSaving] = useState(false);
@@ -169,18 +181,27 @@ const Create = ({ projects, biolinks = [], shortlinks = [] }: Props) => {
             qrId = existing.id;
             publicUrl = existing.publicUrl;
          } else {
-            const payload: Record<string, unknown> = {
-               project_id: projectId,
-               name: name || null,
-               qr_type: "project_qr",
-               destination_type: destinationType,
-               destination_url:
-                  destinationType === "external" ? destinationUrl : null,
-               destination_link_id:
-                  destinationType === "external" ? null : destinationLinkId,
-            };
+            const payload: Record<string, unknown> = directProfileMode
+               ? {
+                    link_id: requestedLink?.id,
+                    name: name || null,
+                    qr_type: "link_qr",
+                 }
+               : {
+                    project_id: projectId,
+                    name: name || null,
+                    qr_type: "project_qr",
+                    destination_type: destinationType,
+                    destination_url:
+                       destinationType === "external" ? destinationUrl : null,
+                    destination_link_id:
+                       destinationType === "external" ? null : destinationLinkId,
+                 };
 
-            const prep = await axios.post("/qrcodes/prepare", payload);
+            const prep = await axios.post(
+               directProfileMode ? "/qrcodes/prepare/link-qr" : "/qrcodes/prepare",
+               payload
+            );
             publicUrl = prep.data.public_url;
             qrId = prep.data.id;
 
@@ -226,8 +247,12 @@ const Create = ({ projects, biolinks = [], shortlinks = [] }: Props) => {
       <>
          <Head title="QR Kod Oluştur" />
          <PageHeader
-            title="QR Kod Oluştur"
-            description="Dinamik QR kod oluşturun. Hedefi sonradan değiştirebilirsiniz."
+            title={directProfileMode ? "Profil QR Kodu Oluştur" : "QR Kod Oluştur"}
+            description={
+               directProfileMode
+                  ? `${requestedLink?.link_name || "Profil"} için dinamik QR kodunuzu tasarlayın.`
+                  : "Dinamik QR kod oluşturun. Hedefi sonradan değiştirebilirsiniz."
+            }
          />
 
          <form onSubmit={submit}>
@@ -235,14 +260,20 @@ const Create = ({ projects, biolinks = [], shortlinks = [] }: Props) => {
                <div className="min-w-0 space-y-6">
                   <PanelCard
                      title="Hedef"
-                     description="QR okutulunca açılacak adresi seçin."
+                     description={
+                        directProfileMode
+                           ? "Bu QR kod doğrudan profilinize bağlıdır."
+                           : "QR okutulunca açılacak adresi seçin."
+                     }
                   >
                      <div className="space-y-4">
                         <AlertBanner variant="info">
-                           QR görseli sabit bir yönlendirme adresi taşır. Hedefi
-                           sonra değiştirseniz basılı QR’lar yeni adrese gider.
+                           {directProfileMode
+                              ? `QR hedefi ${requestedLink?.link_name || "profiliniz"}. Profil adresiniz değişse bile dinamik QR yönlendirmesi yönetilebilir.`
+                              : "QR görseli sabit bir yönlendirme adresi taşır. Hedefi sonra değiştirseniz basılı QR’lar yeni adrese gider."}
                         </AlertBanner>
 
+                        {!directProfileMode ? (
                         <InputDropdown
                            required
                            fullWidth
@@ -258,8 +289,17 @@ const Create = ({ projects, biolinks = [], shortlinks = [] }: Props) => {
                               setDestinationUrl("");
                            }}
                         />
+                        ) : (
+                           <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+                              <p className="text-xs font-medium uppercase tracking-wide text-blue-600">Profil</p>
+                              <p className="mt-1 font-semibold text-slate-900">
+                                 {requestedLink?.link_name || requestedLink?.url_name}
+                              </p>
+                              <p className="mt-1 text-sm text-slate-500">/{requestedLink?.url_name}</p>
+                           </div>
+                        )}
 
-                        {destinationType === "external" ? (
+                        {!directProfileMode && destinationType === "external" ? (
                            <Input
                               fullWidth
                               required
@@ -275,7 +315,7 @@ const Create = ({ projects, biolinks = [], shortlinks = [] }: Props) => {
                            />
                         ) : null}
 
-                        {destinationType === "biolink" ? (
+                        {!directProfileMode && destinationType === "biolink" ? (
                            <InputDropdown
                               required
                               fullWidth
@@ -290,7 +330,7 @@ const Create = ({ projects, biolinks = [], shortlinks = [] }: Props) => {
                            />
                         ) : null}
 
-                        {destinationType === "shortlink" ? (
+                        {!directProfileMode && destinationType === "shortlink" ? (
                            <InputDropdown
                               required
                               fullWidth
@@ -623,19 +663,21 @@ const Create = ({ projects, biolinks = [], shortlinks = [] }: Props) => {
 
                   <PanelCard
                      title="Kaydetme"
-                     description="Proje seçimi ve kayıt bilgileri."
+                     description={directProfileMode ? "QR kod adını belirleyin ve oluşturun." : "Proje seçimi ve kayıt bilgileri."}
                   >
                      <div className="space-y-4">
-                        <InputDropdown
-                           required
-                           fullWidth
-                           name="project_id"
-                           label="Proje Seçiniz"
-                           error={errors.project_id}
-                           defaultValue={projectId}
-                           itemList={project_list}
-                           onChange={(e: any) => setProjectId(e.value)}
-                        />
+                        {!directProfileMode ? (
+                           <InputDropdown
+                              required
+                              fullWidth
+                              name="project_id"
+                              label="Proje Seçiniz"
+                              error={errors.project_id}
+                              defaultValue={projectId}
+                              itemList={project_list}
+                              onChange={(e: any) => setProjectId(e.value)}
+                           />
+                        ) : null}
                         <Input
                            fullWidth
                            type="text"

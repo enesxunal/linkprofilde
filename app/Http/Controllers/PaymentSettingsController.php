@@ -40,7 +40,7 @@ class PaymentSettingsController extends Controller
 
             return Inertia::render('Admin/PaymentSetup', ['tosla' => $toslaProps]);
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -90,7 +90,7 @@ class PaymentSettingsController extends Controller
         } catch (\Throwable $th) {
             return back()
                 ->withInput($request->except('tosla_api_pass'))
-                ->with('error', $th->getMessage());
+                ->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 }

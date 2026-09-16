@@ -6,8 +6,10 @@ import Breadcrumb from "@/Components/Breadcrumb";
 import { ProjectProps } from "@/types";
 import QRCodeDownloader2 from "@/Components/QRCode/QRCodeDownloader2";
 import DeleteByInertia from "@/Components/DeleteByInertia";
-import { IconButton } from "@material-tailwind/react";
+import { IconButton } from "@/Components/MaterialLite";
 import Delete from "@/Components/Icons/Delete";
+import EmptyState from "@/Components/Panel/EmptyState";
+import PanelCard from "@/Components/Panel/PanelCard";
 
 interface Props {
    project: ProjectProps;
@@ -19,6 +21,14 @@ const QRCodes = ({ project }: Props) => {
          <Head title={project.project_name} />
          <Breadcrumb Icon={QRcode} title={project.project_name} />
 
+         {project.qrcodes.length === 0 ? (
+            <PanelCard>
+               <EmptyState
+                  title="Bu projede QR kod yok"
+                  description="Projeye bağlı QR kodlar oluşturulduğunda burada listelenecek."
+               />
+            </PanelCard>
+         ) : (
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {project.qrcodes.map((qrcode) => (
                <div
@@ -44,6 +54,7 @@ const QRCodes = ({ project }: Props) => {
                </div>
             ))}
          </div>
+         )}
       </>
    );
 };

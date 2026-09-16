@@ -11,6 +11,8 @@ use App\Models\PricingPlan;
 use App\Rules\CheckLinkName;
 use App\Rules\XSSPurifier;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 
@@ -39,7 +41,7 @@ class ShortLinkController extends Controller
 
             return Inertia::render('ShortLinks/Show', compact('links', 'limit'));
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -------------------------------------------------
@@ -50,6 +52,13 @@ class ShortLinkController extends Controller
     function create(Request $req)
     {
         $user = auth()->user();
+
+        $rateKey = 'short-link-create:' . $user->id;
+        if (RateLimiter::tooManyAttempts($rateKey, 30)) {
+            return back()->with('error', 'Çok fazla kısa link oluşturdunuz. Lütfen daha sonra tekrar deneyin.');
+        }
+        RateLimiter::hit($rateKey, 3600);
+
         $current = Link::where('user_id', $user->id)->where('link_type', 'shortlink')->count();
         $limit = AppHelper::limit_checker('shortlinks', $current);
         if ($limit) {
@@ -77,25 +86,25 @@ class ShortLinkController extends Controller
         }
 
         try {
-            $short_link = "";
             if ($req->link_slug) {
-                $short_link = $req->link_slug;
+                $short_link = strtolower(trim($req->link_slug));
             } else {
-                $link_key = rand(10000000, 90000000);
-                $short_link = base_convert($link_key, 10, 36);
+                do {
+                    $short_link = strtolower(Str::random(10));
+                } while (Link::where('url_name', $short_link)->exists());
             }
 
             $link = new Link;
             $link->user_id = $user->id;
             $link->link_name = $req->link_name;
-            $link->link_type = $req->link_type;
+            $link->link_type = 'shortlink';
             $link->url_name = $short_link;
             $link->external_url = $req->external_url;
             $link->save();
 
             return back()->with('success', 'Kısa link başarıyla oluşturuldu.');
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //--------------------------------------------------
@@ -123,7 +132,7 @@ class ShortLinkController extends Controller
 
             return response(['success' => 'Kısa link başarıyla güncellendi.', 'link' => $link]);
         } catch (\Throwable $th) {
-            return response(['error' => $th->getMessage()]);
+            return response(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------
@@ -155,7 +164,7 @@ class ShortLinkController extends Controller
 
             return back()->with('success', 'Link başarıyla silindi.');
         } catch (\Throwable $th) {
-            return back()->with("error", $th->getMessage());
+            return back()->with("error", \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //--------------------------------------------------
@@ -186,7 +195,7 @@ class ShortLinkController extends Controller
 
             return $links;
         } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()]);
+            return response()->json(['error' => \App\Helpers\AppHelper::publicExceptionMessage($th)]);
         }
     }
     //--------------------------------------------------

@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEventHandler, useState } from "react";
-import { Dialog } from "@material-tailwind/react";
+import { Dialog } from "@/Components/MaterialLite";
 import { LinkProps } from "@/types";
 import Input from "../Input";
 import { useForm } from "@inertiajs/react";

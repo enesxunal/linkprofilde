@@ -5,7 +5,7 @@
             class="text-center pb-8 max-w-2xl mx-auto"
         >
             <h2 class="home-section-title text-slate-900 font-bold tracking-tight">{{ __('Fiyatlandırma') }}</h2>
-            <p class="mt-4 text-slate-600 text-base sm:text-lg">{{ __('Size uygun planı seçin') }}</p>
+            <p class="mt-4 text-slate-600 text-base sm:text-lg">{{ __('İhtiyacınıza göre ücretsiz başlayın, gerektiğinde yükseltin.') }}</p>
         </div>
 
         <ul
@@ -52,14 +52,17 @@
                             ];
 
                             if ($plan->name == 'BASIC') {
+                                $displayName = 'Ücretsiz';
                                 $badge = 'bg-slate-100 text-slate-600';
                                 $cta = __('Ücretsiz Başla');
                             } else if ($plan->name == 'STANDARD') {
+                                $displayName = 'Pro';
                                 $badge = 'bg-emerald-50 text-emerald-700';
-                                $cta = __('Planı Seç');
+                                $cta = __('Pro’ya Geç');
                             } else {
+                                $displayName = 'Business';
                                 $badge = 'bg-blue-50 text-blue-700';
-                                $cta = __('Planı Seç');
+                                $cta = __('Business’a Geç');
                             }
                         @endphp
                         <article
@@ -68,7 +71,7 @@
                         >
                             <div class="p-6 border-b border-slate-100">
                                 <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $badge }}">
-                                    {{ $plan->name }}
+                                    {{ $displayName }}
                                 </span>
 
                                 @if ($plan->name == 'BASIC')
@@ -131,14 +134,17 @@
                             ];
 
                             if ($plan->name == 'BASIC') {
+                                $displayName = 'Ücretsiz';
                                 $badge = 'bg-slate-100 text-slate-600';
                                 $cta = __('Ücretsiz Başla');
                             } else if ($plan->name == 'STANDARD') {
+                                $displayName = 'Pro';
                                 $badge = 'bg-emerald-50 text-emerald-700';
-                                $cta = __('Planı Seç');
+                                $cta = __('Pro’ya Geç');
                             } else {
+                                $displayName = 'Business';
                                 $badge = 'bg-blue-50 text-blue-700';
-                                $cta = __('Planı Seç');
+                                $cta = __('Business’a Geç');
                             }
                         @endphp
                         <article
@@ -147,7 +153,7 @@
                         >
                             <div class="p-6 border-b border-slate-100">
                                 <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $badge }}">
-                                    {{ $plan->name }}
+                                    {{ $displayName }}
                                 </span>
 
                                 @if ($plan->name == 'BASIC')

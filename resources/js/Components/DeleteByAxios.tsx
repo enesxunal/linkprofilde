@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { Dialog } from "@material-tailwind/react";
+import { Dialog } from "@/Components/MaterialLite";
 
 interface Props {
    apiPath: string;

@@ -47,18 +47,8 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                 <div class="relative order-2 lg:order-1" data-aos="fade-up">
-                    <div class="relative max-w-md mx-auto">
+                    <div class="relative max-w-md mx-auto flex justify-center">
                         @include('components.home.HeroPreview')
-
-                        <div class="absolute -left-2 top-24 hidden md:block rounded-xl bg-white border border-slate-200 shadow-sm px-3 py-2 text-xs font-medium text-slate-700" aria-hidden="true">
-                            40+ tema
-                        </div>
-                        <div class="absolute -right-2 top-48 hidden md:block rounded-xl bg-white border border-slate-200 shadow-sm px-3 py-2 text-xs font-medium text-slate-700" aria-hidden="true">
-                            Sürükle & bırak
-                        </div>
-                        <div class="absolute left-4 bottom-8 hidden md:block rounded-xl bg-white border border-slate-200 shadow-sm px-3 py-2 text-xs font-medium text-slate-700" aria-hidden="true">
-                            Sosyal + vCard
-                        </div>
                     </div>
                 </div>
 

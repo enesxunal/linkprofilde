@@ -27,7 +27,7 @@
             'href' => '#qr',
         ],
         [
-            'title' => 'Analytics',
+            'title' => 'Analitik',
             'description' => 'Ziyaretçi, cihaz, tarayıcı ve yönlendirme kaynaklarını analiz et.',
             'icon' => 'chart-line-up',
             'href' => '#analytics',
@@ -57,7 +57,7 @@
                 {{ __('Dört temel ürün. Tek platform.') }}
             </h2>
             <p class="mt-4 text-slate-600 text-base sm:text-lg">
-                LinkProfilde; kişisel dijital profil, link yönetimi, QR ve analytics ihtiyaçlarını aynı yerde toplar.
+                LinkProfilde; kişisel dijital profil, link yönetimi, QR ve analitik ihtiyaçlarını aynı yerde toplar.
             </p>
         </div>
 

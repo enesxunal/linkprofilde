@@ -1,5 +1,5 @@
 import { FormEventHandler, useState } from "react";
-import { Dialog } from "@material-tailwind/react";
+import { Dialog } from "@/Components/MaterialLite";
 import { LinkProps } from "@/types";
 import CirclePlus from "../Icons/CirclePlus";
 import Input from "../Input";

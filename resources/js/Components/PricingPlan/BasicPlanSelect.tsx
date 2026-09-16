@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { router } from "@inertiajs/react";
-import { Button, Dialog } from "@material-tailwind/react";
+import { Button, Dialog } from "@/Components/MaterialLite";
 
 const BasicPlanSelect = (props: { id: number }) => {
    const [open, setOpen] = useState(false);

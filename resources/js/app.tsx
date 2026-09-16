@@ -4,7 +4,6 @@ import "simplebar-react/dist/simplebar.min.css";
 import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
-import { ThemeProvider } from "@material-tailwind/react";
 import { Toaster } from "react-hot-toast";
 import { AppContextProvider } from "./context/AppContext";
 
@@ -19,10 +18,8 @@ createInertiaApp({
       const root = createRoot(el);
 
       root.render(
-         <ThemeProvider>
-            <AppContextProvider>
-               <App {...props} />
-            </AppContextProvider>
+         <AppContextProvider>
+            <App {...props} />
 
             <Toaster
                position="top-right"
@@ -33,7 +30,7 @@ createInertiaApp({
                   style: { padding: "12px 16px", fontWeight: 500 },
                }}
             />
-         </ThemeProvider>
+         </AppContextProvider>
       );
    },
    progress: {

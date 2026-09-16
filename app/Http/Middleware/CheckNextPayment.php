@@ -23,7 +23,7 @@ class CheckNextPayment
 
         if ($user->next_payment) {
             if ($user->next_payment <= date('Y-m-d')) {
-                return back()->with('error', 'Your subscription is over now. Please complete your payment before use app more.');
+                return back()->with('error', 'Abonelik süreniz sona erdi. Uygulamayı kullanmaya devam etmek için planınızı yenileyin.');
             } else {
                 return $next($request);
             }

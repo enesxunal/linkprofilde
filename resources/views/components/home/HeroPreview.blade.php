@@ -1,58 +1,69 @@
 {{-- Static marketing mockup only. No real user data. No React mount. --}}
 <div class="relative w-full max-w-[340px] mx-auto">
-    <div class="absolute -left-4 top-10 hidden sm:block rounded-xl bg-white border border-slate-200 shadow-sm px-3 py-2 text-xs font-medium text-slate-600" aria-hidden="true">
-        <span class="inline-flex items-center gap-1.5">
-            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-            1.2k görüntülenme
-        </span>
-    </div>
+    <div class="rounded-[2rem] border-[10px] border-gray-900 bg-gray-900 shadow-2xl overflow-hidden">
+        <div class="mx-auto h-5 w-28 rounded-b-2xl bg-gray-900" aria-hidden="true"></div>
 
-    <div class="absolute -right-2 bottom-24 hidden sm:flex items-center gap-2 rounded-xl bg-white border border-slate-200 shadow-sm px-3 py-2" aria-hidden="true">
-        <div class="h-9 w-9 rounded-md bg-slate-900 text-white grid place-items-center text-[10px] font-bold tracking-tight">
-            QR
-        </div>
-        <span class="text-xs font-medium text-slate-600">Paylaşılabilir QR</span>
-    </div>
+        {{-- Themed bio profile surface — solid colors only (reliable in production CSS) --}}
+        <div class="relative min-h-[560px] bg-gray-900 text-white">
+            <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-blue-600 to-gray-900" aria-hidden="true"></div>
 
-    <div class="relative rounded-[2rem] border-[10px] border-slate-900 bg-slate-900 shadow-2xl shadow-slate-900/20 overflow-hidden">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 z-10 h-5 w-24 rounded-b-xl bg-slate-900" aria-hidden="true"></div>
+            <div class="relative px-5 pt-8 pb-6">
+                <div class="flex flex-col items-center text-center">
+                    <div class="relative">
+                        <img
+                            src="{{ asset('assets/user-profile.png') }}"
+                            alt="Demo profil görseli"
+                            class="h-[88px] w-[88px] rounded-full object-cover border-[3px] border-white shadow-lg bg-white"
+                            width="88"
+                            height="88"
+                        >
+                        <span class="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full border-2 border-gray-900 bg-green-400" aria-hidden="true"></span>
+                    </div>
 
-        <div class="bg-gradient-to-b from-slate-100 to-white min-h-[520px] px-5 pt-10 pb-6">
-            <div class="flex flex-col items-center text-center">
-                <img
-                    src="{{ asset($app->logo) }}"
-                    alt="Demo profil görseli"
-                    class="h-20 w-20 rounded-full object-cover border-4 border-white shadow-md bg-white"
-                    width="80"
-                    height="80"
-                >
-                <p class="mt-4 text-lg font-bold text-slate-900">@demo.profil</p>
-                <p class="mt-1 text-sm text-slate-500 max-w-[220px]">
-                    İçerik üreticisi · Linkler, projeler ve iletişim
+                    <p class="mt-4 text-lg font-bold tracking-tight text-white">Ayşe Yılmaz</p>
+                    <p class="text-sm text-blue-300">@ayse.studio</p>
+                    <p class="mt-2 text-sm leading-relaxed text-gray-300 max-w-[240px]">
+                        Marka danışmanı · içerik · iş birlikleri. Tüm bağlantılarım tek profilde.
+                    </p>
+
+                    <div class="mt-4 flex items-center justify-center gap-2.5" aria-hidden="true">
+                        <span class="h-9 w-9 rounded-full bg-pink-500 grid place-items-center text-[11px] font-bold text-white">IG</span>
+                        <span class="h-9 w-9 rounded-full bg-red-500 grid place-items-center text-[11px] font-bold text-white">YT</span>
+                        <span class="h-9 w-9 rounded-full bg-blue-600 grid place-items-center text-[11px] font-bold text-white">in</span>
+                        <span class="h-9 w-9 rounded-full bg-green-500 grid place-items-center text-[11px] font-bold text-white">WA</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 space-y-2.5">
+                    <div class="rounded-2xl bg-white text-gray-900 text-sm font-semibold py-3.5 px-4 text-center shadow-sm">
+                        Portfolyo &amp; hizmetler
+                    </div>
+                    <div class="rounded-2xl bg-gray-800 border border-gray-700 text-white text-sm font-medium py-3.5 px-4 text-center">
+                        YouTube kanalı
+                    </div>
+                    <div class="rounded-2xl bg-gray-800 border border-gray-700 text-white text-sm font-medium py-3.5 px-4 text-center">
+                        Spotify playlist
+                    </div>
+                    <div class="rounded-2xl bg-blue-600 text-white text-sm font-semibold py-3.5 px-4 text-center shadow-sm">
+                        İş birliği için yaz
+                    </div>
+                </div>
+
+                <div class="mt-4 grid grid-cols-2 gap-2.5" aria-hidden="true">
+                    <div class="rounded-xl bg-gray-800 border border-gray-700 px-3 py-2.5 text-left">
+                        <p class="text-[10px] uppercase tracking-wide text-blue-300">QR</p>
+                        <p class="text-xs font-medium mt-0.5 text-white">Paylaş &amp; indir</p>
+                    </div>
+                    <div class="rounded-xl bg-gray-800 border border-gray-700 px-3 py-2.5 text-left">
+                        <p class="text-[10px] uppercase tracking-wide text-blue-300">Rehber</p>
+                        <p class="text-xs font-medium mt-0.5 text-white">vCard ekle</p>
+                    </div>
+                </div>
+
+                <p class="mt-5 text-center text-[10px] text-gray-400">
+                    Demo önizleme
                 </p>
-
-                <div class="mt-4 flex items-center gap-3 text-slate-500" aria-hidden="true">
-                    <span class="h-8 w-8 rounded-full bg-white border border-slate-200 grid place-items-center text-xs font-semibold text-pink-600">IG</span>
-                    <span class="h-8 w-8 rounded-full bg-white border border-slate-200 grid place-items-center text-xs font-semibold text-emerald-600">WA</span>
-                    <span class="h-8 w-8 rounded-full bg-white border border-slate-200 grid place-items-center text-xs font-semibold text-blue-700">in</span>
-                </div>
             </div>
-
-            <div class="mt-6 space-y-3">
-                <div class="rounded-xl bg-slate-900 text-white text-sm font-medium py-3 px-4 text-center shadow-sm">
-                    Portfolyo
-                </div>
-                <div class="rounded-xl bg-white border border-slate-200 text-slate-800 text-sm font-medium py-3 px-4 text-center">
-                    İletişim
-                </div>
-                <div class="rounded-xl bg-white border border-slate-200 text-slate-800 text-sm font-medium py-3 px-4 text-center">
-                    Son projeler
-                </div>
-            </div>
-
-            <p class="mt-8 text-center text-[11px] text-slate-400">
-                Demo önizleme
-            </p>
         </div>
     </div>
 </div>

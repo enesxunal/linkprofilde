@@ -22,3 +22,6 @@ yarn-error.log
 /.idea.zip
 /public/upload/*
 !/public/upload/.htaccess
+.env.bak
+build.zip
+*.zip

@@ -195,3 +195,34 @@ input:checked ~ .dot {
       opacity: 0;
    }
 }
+
+/* Blog / GEO content */
+.blog-prose {
+   @apply text-[17px] leading-8 text-slate-700;
+}
+.blog-prose h2 {
+   @apply mt-10 mb-4 text-2xl font-bold tracking-tight text-slate-950;
+   line-height: 1.3;
+}
+.blog-prose h3 {
+   @apply mt-8 mb-3 text-xl font-semibold text-slate-950;
+   line-height: 1.4;
+}
+.blog-prose p {
+   @apply my-5;
+}
+.blog-prose ul {
+   @apply my-5 list-disc space-y-2 pl-6;
+}
+.blog-prose ol {
+   @apply my-5 list-decimal space-y-2 pl-6;
+}
+.blog-prose strong {
+   @apply font-semibold text-slate-900;
+}
+.blog-prose a {
+   @apply font-medium text-blue-600 underline decoration-blue-200 underline-offset-4 hover:text-blue-700;
+}
+.blog-prose blockquote {
+   @apply my-6 border-l-4 border-blue-200 bg-blue-50 px-5 py-3 text-slate-700;
+}

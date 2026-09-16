@@ -16,7 +16,7 @@ class AccountController extends Controller
         try {
             return Inertia::render('Account');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 

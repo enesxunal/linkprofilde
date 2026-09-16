@@ -6,7 +6,7 @@ import TextArea from "../TextArea";
 import EditPen from "../Icons/EditPen";
 import { useForm } from "@inertiajs/react";
 import InputDropdown from "../InputDropdown";
-import { Dialog } from "@material-tailwind/react";
+import { Dialog } from "@/Components/MaterialLite";
 import { ChangeEvent, FormEventHandler, useState } from "react";
 import { vimeoUrl, spotifyUrl, youTubeUrl, soundCloudUrl } from "@/utils/utils";
 

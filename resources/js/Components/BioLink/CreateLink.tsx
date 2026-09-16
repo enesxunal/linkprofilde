@@ -1,6 +1,6 @@
 import Input from "../Input";
 import { FormEventHandler, useEffect, useState } from "react";
-import { Dialog } from "@material-tailwind/react";
+import { Dialog } from "@/Components/MaterialLite";
 import { useForm } from "@inertiajs/react";
 
 const CreateLink = () => {

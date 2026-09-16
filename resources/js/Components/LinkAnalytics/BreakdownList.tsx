@@ -1,4 +1,4 @@
-import { Progress } from "@material-tailwind/react";
+import { Progress } from "@/Components/MaterialLite";
 import PanelCard from "@/Components/Panel/PanelCard";
 import EmptyState from "@/Components/Panel/EmptyState";
 

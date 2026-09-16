@@ -121,7 +121,7 @@ class InstallerController extends Controller
 
             return back()->with('success', 'Admin info successfully saved');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -181,7 +181,7 @@ class InstallerController extends Controller
         } catch (\Exception $e) {
             Artisan::call('up'); // Maintenance mode OFF
             Artisan::call('optimize:clear'); // Clear cache after failed update
-            return back()->with('error', $e->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($e));
         }
     }
 

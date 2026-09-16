@@ -8,7 +8,7 @@ import { shortLinksHead } from "@/utils/table-head";
 import TableHead from "@/Components/Table/TableHead";
 import EditLink from "@/Components/ShortLink/EditLink";
 import ChartLineUp from "@/Components/Icons/ChartLineUp";
-import { Button } from "@material-tailwind/react";
+import { Button } from "@/Components/MaterialLite";
 import { LinkProps, PageProps, PaginationProps } from "@/types";
 import { ReactNode, useEffect, useMemo, useState, useRef } from "react";
 import TablePagination from "@/Components/Table/TablePagination";
@@ -191,6 +191,7 @@ const Show = (props: Props) => {
                                           {column.id === "url" ? (
                                              <a
                                                 target="_blank"
+                                                rel="noopener noreferrer"
                                                 href={`${props.ziggy.url}/${url_name}`}
                                                 className="text-sm font-medium underline"
                                              >

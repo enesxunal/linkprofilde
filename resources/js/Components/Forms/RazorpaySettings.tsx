@@ -1,7 +1,7 @@
 import Input from "@/Components/Input";
 import { useForm } from "@inertiajs/react";
 import Switch from "@/Components/Switch";
-import { Button } from "@material-tailwind/react";
+import { Button } from "@/Components/MaterialLite";
 import { PaymentProps } from "@/types";
 
 const RazorpaySettings = (props: { razorpay: PaymentProps }) => {
@@ -32,12 +32,12 @@ const RazorpaySettings = (props: { razorpay: PaymentProps }) => {
 
    return (
       <div className="card max-w-[1000px] w-full mx-auto mt-7">
-         <div className="px-7 pt-7 pb-4 border-b border-b-gray-200">
-            <p className="text18 font-bold text-gray-900">
+         <div className="px-5 pt-5 pb-4 sm:px-6 border-b border-slate-200">
+            <p className="text-lg font-semibold text-slate-900">
                Razorpay Payment Gateway
             </p>
          </div>
-         <form onSubmit={submit} className="p-7">
+         <form onSubmit={submit} className="p-5 sm:p-6">
             <div className="mb-7 md:pl-[164px]">
                <Switch
                   switchId="razorpay"
@@ -54,7 +54,7 @@ const RazorpaySettings = (props: { razorpay: PaymentProps }) => {
                   name="razorpay_key"
                   value={data.razorpay_key}
                   error={errors.razorpay_key}
-                  placeholder="Enter your razorpay api key"
+                  placeholder="Razorpay API key girin"
                   onChange={onHandleChange}
                   label="Razorpay Api Key"
                   flexLabel
@@ -69,7 +69,7 @@ const RazorpaySettings = (props: { razorpay: PaymentProps }) => {
                   name="razorpay_secret"
                   value={data.razorpay_secret}
                   error={errors.razorpay_secret}
-                  placeholder="Enter your razorpay api secret"
+                  placeholder="Razorpay API secret girin"
                   onChange={onHandleChange}
                   label="Razorpay Api Secret"
                   flexLabel
@@ -78,14 +78,12 @@ const RazorpaySettings = (props: { razorpay: PaymentProps }) => {
             </div>
 
             <div className="flex items-center mt-6 md:pl-[164px]">
-               <Button
+               <button
                   type="submit"
-                  color="blue"
-                  variant="gradient"
-                  className="py-2.5 px-5 rounded-md font-medium capitalize text-sm hover:shadow-md"
-               >
-                  Save Changes
-               </Button>
+                  className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                  >
+                  Değişiklikleri Kaydet
+               </button>
             </div>
          </form>
       </div>

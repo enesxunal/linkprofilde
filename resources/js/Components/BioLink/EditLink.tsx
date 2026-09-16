@@ -4,7 +4,7 @@ import EditPen from "../Icons/EditPen";
 import { useForm } from "@inertiajs/react";
 import { FormEventHandler, useEffect, useState } from "react";
 import { LinkProps, PaginationProps } from "@/types";
-import { Dialog } from "@material-tailwind/react";
+import { Dialog } from "@/Components/MaterialLite";
 import { error, success } from "@/utils/toast";
 
 interface Props {

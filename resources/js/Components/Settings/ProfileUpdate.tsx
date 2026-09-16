@@ -2,7 +2,7 @@ import Input from "@/Components/Input";
 import { useState, FormEventHandler } from "react";
 import { useForm, usePage } from "@inertiajs/react";
 import UserCircle from "@/Components/Icons/UserCircle";
-import { Avatar } from "@material-tailwind/react";
+import { Avatar } from "@/Components/MaterialLite";
 import { PageProps } from "@/types";
 
 const ProfileUpdate = () => {

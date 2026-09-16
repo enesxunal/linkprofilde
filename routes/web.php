@@ -26,6 +26,8 @@ use App\Http\Controllers\QrRedirectController;
 use App\Http\Controllers\InstallerController;
 use App\Http\Controllers\InstallerDBController;
 use App\Http\Controllers\VersionController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\SeoController;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -46,6 +48,10 @@ if ($installed) {
     require __DIR__ . '/auth.php';
 
     Route::get('/', [HomeController::class, 'Home']);
+    Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+    Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+    Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap');
+    Route::get('/llms.txt', [SeoController::class, 'llms'])->name('seo.llms');
     Route::get('/lang/{locale}', [AppSettingsController::class, 'languageChange']);
 
     Route::post('/tosla/callback', [ToslaController::class, 'callback'])->name('tosla.callback');
@@ -251,6 +257,16 @@ if ($installed) {
         //---------- Payment Settings routes end ----------// 
 
 
+        Route::prefix('/blog')->group(function () {
+            Route::get('/', [BlogController::class, 'adminIndex'])->name('admin.blog.index');
+            Route::get('/create', [BlogController::class, 'adminCreate'])->name('admin.blog.create');
+            Route::post('/', [BlogController::class, 'adminStore'])->name('admin.blog.store');
+            Route::get('/{id}/edit', [BlogController::class, 'adminEdit'])->name('admin.blog.edit');
+            Route::put('/{id}', [BlogController::class, 'adminUpdate'])->name('admin.blog.update');
+            Route::delete('/{id}', [BlogController::class, 'adminDelete'])->name('admin.blog.delete');
+        });
+
+
         //---------- Custom page create routes start ----------//
         Route::prefix('/custom-page')->group(function () {
             Route::get('/', [CustomPageController::class, 'index'])->name('custom-page');
@@ -283,11 +299,11 @@ if ($installed) {
         ->where('publicCode', '[A-Za-z0-9]{12}')
         ->name('qr.redirect');
 
-    // Accessing biolink by link name
-    Route::get('/{linkName}', [BioLinkController::class, 'bioLinkView']);
-
-    // Custom created pages
+    // Custom created pages must stay above the public profile catch-all.
     Route::get('/app/{page}', [CustomPageController::class, 'pageView'])->name('custom-page.view');
+
+    // Accessing biolink by link name (keep this catch-all last).
+    Route::get('/{linkName}', [BioLinkController::class, 'bioLinkView']);
 } elseif (!app()->environment('production')) {
 
     Route::prefix('/setup')->group(function () {

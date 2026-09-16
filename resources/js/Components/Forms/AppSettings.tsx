@@ -1,7 +1,7 @@
 import Input from "@/Components/Input";
 import { useForm } from "@inertiajs/react";
 import { useState, ChangeEvent, FormEvent } from "react";
-import { Avatar } from "@material-tailwind/react";
+import { Avatar } from "@/Components/MaterialLite";
 import UserCircle from "@/Components/Icons/UserCircle";
 import { AppSettingProps } from "@/types";
 import TextArea from "../TextArea";

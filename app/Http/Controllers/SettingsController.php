@@ -19,7 +19,7 @@ class SettingsController extends Controller
         try {
             return Inertia::render('Settings');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -55,7 +55,7 @@ class SettingsController extends Controller
 
             return back()->with('success', 'Profil başarıyla güncellendi.');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     //--------------------------------------------------------
@@ -87,7 +87,7 @@ class SettingsController extends Controller
 
             return back()->with('success', 'Yeni e-posta adresinize doğrulama bağlantısı gönderildi.');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -106,7 +106,7 @@ class SettingsController extends Controller
 
             return redirect()->route('settings')->with('success', "E-posta adresi başarıyla güncellendi.");
         } catch (\Throwable $th) {
-            return redirect()->route('settings')->with('error', $th->getMessage());
+            return redirect()->route('settings')->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 }

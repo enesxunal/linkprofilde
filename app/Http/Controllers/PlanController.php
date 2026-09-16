@@ -19,7 +19,7 @@ class PlanController extends Controller
 
             return Inertia::render('CurrentPlan/Select', compact('plans'));
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -----------------------------------------
@@ -38,7 +38,7 @@ class PlanController extends Controller
 
             return Inertia::render('CurrentPlan/Show', compact('plan'));
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -----------------------------------------
@@ -67,7 +67,7 @@ class PlanController extends Controller
 
             return Inertia::render('Admin/PricingPlans/Show', compact('plans'));
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -----------------------------------------
@@ -78,7 +78,7 @@ class PlanController extends Controller
         try {
             return Inertia::render('Admin/PricingPlans/Create');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -----------------------------------------
@@ -109,7 +109,7 @@ class PlanController extends Controller
 
             return redirect()->route('plans')->with('success', 'Yeni fiyatlandırma planı oluşturuldu.');
         } catch (\Throwable $th) {
-            return redirect()->route('plans')->with('error', $th->getMessage());
+            return redirect()->route('plans')->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -----------------------------------------
@@ -123,7 +123,7 @@ class PlanController extends Controller
 
             return Inertia::render('Admin/PricingPlans/Update', compact('plan'));
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -169,7 +169,7 @@ class PlanController extends Controller
             return redirect()->route('plans')->with('success', 'Fiyatlandırma planı başarıyla güncellendi.');
         } catch (\Throwable $th) {
             //throw $th;
-            return redirect()->route('plans')->with('error', $th->getMessage());
+            return redirect()->route('plans')->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
     // -----------------------------------------
@@ -198,7 +198,7 @@ class PlanController extends Controller
                 ->route('plan')
                 ->with('success', 'Planınız başarıyla temel plana geçirildi.');
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 }

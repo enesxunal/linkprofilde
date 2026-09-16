@@ -1,7 +1,7 @@
 import Input from "@/Components/Input";
 import { Head, useForm } from "@inertiajs/react";
 import InputDropdown from "@/Components/InputDropdown";
-import { Checkbox } from "@material-tailwind/react";
+import { Checkbox } from "@/Components/MaterialLite";
 import { ReactNode, FormEventHandler } from "react";
 import Dashboard from "@/Layouts/Dashboard";
 import PageHeader from "@/Components/Panel/PageHeader";

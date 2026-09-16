@@ -26,13 +26,12 @@ const Dashboard: FC<Props> = ({ children }) => {
                   {props.next_payment && (
                      <AlertBanner variant="danger" className="text-center">
                         <p>
-                           Yor subscription limit is over now. Please renew your
-                           subscription or update your curren subscription plan.{" "}
+                           Abonelik süreniz sona erdi. Özellikleri kullanmaya devam etmek için planınızı yenileyin veya değiştirin.{" "}
                            <a
-                              className="font-medium underline"
+                              className="font-semibold underline"
                               href={`/current-plan/selected/${props.auth.user.pricing_plan_id}?type=${props.auth.user.recurring}`}
                            >
-                              Click here
+                              Planı yönet
                            </a>
                         </p>
                      </AlertBanner>

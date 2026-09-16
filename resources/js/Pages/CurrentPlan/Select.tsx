@@ -4,8 +4,7 @@ import {
    TabsBody,
    TabPanel,
    TabsHeader,
-   Button,
-} from "@material-tailwind/react";
+} from "@/Components/MaterialLite";
 import { ReactNode } from "react";
 import { Head } from "@inertiajs/react";
 import Dashboard from "@/Layouts/Dashboard";
@@ -14,6 +13,7 @@ import Pricing from "@/Components/Icons/Pricing";
 import { PageProps, PlanProps } from "@/types";
 import BadgeCheck from "@/Components/Icons/BadgeCheck";
 import PricingPlanCard from "@/Components/PricingPlan/PricingPlanCard";
+import EmptyState from "@/Components/Panel/EmptyState";
 
 interface Props extends PageProps {
    plans: PlanProps[];
@@ -28,6 +28,12 @@ const Select = (props: Props) => {
          <Breadcrumb Icon={Pricing} title="Plan Seç" />
 
          <div className="card p-3">
+            {plans.length === 0 ? (
+               <EmptyState
+                  title="Kullanılabilir plan bulunamadı"
+                  description="Şu anda seçilebilecek bir abonelik planı bulunmuyor. Lütfen daha sonra tekrar deneyin."
+               />
+            ) : (
             <Tabs value="monthly">
                <TabsHeader
                   className="bg-transparent max-w-[200px] w-full mx-auto mt-4 mb-3"
@@ -73,6 +79,7 @@ const Select = (props: Props) => {
                   </TabPanel>
                </TabsBody>
             </Tabs>
+            )}
          </div>
       </>
    );

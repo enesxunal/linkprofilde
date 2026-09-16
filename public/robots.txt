@@ -1,2 +1,19 @@
+# Public search and AI crawlers are intentionally allowed.
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /bio-links
+Disallow: /short-links
+Disallow: /qrcodes
+Disallow: /projects
+Disallow: /settings
+Disallow: /current-plan
+Disallow: /billing/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /verify-email
+Disallow: /setup/
+
+Sitemap: https://linkprofilde.com/sitemap.xml

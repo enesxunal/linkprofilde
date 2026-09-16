@@ -1,21 +1,14 @@
 import { useState } from "react";
-import "katex/dist/katex.min.css";
-import "react-quill/dist/quill.snow.css";
 import Dashboard from "@/Layouts/Dashboard";
 import Input from "@/Components/Input";
 import { Head, useForm } from "@inertiajs/react";
-import ReactQuill from "react-quill";
-import { formats } from "@/utils/utils";
-import CustomToolbar from "@/Components/CustomToolbar";
 import PageHeader from "@/Components/Panel/PageHeader";
-import katex from "katex";
-window.katex = katex;
+import NativeRichTextEditor from "@/Components/NativeRichTextEditor";
 
 const Create = () => {
    const [validRoute, setValidRoute] = useState(true);
-   const modules = { toolbar: { container: "#toolbar" } };
 
-   const { data, setData, post, errors, clearErrors } = useForm({
+   const { data, setData, post, errors, clearErrors, processing } = useForm({
       name: "",
       route: "",
       content: "",
@@ -25,27 +18,25 @@ const Create = () => {
       const { name, value } = event.target;
 
       if (name === "route") {
-         setData(name, value);
+         const normalized = value.toLowerCase().replace(/\s+/g, "-");
+         setData(name, normalized);
 
-         if (value.length > 0) {
-            const regex = /^[a-z]+(-[a-z]+)*$/;
-            const isValidInput = regex.test(value);
-
-            setValidRoute(isValidInput);
+         if (normalized.length > 0) {
+            setValidRoute(/^[a-z]+(-[a-z]+)*$/.test(normalized));
          } else {
             setValidRoute(true);
          }
       } else {
-         setData(name as "name" | "content", value);
+         setData("name", value);
       }
    };
 
    const submit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (validRoute) {
-         clearErrors();
-         post(route("custom-page.store"));
-      }
+      if (!validRoute || processing) return;
+
+      clearErrors();
+      post(route("custom-page.store"));
    };
 
    return (
@@ -53,13 +44,14 @@ const Create = () => {
          <Head title="Özel Sayfa Oluştur" />
          <PageHeader
             title="Özel Sayfa Oluştur"
-            description="Yeni bir özel sayfa oluşturun."
+            description="Kurumsal içerik, bilgilendirme veya kampanya sayfası oluşturun."
          />
 
          <div className="card mx-auto w-full max-w-[1200px]">
             <div className="border-b border-slate-200 px-5 pb-4 pt-5 sm:px-6">
-               <p className="text-lg font-semibold text-slate-900">
-                  Yeni Sayfa
+               <p className="text-lg font-semibold text-slate-900">Yeni Sayfa</p>
+               <p className="mt-1 text-sm text-slate-500">
+                  Sayfa adresi /app/sayfa-yolu biçiminde yayınlanır.
                </p>
             </div>
             <form onSubmit={submit} className="p-5 sm:p-6">
@@ -70,7 +62,7 @@ const Create = () => {
                      name="name"
                      value={data.name}
                      error={errors.name}
-                     placeholder="Sayfa adı"
+                     placeholder="Örn: Hakkımızda"
                      onChange={onHandleChange}
                      label="Sayfa Adı"
                      required
@@ -82,41 +74,38 @@ const Create = () => {
                      name="route"
                      value={data.route}
                      error={
-                        errors.route ?? !validRoute
-                           ? "Route yalnızca küçük harf ve tire (-) içerebilir"
-                           : ""
+                        errors.route ||
+                        (!validRoute
+                           ? "Sayfa yolu yalnızca küçük harf ve tire içerebilir."
+                           : "")
                      }
-                     placeholder="ornek-sayfa"
+                     placeholder="hakkimizda"
                      onChange={onHandleChange}
-                     label="Route"
+                     label="Sayfa Yolu"
                      required
                   />
                </div>
 
                <div>
-                  <label className="mb-1.5 flex w-full items-center text-sm font-medium text-slate-700">
-                     <span className="mr-1">Sayfa İçeriği</span>
-                     <span className="text-red-600">*</span>
+                  <label className="mb-2 flex items-center text-sm font-medium text-slate-700">
+                     Sayfa İçeriği <span className="ml-1 text-red-600">*</span>
                   </label>
-                  <div className="rounded-lg border border-slate-200">
-                     <CustomToolbar />
-                     <ReactQuill
-                        modules={modules}
-                        formats={formats}
-                        value={data.content}
-                        onChange={(html) => setData("content", html)}
-                        className="page-create border-0"
-                     />
-                  </div>
+                  <NativeRichTextEditor
+                     value={data.content}
+                     onChange={(html) => setData("content", html)}
+                     error={errors.content}
+                  />
                </div>
 
-               <button
-                  type="submit"
-                  disabled={!validRoute}
-                  className="mt-8 inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-               >
-                  Sayfayı Oluştur
-               </button>
+               <div className="mt-6 flex justify-end">
+                  <button
+                     type="submit"
+                     disabled={!validRoute || processing || !data.content.trim()}
+                     className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                     {processing ? "Oluşturuluyor…" : "Sayfayı Oluştur"}
+                  </button>
+               </div>
             </form>
          </div>
       </>

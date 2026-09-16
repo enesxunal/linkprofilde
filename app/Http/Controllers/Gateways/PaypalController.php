@@ -145,7 +145,7 @@ class PaypalController extends Controller
             }
         } catch (\Throwable $th) {
             //throw $th;
-            return redirect()->route('plan')->with('error', $th->getMessage());
+            return redirect()->route('plan')->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 

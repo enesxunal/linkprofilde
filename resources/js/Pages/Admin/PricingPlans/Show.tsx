@@ -6,13 +6,14 @@ import BadgeCheck from "@/Components/Icons/BadgeCheck";
 import PageHeader from "@/Components/Panel/PageHeader";
 import PanelCard from "@/Components/Panel/PanelCard";
 import Badge from "@/Components/Panel/Badge";
+import EmptyState from "@/Components/Panel/EmptyState";
 import {
    Tab,
    Tabs,
    TabsBody,
    TabPanel,
    TabsHeader,
-} from "@material-tailwind/react";
+} from "@/Components/MaterialLite";
 
 interface Props extends PageProps {
    plans: PlanProps[];
@@ -104,6 +105,22 @@ const Show = (props: Props) => {
             }
          />
 
+         {plans.length === 0 ? (
+            <PanelCard>
+               <EmptyState
+                  title="Henüz fiyat planı yok"
+                  description="Üyelik akışını kullanıma açmak için ilk fiyat planını oluşturun."
+                  action={
+                     <Link
+                        href="/admin/pricing-plans/create"
+                        className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                     >
+                        İlk Planı Oluştur
+                     </Link>
+                  }
+               />
+            </PanelCard>
+         ) : (
          <Tabs value="monthly">
             <TabsHeader
                className="mx-auto mb-4 w-full max-w-[220px] rounded-lg border border-slate-200 bg-slate-50 p-1"
@@ -143,6 +160,7 @@ const Show = (props: Props) => {
                </TabPanel>
             </TabsBody>
          </Tabs>
+         )}
       </>
    );
 };

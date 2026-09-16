@@ -3,7 +3,9 @@
 namespace App\Services\Analytics;
 
 use App\Models\Language;
+use App\Models\AnalyticsEvent;
 use App\Models\Link;
+use App\Models\QRCode;
 use App\Models\ShetabitVisit;
 use App\Models\User;
 use Carbon\Carbon;
@@ -113,6 +115,37 @@ class LinkAnalyticsService
             ->whereBetween('created_at', [$previous['from'], $previous['to']])
             ->count();
 
+        $events = AnalyticsEvent::query()
+            ->where('subject_type', 'Link')
+            ->where('subject_id', $link->id)
+            ->whereBetween('occurred_at', [$from, $to]);
+
+        $linkClicks = (clone $events)->where('event_type', 'link_click')->count();
+        $socialClicks = (clone $events)->where('event_type', 'social_click')->count();
+        $vcardDownloads = (clone $events)->where('event_type', 'vcard_download')->count();
+        $shares = (clone $events)->where('event_type', 'share')->count();
+
+        $qrIds = QRCode::query()
+            ->where(function ($query) use ($link) {
+                $query->where('link_id', $link->id)
+                    ->orWhere('destination_link_id', $link->id);
+            })
+            ->pluck('id');
+
+        $qrScans = $qrIds->isEmpty()
+            ? 0
+            : AnalyticsEvent::query()
+                ->where('event_type', AnalyticsEvent::TYPE_QR_SCAN)
+                ->where('subject_type', AnalyticsEvent::SUBJECT_QR_CODE)
+                ->whereIn('subject_id', $qrIds)
+                ->whereBetween('occurred_at', [$from, $to])
+                ->count();
+
+        $interactionsTotal = $linkClicks + $socialClicks + $vcardDownloads + $shares + $qrScans;
+        $interactionRate = $selectedPeriodTotal > 0
+            ? round(($interactionsTotal / $selectedPeriodTotal) * 100, 1)
+            : 0.0;
+
         $periodChangePercent = null;
         if ($previousTotal > 0) {
             $periodChangePercent = round((($selectedPeriodTotal - $previousTotal) / $previousTotal) * 100, 1);
@@ -142,6 +175,13 @@ class LinkAnalyticsService
                 'selected_period_total' => $selectedPeriodTotal,
                 'previous_period_total' => $previousTotal,
                 'period_change_percent' => $periodChangePercent,
+                'interactions_total' => $interactionsTotal,
+                'link_clicks' => $linkClicks,
+                'social_clicks' => $socialClicks,
+                'vcard_downloads' => $vcardDownloads,
+                'shares' => $shares,
+                'qr_scans' => $qrScans,
+                'interaction_rate' => $interactionRate,
             ],
             'timeseries' => $this->timeseries($link->id, $from, $to),
             'countries' => $this->aggregateCountries($link->id, $from, $to, $selectedPeriodTotal),

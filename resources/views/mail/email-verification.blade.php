@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Email Verification</title>
+        <title>E-posta Doğrulama</title>
 
         <style>
             *,
@@ -749,30 +749,31 @@
         />
         <div class="relative bg-white px-4 md:px-6 py-8 md:py-10 shadow border border-gray-200 rounded-lg mx-auto max-w-xl w-full">
             <h6 class=" text-2xl font-medium text-center mb-8">
-                Verify Email Address
+                E-posta Adresinizi Doğrulayın
             </h6>
             <div class="py-6 text-gray-700 border-y border-gray-200">
                 <p class="text text-gray-900 font-medium mb-4">
-                    Hello, {{$user->name}}
+                    Merhaba, {{$user->name}}
                 </p>
                 <p>
-                    Please click the button below to verify your email address.
+                    E-posta adresinizi doğrulamak için aşağıdaki butona tıklayın.
                 </p>
                 <div class="flex justify-center my-6">
                     <a 
                         href="{{$url}}" 
-                        target="_blank" 
+                        target="_blank"
+                        rel="noopener noreferrer"
                         class="px-4 py-2.5 bg-blue-500 hover:bg-blue-600/90 text-white roud shadow-md shadow-blue-300 rounded-md"
                     >
-                        Verify Email Address
+                        E-posta Adresinizi Doğrulayın
                     </a>
                 </div>
                 <p>
-                    Your email won't be registered or verified if you don't click the confirmation link above. If you received this email by mistake, simply delete it.
+                    Yukarıdaki doğrulama bağlantısına tıklamazsanız e-posta adresiniz doğrulanmayacaktır. Bu e-postayı yanlışlıkla aldıysanız silebilirsiniz.
                 </p>
             </div>
             <div class="pt-6">
-                <p class="text-gray-900 font-medium">Regards,</p>
+                <p class="text-gray-900 font-medium">Saygılarımızla,</p>
                 <p class="text-gray-600 mt-2">{{$app->name}}</p>
             </div>
         </div>

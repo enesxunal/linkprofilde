@@ -107,8 +107,31 @@ return new class extends Migration
 
     private function indexExists(string $indexName): bool
     {
-        $database = Schema::getConnection()->getDatabaseName();
+        $connection = Schema::getConnection();
+        $driver = $connection->getDriverName();
 
+        if ($driver === 'sqlite') {
+            $rows = DB::select("PRAGMA index_list('" . self::TABLE . "')");
+
+            foreach ($rows as $row) {
+                if (($row->name ?? null) === $indexName) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        if ($driver === 'pgsql') {
+            $row = DB::selectOne(
+                'SELECT 1 AS present FROM pg_indexes WHERE schemaname = current_schema() AND tablename = ? AND indexname = ? LIMIT 1',
+                [self::TABLE, $indexName]
+            );
+
+            return $row !== null;
+        }
+
+        $database = $connection->getDatabaseName();
         $row = DB::selectOne(
             'SELECT 1 AS present
              FROM information_schema.statistics

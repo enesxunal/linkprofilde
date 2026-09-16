@@ -1,175 +1,217 @@
 @extends('auth.layout')
 
-<?php
-    $urlName = preg_replace("/\s+/", "", strtolower(request()->linkname));
-    $iconClass = 'input-group-text bg-white ps-3 border';
-    $inputClass = 'form-control px-2 border-start-0 rounded-end';
+@section('title', __('Kayıt Ol') . ' · ' . ($app->title ?? 'LinkProfilde'))
 
+@php
     $link = '';
-    if ($linkname) {
+    if (!empty($linkname)) {
         $link = $linkname;
-    } else if (old('url_name')) {
+    } elseif (old('url_name')) {
         $link = old('url_name');
     }
-    
-?>
+@endphp
 
 @section('content')
-<div class="max-w-[800px] w-full rounded-lg shadow-card">
-    <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-5 flex flex-col items-center justify-center bg-blue-50 rounded-s-lg">
-            <img height="142px" width="142px" src="{{ asset($app->logo) }}" alt="">
-            <p class="text-xl font-semibold mt-3">{{$app->title}}</p>
-        </div>
+    <div class="w-full max-w-[920px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="grid grid-cols-1 lg:grid-cols-12">
+            <aside class="relative hidden overflow-hidden bg-gray-900 px-8 py-10 text-white lg:col-span-5 lg:flex lg:flex-col lg:justify-between">
+                <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-blue-600 to-gray-900" aria-hidden="true"></div>
 
-        <div class="col-span-12 lg:col-span-7 p-8 lg:p-12">
-            <form class="auth-form pb-0" method="POST" action="{{ route('register') }}">
-                @csrf
-
-                <p class="text-xl font-semibold mb-5 flex items-center">
-                    <a class="text-gray-400" href="{{ route('login') }}">
-                        {{__('Giriş Yap')}}
-                    </a>
-                    <span class="text-blue-500 text-base px-2">|</span>
-                    <a href="{{ route('register') }}">
-                        {{__('Kayıt Ol')}}
-                    </a>
-                </p>
-                
-                <div class="mb-4">
-                    <div class=" relative">
-                        <span class="absolute top-1/2 -translate-y-1/2 left-4">
-                            @include('components.icons.user', ['class'=>'w-5 h-5 text-gray-500'])
-                        </span>
-                        <input
-                            required 
-                            id="name" 
-                            name="name" 
-                            type="name" 
-                            value="{{ old('name') }}"
-                            placeholder="full name"
-                            class="pl-12 p-3 w-full rounded-lg border border-gray-200 focus:ring-0 focus:border-blue-500 focus:outline-0"
-                        >
-                    </div>
-                    @error('name')
-                        <span class="text-xs text-red-500" role="alert">
-                            {{$message}}
-                        </span>
-                    @enderror
+                <div class="relative">
+                    <p class="text-sm font-medium text-blue-300">{{ __('Ücretsiz başla') }}</p>
+                    <h1 class="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl" style="font-size:1.75rem;line-height:1.2;">
+                        {{ __('Dakikalar içinde kendi profilini oluştur.') }}
+                    </h1>
+                    <p class="mt-3 text-sm leading-relaxed text-gray-300">
+                        {{ __('Kayıt ol, kısa link adını seç ve tüm bağlantılarını tek yerde topla.') }}
+                    </p>
                 </div>
 
-                <div class="mb-4">
-                    <div class=" relative">
-                        <span class="absolute top-1/2 -translate-y-1/2 left-4">
-                            @include('components.icons.link', ['class'=>'w-5 h-5 text-gray-500'])
-                        </span>
-                        <span class="absolute top-1/2 -translate-y-1/2 left-12">/</span>
-                        <input
-                            required 
-                            id="bioLinkName" 
-                            name="url_name" 
-                            value="{{$link}}"
-                            placeholder="kısa link adı"
-                            class="pl-14 p-3 w-full rounded-lg border border-gray-200 focus:ring-0 focus:border-blue-500 focus:outline-0"
-                        >
-                    </div>
-                    @error('url_name')
-                        <span class="text-xs text-red-500" role="alert">
-                            {{$message}}
-                        </span>
-                    @enderror
+                <ul class="relative mt-10 space-y-3 text-sm text-gray-300">
+                    <li class="flex items-start gap-2.5">
+                        <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[11px] font-bold text-white">✓</span>
+                        <span>{{ __('Kişisel bio link sayfası') }}</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[11px] font-bold text-white">✓</span>
+                        <span>{{ __('Sosyal medya ve içerik blokları') }}</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[11px] font-bold text-white">✓</span>
+                        <span>{{ __('Kartvizit ve QR paylaşımı') }}</span>
+                    </li>
+                </ul>
+            </aside>
 
-                    <script>
-                        document.getElementById("bioLinkName")
-                        .addEventListener("change", function (item) {
-                            let result = item.target.value.replace(/\s+/g, '').toLowerCase();
-                            item.target.value = result;
-                        });
-                    </script>
-                </div>
-
-                <div class="mb-4">
-                    <div class=" relative">
-                        <span class="absolute top-1/2 -translate-y-1/2 left-4">
-                            @include('components.icons.email', ['class'=>'w-5 h-5 text-gray-500'])
-                        </span>
-                        <input
-                            required 
-                            id="email" 
-                            name="email" 
-                            type="email" 
-                            value="{{ old('email') }}"
-                            placeholder="email adres"
-                            class="pl-12 p-3 w-full rounded-lg border border-gray-200 focus:ring-0 focus:border-blue-500 focus:outline-0"
-                        >
-                    </div>
-                    @error('email')
-                        <span class="text-xs text-red-500" role="alert">
-                            {{$message}}
-                        </span>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <div class=" relative">
-                        <span class="absolute top-1/2 -translate-y-1/2 left-4">
-                            @include('components.icons.lock-keyhole', ['class'=>'w-5 h-5 text-gray-500'])
-                        </span>
-                        <input
-                            required 
-                            id="password" 
-                            type="password" 
-                            name="password" 
-                            placeholder="şifre"
-                            class="pl-12 p-3 w-full rounded-lg border border-gray-200 focus:ring-0 focus:border-blue-500 focus:outline-0"
-                        >
-                    </div>
-                    @error('Şifre')
-                        <span class="text-xs text-red-500" role="alert">
-                            {{$message}}
-                        </span>
-                    @enderror
-                </div>
-
-                <div class="mb-6">
-                    <div class=" relative">
-                        <span class="absolute top-1/2 -translate-y-1/2 left-4">
-                            @include('components.icons.lock-keyhole', ['class'=>'w-5 h-5 text-gray-500'])
-                        </span>
-                        <input
-                            required 
-                            id="password" 
-                            type="password" 
-                            name="password_confirmation" 
-                            placeholder="şifreyi tekrar giriniz"
-                            class="pl-12 p-3 w-full rounded-lg border border-gray-200 focus:ring-0 focus:border-blue-500 focus:outline-0"
-                        >
-                    </div>
-                </div>
-
-                <button 
-                    type="submit" 
-                    data-ripple-light="true"
-                    class="py-2.5 px-5 w-full rounded-md bg-blue-500 font-medium text-white shadow-md shadow-blue-500/20 transition-all active:opacity-[0.85]"
-                >
-                    {{ __('Kayıt Ol') }}
-                </button>
-            </form>
-
-            <form action="auth/google" method="GET" class="mt-3">
-                @csrf
-
-                @if ($google->active)
-                    <button 
-                        type="submit" 
-                        class="py-2 px-5 w-full rounded-md font-medium border border-gray-200 transition-all active:opacity-[0.85] flex items-center justify-center"
+            <div class="px-6 py-8 sm:px-10 sm:py-10 lg:col-span-7">
+                <div class="mb-6 flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1">
+                    <a
+                        href="{{ route('login') }}"
+                        class="flex-1 rounded-md px-3 py-2 text-center text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
                     >
-                        <img src="{{asset('assets/icons/google.svg')}}" alt="" class="me-2">
-                        {{__('Continue with Google')}}
+                        {{ __('Giriş Yap') }}
+                    </a>
+                    <a
+                        href="{{ route('register') }}"
+                        class="flex-1 rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-slate-900 shadow-sm"
+                        aria-current="page"
+                    >
+                        {{ __('Kayıt Ol') }}
+                    </a>
+                </div>
+
+                <p class="mb-6 text-sm text-slate-600 lg:hidden">
+                    {{ __('Ücretsiz hesap oluştur ve dijital profilini hemen yayınla.') }}
+                </p>
+
+                <form class="auth-form space-y-4" method="POST" action="{{ route('register') }}">
+                    @csrf
+
+                    <div>
+                        <label for="name" class="mb-1.5 block text-sm font-medium text-slate-700">{{ __('Ad Soyad') }}</label>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2">
+                                @include('components.icons.user', ['class' => 'w-5 h-5 text-slate-400'])
+                            </span>
+                            <input
+                                required
+                                id="name"
+                                name="name"
+                                type="text"
+                                autocomplete="name"
+                                value="{{ old('name') }}"
+                                placeholder="{{ __('Adın Soyadın') }}"
+                                class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            >
+                        </div>
+                        @error('name')
+                            <span class="mt-1.5 block text-xs text-red-500" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="bioLinkName" class="mb-1.5 block text-sm font-medium text-slate-700">{{ __('Profil linki') }}</label>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2">
+                                @include('components.icons.link', ['class' => 'w-5 h-5 text-slate-400'])
+                            </span>
+                            <span class="pointer-events-none absolute left-11 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400">/</span>
+                            <input
+                                required
+                                id="bioLinkName"
+                                name="url_name"
+                                value="{{ $link }}"
+                                autocomplete="off"
+                                placeholder="{{ __('kisa-link-adin') }}"
+                                class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-14 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            >
+                        </div>
+                        @error('url_name')
+                            <span class="mt-1.5 block text-xs text-red-500" role="alert">{{ $message }}</span>
+                        @enderror
+                        <script>
+                            document.getElementById('bioLinkName').addEventListener('change', function (item) {
+                                item.target.value = item.target.value.replace(/\s+/g, '').toLowerCase();
+                            });
+                        </script>
+                    </div>
+
+                    <div>
+                        <label for="email" class="mb-1.5 block text-sm font-medium text-slate-700">{{ __('E-posta') }}</label>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2">
+                                @include('components.icons.email', ['class' => 'w-5 h-5 text-slate-400'])
+                            </span>
+                            <input
+                                required
+                                id="email"
+                                name="email"
+                                type="email"
+                                autocomplete="email"
+                                value="{{ old('email') }}"
+                                placeholder="{{ __('ornek@email.com') }}"
+                                class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            >
+                        </div>
+                        @error('email')
+                            <span class="mt-1.5 block text-xs text-red-500" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="password" class="mb-1.5 block text-sm font-medium text-slate-700">{{ __('Şifre') }}</label>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2">
+                                @include('components.icons.lock-keyhole', ['class' => 'w-5 h-5 text-slate-400'])
+                            </span>
+                            <input
+                                required
+                                id="password"
+                                type="password"
+                                name="password"
+                                autocomplete="new-password"
+                                placeholder="{{ __('En az 8 karakter') }}"
+                                class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            >
+                        </div>
+                        @error('password')
+                            <span class="mt-1.5 block text-xs text-red-500" role="alert">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="password_confirmation" class="mb-1.5 block text-sm font-medium text-slate-700">{{ __('Şifre tekrar') }}</label>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2">
+                                @include('components.icons.lock-keyhole', ['class' => 'w-5 h-5 text-slate-400'])
+                            </span>
+                            <input
+                                required
+                                id="password_confirmation"
+                                type="password"
+                                name="password_confirmation"
+                                autocomplete="new-password"
+                                placeholder="{{ __('Şifreni tekrar yaz') }}"
+                                class="w-full rounded-lg border border-slate-200 bg-white py-3 pl-11 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            >
+                        </div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="mt-2 inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    >
+                        {{ __('Kayıt Ol') }}
                     </button>
+                </form>
+
+                @if ($google && $google->active)
+                    <div class="relative my-6">
+                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                            <div class="w-full border-t border-slate-200"></div>
+                        </div>
+                        <div class="relative flex justify-center text-xs">
+                            <span class="bg-white px-3 text-slate-400">{{ __('veya') }}</span>
+                        </div>
+                    </div>
+
+                    <form action="{{ url('auth/google') }}" method="GET">
+                        @csrf
+                        <button
+                            type="submit"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-800 transition-colors hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                        >
+                            <img src="{{ asset('assets/icons/google.svg') }}" alt="" class="h-5 w-5" width="20" height="20">
+                            {{ __('Google ile devam et') }}
+                        </button>
+                    </form>
                 @endif
-            </form>
+
+                <p class="mt-6 text-center text-sm text-slate-500">
+                    {{ __('Zaten hesabın var mı?') }}
+                    <a href="{{ route('login') }}" class="font-semibold text-blue-600 hover:text-blue-700">{{ __('Giriş yap') }}</a>
+                </p>
+            </div>
         </div>
     </div>
-</div>
 @endsection

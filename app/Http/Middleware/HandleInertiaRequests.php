@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Inertia\Middleware;
-use Tightenco\Ziggy\Ziggy;
+use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -74,30 +74,5 @@ class HandleInertiaRequests extends Middleware
                 'sidebar' => trans('sidebar'),
             ],
         ]);
-
-        // $sharedData = parent::share($request);
-
-        // // Check if AppSetting exists and is not null
-        // if (Schema::hasTable('app_settings')) {
-        //     $sharedData['app'] = AppSetting::first();
-        // }
-
-        // $sharedData['auth'] = [
-        //     'user' => $request->user() ? User::where('id', $request->user()->id)->with('roles')->first() : $request->user(),
-        // ];
-
-        // $sharedData['ziggy'] = function () use ($request) {
-        //     return array_merge((new Ziggy)->toArray(), [
-        //         'location' => $request->url(),
-        //     ]);
-        // };
-
-        // $sharedData['flash'] = [
-        //     'error' => fn () => $request->session()->get('error'),
-        //     'warning' => fn () => $request->session()->get('warning'),
-        //     'success' => fn () => $request->session()->get('success'),
-        // ];
-
-        // return $sharedData;
     }
 }

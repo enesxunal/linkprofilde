@@ -43,7 +43,7 @@ class AppSettingsController extends Controller
 
             return Inertia::render('Admin/AppSettings', compact('app', 'smtp', 'google'));
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 
@@ -202,7 +202,7 @@ class AppSettingsController extends Controller
 
             return Inertia::render('Admin/AppControl', compact('version'));
         } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
+            return back()->with('error', \App\Helpers\AppHelper::publicExceptionMessage($th));
         }
     }
 

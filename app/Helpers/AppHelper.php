@@ -35,6 +35,10 @@ class AppHelper
     {
         $smtp = SmtpSetting::first();
 
+        if (! $smtp) {
+            return null;
+        }
+
         config(['mail.mailers.smtp.host' => $smtp->host]);
         config(['mail.mailers.smtp.port' => (int) $smtp->port]);
         config(['mail.mailers.smtp.username' => $smtp->username]);
@@ -177,6 +181,22 @@ class AppHelper
         }
 
         return @unlink($realTarget);
+    }
+
+
+    /**
+     * Report internal exceptions while keeping production responses free of
+     * database paths, credentials and framework internals.
+     */
+    public static function publicExceptionMessage(\Throwable $exception, string $fallback = 'İşlem sırasında beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.'): string
+    {
+        report($exception);
+
+        if (app()->environment('production')) {
+            return $fallback;
+        }
+
+        return $exception->getMessage();
     }
 
 

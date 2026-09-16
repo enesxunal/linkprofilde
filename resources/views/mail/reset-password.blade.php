@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Reset Password Verification</title>
+        <title>Şifre Sıfırlama Doğrulaması</title>
 
         <style>
             *,
@@ -749,7 +749,7 @@
         />
         <div class="relative bg-white px-4 md:px-6 py-8 md:py-10 shadow border border-gray-200 rounded-lg mx-auto max-w-xl w-full">
             <h6 class=" text-2xl font-medium text-center mb-8">
-               Reset Password Verification
+               Şifre Sıfırlama Doğrulaması
             </h6>
             <div class="py-6 text-gray-700 border-y border-gray-200">
                 <p class="text text-gray-900 font-medium mb-4">
@@ -761,10 +761,11 @@
                 <div class="flex justify-center my-6">
                     <a 
                         href="{{$url}}" 
-                        target="_blank" 
+                        target="_blank"
+                        rel="noopener noreferrer"
                         class="px-4 py-2.5 bg-blue-500 hover:bg-blue-600/90 text-white roud shadow-md shadow-blue-300 rounded-md"
                     >
-                        Reset Password
+                        Şifreyi Sıfırla
                     </a>
                 </div>
                 <p>

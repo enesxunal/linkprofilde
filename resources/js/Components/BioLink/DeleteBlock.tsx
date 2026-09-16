@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { error } from "@/utils/toast";
 import { LinkItemProps } from "@/types";
-import { Dialog } from "@material-tailwind/react";
+import { Dialog } from "@/Components/MaterialLite";
 import Delete from "../Icons/Delete";
 
 interface Props {

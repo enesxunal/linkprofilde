@@ -84,12 +84,12 @@ const Show = (props: Props) => {
                   ))}
 
                   {auth.user.roles[0].name === "SUPER-ADMIN" ? (
-                     <button
-                        type="button"
+                     <Link
+                        href="/admin/pricing-plans"
                         className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                      >
-                        Plan Güncelle
-                     </button>
+                        Planları Yönet
+                     </Link>
                   ) : (
                      <Link
                         href={route("plan.select")}

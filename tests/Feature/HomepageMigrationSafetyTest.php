@@ -14,14 +14,6 @@ class HomepageMigrationSafetyTest extends TestCase
 
     protected function setUp(): void
     {
-        // Isolate from shared docker MySQL used by the app container.
-        putenv('DB_CONNECTION=sqlite');
-        putenv('DB_DATABASE=:memory:');
-        $_ENV['DB_CONNECTION'] = 'sqlite';
-        $_ENV['DB_DATABASE'] = ':memory:';
-        $_SERVER['DB_CONNECTION'] = 'sqlite';
-        $_SERVER['DB_DATABASE'] = ':memory:';
-
         parent::setUp();
         $this->withoutVite();
     }
