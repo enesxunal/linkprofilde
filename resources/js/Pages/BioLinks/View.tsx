@@ -66,10 +66,12 @@ const View = (props: { link: LinkProps }) => {
    const baseUrl = (page.props as PageProps).ziggy?.url || window.location.origin;
    const cleanBaseUrl = baseUrl.replace(/\/$/, "");
    const profileUrl = `${cleanBaseUrl}/${link.url_name}`;
-   const profileTitle = `${link.link_name} | ${app.title || "LinkProfilde"}`;
-   const profileDescription =
-      link.short_bio?.trim() ||
-      `${link.link_name} profilindeki bağlantıları ve iletişim bilgilerini görüntüleyin.`;
+   const profileTitle = `${link.link_name} | Bağlantılar ve İletişim | ${app.title || "LinkProfilde"}`;
+   const profileDescription = (() => {
+      const bio = link.short_bio?.replace(/\s+/g, " ").trim();
+      if (bio) return bio.length > 155 ? `${bio.slice(0, 152).trim()}...` : bio;
+      return `${link.link_name} için sosyal medya, iletişim ve önemli bağlantılara tek sayfadan ulaşın.`;
+   })();
    const profileImage = link.thumbnail
       ? `${cleanBaseUrl}/${String(link.thumbnail).replace(/^\//, "")}`
       : undefined;
@@ -81,11 +83,16 @@ const View = (props: { link: LinkProps }) => {
    );
    const structuredData = {
       "@context": "https://schema.org",
-      "@type": "Person",
-      name: link.link_name,
+      "@type": "ProfilePage",
+      name: profileTitle,
       description: profileDescription,
       url: profileUrl,
-      ...(profileImage ? { image: profileImage } : {}),
+      ...(profileImage ? { primaryImageOfPage: { "@type": "ImageObject", url: profileImage } } : {}),
+      mainEntity: {
+         "@type": "Thing",
+         name: link.link_name,
+         ...(profileImage ? { image: profileImage } : {}),
+      },
    };
 
    const socialColor = isSafeHex(link.social_color) ? link.social_color : "#101828";

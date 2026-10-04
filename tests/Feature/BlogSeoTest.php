@@ -36,6 +36,18 @@ class BlogSeoTest extends TestCase
         $response->assertSee($post->title, false);
     }
 
+    public function test_blog_guides_link_to_the_relevant_product_landing_page(): void
+    {
+        $post = BlogPost::published()
+            ->where('slug', 'sosyal-medya-linklerini-tek-linkte-toplama')
+            ->firstOrFail();
+
+        $this->get('/blog/' . $post->slug)
+            ->assertOk()
+            ->assertSee('Sosyal medya linklerini tek sayfada topla', false)
+            ->assertSee('href="' . url('/bio-link') . '"', false);
+    }
+
     public function test_sitemap_contains_blog_and_published_posts(): void
     {
         $post = BlogPost::published()->firstOrFail();

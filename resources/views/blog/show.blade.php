@@ -67,10 +67,36 @@
             {!! $safeContent !!}
         </div>
 
+        @php
+            $landingMap = [
+                'bio-link-nedir' => ['url' => '/bio-link', 'label' => 'Bio Link Oluştur', 'title' => 'Kendi bio link sayfanı oluştur'],
+                'ucretsiz-bio-link-olusturma' => ['url' => '/bio-link', 'label' => 'Bio Link Sayfasını Gör', 'title' => 'Ücretsiz bio link çözümünü incele'],
+                'instagram-bio-link-nasil-olusturulur' => ['url' => '/bio-link', 'label' => 'Bio Link Oluştur', 'title' => 'Instagram için tek bio link kullan'],
+                'sosyal-medya-linklerini-tek-linkte-toplama' => ['url' => '/bio-link', 'label' => 'Tek Link Oluştur', 'title' => 'Sosyal medya linklerini tek sayfada topla'],
+                'freelancer-icin-bio-link' => ['url' => '/bio-link', 'label' => 'Bio Link Oluştur', 'title' => 'Freelancer profilini tek linkte topla'],
+                'isletmeler-icin-qr-kod-bio-link' => ['url' => '/bio-link', 'label' => 'Bio Link Çözümünü İncele', 'title' => 'İşletmen için bio link profili oluştur'],
+                'dijital-kartvizit-nasil-olusturulur' => ['url' => '/dijital-kartvizit', 'label' => 'Dijital Kartvizit Oluştur', 'title' => 'Kendi dijital kartvizitini oluştur'],
+                'dijital-kartvizit-mi-klasik-kartvizit-mi' => ['url' => '/dijital-kartvizit', 'label' => 'Dijital Kartviziti İncele', 'title' => 'Güncellenebilir dijital kartviziti dene'],
+                'nfc-kartvizit-nedir' => ['url' => '/dijital-kartvizit', 'label' => 'Dijital Kartvizit Oluştur', 'title' => 'NFC ile paylaşabileceğin dijital profil oluştur'],
+                'isletme-icin-dijital-kartvizit' => ['url' => '/dijital-kartvizit', 'label' => 'İşletme Kartviziti Oluştur', 'title' => 'İşletmen için dijital kartvizit oluştur'],
+                'ucretsiz-qr-kod-olusturma' => ['url' => '/qr-kod', 'label' => 'QR Kod Oluştur', 'title' => 'Kendi QR kodunu oluştur'],
+                'dinamik-qr-kod-nedir' => ['url' => '/qr-kod', 'label' => 'Dinamik QR Kod İncele', 'title' => 'Dinamik QR kod çözümünü kullan'],
+                'qr-kod-linki-sonradan-degistirme' => ['url' => '/qr-kod', 'label' => 'Dinamik QR Oluştur', 'title' => 'Hedefi sonradan değiştirilebilen QR kod oluştur'],
+                'qr-kod-tarama-sayisi-nasil-olculur' => ['url' => '/qr-kod', 'label' => 'QR Analitiğini İncele', 'title' => 'QR kod taramalarını takip et'],
+                'etkinlik-fuar-icin-qr-kod' => ['url' => '/qr-kod', 'label' => 'Etkinlik QR Kodu Oluştur', 'title' => 'Etkinlik ve fuar için QR kod oluştur'],
+                'kisa-link-nasil-olusturulur' => ['url' => '/kisa-link', 'label' => 'Kısa Link Oluştur', 'title' => 'Kısa ve ölçülebilir bağlantı oluştur'],
+                'link-analizi-nedir' => ['url' => '/kisa-link', 'label' => 'Kısa Link Analitiğini İncele', 'title' => 'Kısa link performansını takip et'],
+                'whatsapp-linki-nasil-olusturulur' => ['url' => '/kisa-link', 'label' => 'Kısa Link Oluştur', 'title' => 'WhatsApp bağlantını daha kolay paylaş'],
+            ];
+            $landing = $landingMap[$post->slug] ?? ['url' => '/bio-link', 'label' => 'LinkProfilde Araçlarını İncele', 'title' => 'Linklerini tek panelden yönet'];
+        @endphp
         <aside class="mt-12 rounded-2xl border border-blue-100 bg-blue-50 p-6">
-            <h2 class="text-xl font-bold text-slate-950">Linklerini tek panelden yönetmek ister misin?</h2>
-            <p class="mt-2 text-sm leading-6 text-slate-600">Bio link profilini oluştur, QR kodlarını paylaş, kısa linklerini yönet ve etkileşimleri tek panelden takip et.</p>
-            <a href="{{ url('/register') }}" class="mt-5 inline-flex rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Ücretsiz Başla</a>
+            <h2 class="text-xl font-bold text-slate-950">{{ $landing['title'] }}</h2>
+            <p class="mt-2 text-sm leading-6 text-slate-600">Bio link, dijital kartvizit, QR kod ve kısa link araçlarını tek panelden oluştur, paylaş ve performanslarını takip et.</p>
+            <div class="mt-5 flex flex-wrap gap-3">
+                <a href="{{ url($landing['url']) }}" class="inline-flex rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">{{ $landing['label'] }}</a>
+                <a href="{{ url('/register') }}" class="inline-flex rounded-lg border border-blue-200 bg-white px-4 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-50">Ücretsiz Başla</a>
+            </div>
         </aside>
 
         @if($related->count())
