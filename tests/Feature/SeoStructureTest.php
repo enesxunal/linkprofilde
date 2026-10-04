@@ -80,6 +80,26 @@ class SeoStructureTest extends TestCase
             ->assertHeader('X-Robots-Tag', 'noindex, follow');
     }
 
+    public function test_public_profile_seo_is_present_in_initial_html(): void
+    {
+        $user = User::factory()->create();
+
+        $link = new Link();
+        $link->user_id = $user->id;
+        $link->link_name = 'SEO Test Profile';
+        $link->link_type = 'biolink';
+        $link->url_name = 'seo-test-profile';
+        $link->short_bio = 'SEO test profili için yeterli uzunlukta açıklama metni.';
+        $link->save();
+
+        $this->get('/' . $link->url_name)
+            ->assertOk()
+            ->assertSee('<title inertia>SEO Test Profile | Bağlantılar ve İletişim | LinkProfilde</title>', false)
+            ->assertSee('<meta name="description" content="SEO test profili için yeterli uzunlukta açıklama metni.">', false)
+            ->assertSee('<link rel="canonical" href="' . url('/' . $link->url_name) . '">', false)
+            ->assertSee('ProfilePage', false);
+    }
+
     public function test_product_seo_landing_pages_have_unique_canonical_and_schema(): void
     {
         $pages = [
