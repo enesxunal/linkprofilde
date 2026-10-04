@@ -28,6 +28,7 @@ use App\Http\Controllers\InstallerDBController;
 use App\Http\Controllers\VersionController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\SeoController;
+use App\Http\Controllers\SeoLandingController;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -50,6 +51,10 @@ if ($installed) {
     Route::get('/', [HomeController::class, 'Home']);
     Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
     Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+    Route::get('/bio-link', [SeoLandingController::class, 'show'])->defaults('slug', 'bio-link')->name('seo.bio-link');
+    Route::get('/dijital-kartvizit', [SeoLandingController::class, 'show'])->defaults('slug', 'dijital-kartvizit')->name('seo.dijital-kartvizit');
+    Route::get('/qr-kod', [SeoLandingController::class, 'show'])->defaults('slug', 'qr-kod')->name('seo.qr-kod');
+    Route::get('/kisa-link', [SeoLandingController::class, 'show'])->defaults('slug', 'kisa-link')->name('seo.kisa-link');
     Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap');
     Route::get('/llms.txt', [SeoController::class, 'llms'])->name('seo.llms');
     Route::get('/lang/{locale}', [AppSettingsController::class, 'languageChange']);

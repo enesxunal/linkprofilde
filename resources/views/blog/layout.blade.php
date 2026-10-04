@@ -21,6 +21,10 @@
         </a>
         <nav class="flex items-center gap-2 text-sm sm:gap-5">
             <a href="{{ url('/') }}" class="hidden text-slate-600 hover:text-slate-900 sm:inline">Ana Sayfa</a>
+            <a href="{{ url('/bio-link') }}" class="hidden text-slate-600 hover:text-slate-900 lg:inline">Bio Link</a>
+            <a href="{{ url('/dijital-kartvizit') }}" class="hidden text-slate-600 hover:text-slate-900 lg:inline">Dijital Kartvizit</a>
+            <a href="{{ url('/qr-kod') }}" class="hidden text-slate-600 hover:text-slate-900 lg:inline">QR Kod</a>
+            <a href="{{ url('/kisa-link') }}" class="hidden text-slate-600 hover:text-slate-900 lg:inline">Kısa Link</a>
             <a href="{{ url('/blog') }}" class="font-semibold text-blue-600">Blog</a>
             <a href="{{ url('/login') }}" class="hidden text-slate-600 hover:text-slate-900 sm:inline">Giriş Yap</a>
             <a href="{{ url('/register') }}" class="rounded-lg bg-blue-600 px-3.5 py-2 font-semibold text-white hover:bg-blue-700">Ücretsiz Başla</a>

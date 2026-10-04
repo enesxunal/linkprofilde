@@ -12,19 +12,19 @@
             'title' => 'Bio Link',
             'description' => 'Profilini, sosyal hesaplarını ve tüm önemli bağlantılarını tek sayfada paylaş.',
             'icon' => 'link',
-            'href' => '#bio-link',
+            'href' => '/bio-link',
         ],
         [
             'title' => 'Kısa Link',
             'description' => 'Uzun bağlantılarını sadeleştir, yönet ve performanslarını takip et.',
             'icon' => 'link-slash',
-            'href' => '#short-links',
+            'href' => '/kisa-link',
         ],
         [
             'title' => 'QR Kod',
             'description' => 'Markana uygun QR kodlar oluştur, özelleştir ve indir.',
             'icon' => 'qrcode',
-            'href' => '#qr',
+            'href' => '/qr-kod',
         ],
         [
             'title' => 'Analitik',

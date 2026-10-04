@@ -18,9 +18,10 @@
 
             <ul class="ml-auto mr-4 hidden items-center gap-5 xl:gap-6 lg:flex text-sm font-medium text-slate-600">
                 <li><a href="#features" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Özellikler') }}</a></li>
-                <li><a href="#bio-link" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Bio Link') }}</a></li>
-                <li><a href="#short-links" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Kısa Link') }}</a></li>
-                <li><a href="#qr" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('QR Kod') }}</a></li>
+                <li><a href="/bio-link" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Bio Link') }}</a></li>
+                <li><a href="/dijital-kartvizit" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Dijital Kartvizit') }}</a></li>
+                <li><a href="/kisa-link" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Kısa Link') }}</a></li>
+                <li><a href="/qr-kod" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('QR Kod') }}</a></li>
                 <li><a href="#pricing" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Fiyatlandırma') }}</a></li>
                 <li><a href="/blog" class="hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">{{ __('Blog') }}</a></li>
             </ul>
@@ -96,9 +97,10 @@
         >
             <ul class="flex flex-col gap-4 pt-5 pb-4 text-sm font-medium">
                 <li><a href="#features">{{ __('Özellikler') }}</a></li>
-                <li><a href="#bio-link">{{ __('Bio Link') }}</a></li>
-                <li><a href="#short-links">{{ __('Kısa Link') }}</a></li>
-                <li><a href="#qr">{{ __('QR Kod') }}</a></li>
+                <li><a href="/bio-link">{{ __('Bio Link') }}</a></li>
+                <li><a href="/dijital-kartvizit">{{ __('Dijital Kartvizit') }}</a></li>
+                <li><a href="/kisa-link">{{ __('Kısa Link') }}</a></li>
+                <li><a href="/qr-kod">{{ __('QR Kod') }}</a></li>
                 <li><a href="#pricing">{{ __('Fiyatlandırma') }}</a></li>
                 <li><a href="/blog">{{ __('Blog') }}</a></li>
 

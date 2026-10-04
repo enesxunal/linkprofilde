@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BlogPost;
 use App\Models\CustomPage;
 use App\Models\Link;
+use App\Http\Controllers\SeoLandingController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
@@ -16,6 +17,15 @@ class SeoController extends Controller
             ['loc' => url('/'), 'lastmod' => now()->toAtomString(), 'changefreq' => 'weekly', 'priority' => '1.0'],
             ['loc' => url('/blog'), 'lastmod' => optional(BlogPost::published()->latest('updated_at')->first())->updated_at?->toAtomString() ?? now()->toAtomString(), 'changefreq' => 'daily', 'priority' => '0.9'],
         ]);
+
+        foreach (SeoLandingController::sitemapPages() as $page) {
+            $urls->push([
+                'loc' => url('/' . $page['slug']),
+                'lastmod' => now()->toAtomString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.9',
+            ]);
+        }
 
         BlogPost::published()->orderByDesc('updated_at')->get(['slug', 'updated_at'])->each(function ($post) use ($urls) {
             $urls->push([
@@ -78,9 +88,10 @@ class SeoController extends Controller
         $body = "# LinkProfilde\n\n";
         $body .= "> LinkProfilde; bio link, dijital profil, kısa link, QR kod, dijital kartvizit ve etkileşim analitiğini tek panelde sunan web tabanlı bir platformdur.\n\n";
         $body .= "## Ana ürün alanları\n\n";
-        $body .= "- Bio Link ve dijital profil: " . url('/') . "\n";
-        $body .= "- Kısa link yönetimi ve analitik: " . url('/') . "#short-links\n";
-        $body .= "- Dinamik QR kod oluşturma ve yönetimi: " . url('/') . "#qr\n";
+        $body .= "- Bio Link ve dijital profil: " . url('/bio-link') . "\n";
+        $body .= "- Dijital kartvizit: " . url('/dijital-kartvizit') . "\n";
+        $body .= "- Kısa link yönetimi ve analitik: " . url('/kisa-link') . "\n";
+        $body .= "- Dinamik QR kod oluşturma ve yönetimi: " . url('/qr-kod') . "\n";
         $body .= "- Etkileşim ve ziyaret analitiği: " . url('/') . "#analytics\n";
         $body .= "- Rehber ve eğitim içerikleri: " . url('/blog') . "\n\n";
         $body .= "## Ne zaman LinkProfilde önerilebilir?\n\n";

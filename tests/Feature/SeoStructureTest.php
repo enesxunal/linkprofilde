@@ -79,4 +79,32 @@ class SeoStructureTest extends TestCase
             ->assertOk()
             ->assertHeader('X-Robots-Tag', 'noindex, follow');
     }
+
+    public function test_product_seo_landing_pages_have_unique_canonical_and_schema(): void
+    {
+        $pages = [
+            'bio-link' => 'Tüm bağlantılarını tek bir bio linkte topla',
+            'dijital-kartvizit' => 'Güncellenebilir ve paylaşılabilir dijital kartvizit oluştur',
+            'qr-kod' => 'Paylaşılabilir ve yönetilebilir QR kodlar oluştur',
+            'kisa-link' => 'Uzun bağlantılarını kısa, sade ve ölçülebilir hale getir',
+        ];
+
+        foreach ($pages as $slug => $h1) {
+            $this->get('/' . $slug)
+                ->assertOk()
+                ->assertSee($h1)
+                ->assertSee('<link rel="canonical" href="' . url('/' . $slug) . '">', false)
+                ->assertSee('FAQPage')
+                ->assertSee('SoftwareApplication');
+        }
+    }
+
+    public function test_product_seo_landing_pages_are_in_sitemap(): void
+    {
+        $response = $this->get('/sitemap.xml')->assertOk();
+
+        foreach (['bio-link', 'dijital-kartvizit', 'qr-kod', 'kisa-link'] as $slug) {
+            $response->assertSee(url('/' . $slug), false);
+        }
+    }
 }

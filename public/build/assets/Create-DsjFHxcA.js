@@ -1,0 +1,1 @@
+import{i as e}from"./app-dguqy8g_.js";import{t}from"./Dashboard-DAZk_sqM.js";var n=e(),r=()=>(0,n.jsx)(`div`,{children:(0,n.jsx)(`h1`,{children:`Oluştur`})});r.layout=e=>(0,n.jsx)(t,{children:e});export{r as default};
