@@ -531,7 +531,17 @@ class BioLinkController extends Controller
                 if ($link->link_type == 'shortlink') {
                     return redirect()->to(url($link->external_url));
                 } else {
-                    return Inertia::render('BioLinks/View', compact('link'));
+                    $hasIndexableProfileContent = $link->items->isNotEmpty()
+                        || mb_strlen(trim((string) $link->short_bio)) >= 20
+                        || trim((string) $link->thumbnail) !== ''
+                        || ! in_array(trim((string) $link->socials), ['', '[]', '{}', 'null'], true);
+
+                    $response = Inertia::render('BioLinks/View', compact('link'))->toResponse($req);
+                    if (! $hasIndexableProfileContent) {
+                        $response->headers->set('X-Robots-Tag', 'noindex, follow');
+                    }
+
+                    return $response;
                 }
             } else {
                 abort(404);

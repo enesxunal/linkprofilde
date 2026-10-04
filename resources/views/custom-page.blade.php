@@ -1,11 +1,34 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
+        @php
+            $seoTitle = trim((string) $currentPage->name) . ' | ' . ($app->title ?? 'LinkProfilde');
+            $seoDescription = \Illuminate\Support\Str::limit(
+                \Illuminate\Support\Str::squish(strip_tags((string) $safeContent)),
+                160,
+                ''
+            );
+            $seoDescription = $seoDescription !== ''
+                ? $seoDescription
+                : ($app->description ?? 'Dijital profil ve bağlantı yönetimi.');
+            $canonicalUrl = url('/app/' . $currentPage->route);
+        @endphp
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>{{$app->name}}</title>
+        <title>{{ $seoTitle }}</title>
+        <meta name="description" content="{{ $seoDescription }}">
+        <meta name="robots" content="index,follow,max-image-preview:large">
+        <link rel="canonical" href="{{ $canonicalUrl }}">
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="{{ $app->title ?? 'LinkProfilde' }}">
+        <meta property="og:title" content="{{ $seoTitle }}">
+        <meta property="og:description" content="{{ $seoDescription }}">
+        <meta property="og:url" content="{{ $canonicalUrl }}">
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:title" content="{{ $seoTitle }}">
+        <meta name="twitter:description" content="{{ $seoDescription }}">
 
         {{-- vites --}}
         @viteReactRefresh

@@ -73,6 +73,12 @@ const View = (props: { link: LinkProps }) => {
    const profileImage = link.thumbnail
       ? `${cleanBaseUrl}/${String(link.thumbnail).replace(/^\//, "")}`
       : undefined;
+   const hasIndexableProfileContent = Boolean(
+      link.items.length > 0 ||
+      (link.short_bio?.trim().length || 0) >= 20 ||
+      String(link.thumbnail || "").trim() ||
+      socials.some((item) => item.link && String(item.link).trim())
+   );
    const structuredData = {
       "@context": "https://schema.org",
       "@type": "Person",
@@ -168,6 +174,10 @@ const View = (props: { link: LinkProps }) => {
    return (
       <div style={parsedStyle} className="min-h-screen bg-cover bg-center">
          <Head title={profileTitle}>
+            <meta
+               name="robots"
+               content={hasIndexableProfileContent ? "index,follow,max-image-preview:large" : "noindex,follow"}
+            />
             <meta name="description" content={profileDescription} />
             <link rel="canonical" href={profileUrl} />
             <meta property="og:type" content="profile" />

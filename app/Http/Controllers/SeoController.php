@@ -39,6 +39,21 @@ class SeoController extends Controller
         Link::query()
             ->where('link_type', 'biolink')
             ->whereNotNull('url_name')
+            ->where(function ($query) {
+                $query->whereHas('items')
+                    ->orWhere(function ($query) {
+                        $query->whereNotNull('short_bio')
+                            ->whereRaw('CHAR_LENGTH(TRIM(short_bio)) >= 20');
+                    })
+                    ->orWhere(function ($query) {
+                        $query->whereNotNull('thumbnail')
+                            ->where('thumbnail', '!=', '');
+                    })
+                    ->orWhere(function ($query) {
+                        $query->whereNotNull('socials')
+                            ->whereNotIn('socials', ['', '[]', '{}', 'null']);
+                    });
+            })
             ->orderByDesc('updated_at')
             ->limit(49000)
             ->get(['url_name', 'updated_at'])

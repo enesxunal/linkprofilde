@@ -2,7 +2,7 @@
 
 @section('title', 'LinkProfilde Blog — Bio Link, QR Kod, Kısa Link ve Dijital Kartvizit Rehberleri')
 @section('meta_description', 'Bio link, dijital kartvizit, kısa link, QR kod, sosyal medya bağlantıları ve analitik hakkında uygulamalı rehberler.')
-@section('canonical', url('/blog'))
+@section('canonical', $posts->currentPage() > 1 ? $posts->url($posts->currentPage()) : url('/blog'))
 @section('meta')
 <meta property="og:type" content="website">
 <meta property="og:title" content="LinkProfilde Blog — Dijital Profil ve Bağlantı Rehberleri">

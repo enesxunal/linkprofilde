@@ -10,10 +10,7 @@ Disallow: /projects
 Disallow: /settings
 Disallow: /current-plan
 Disallow: /billing/
-Disallow: /login
-Disallow: /register
-Disallow: /forgot-password
-Disallow: /verify-email
+# Auth pages are crawlable so their noindex directives can be seen by search engines.
 Disallow: /setup/
 
 Sitemap: https://linkprofilde.com/sitemap.xml
