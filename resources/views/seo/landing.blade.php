@@ -231,5 +231,6 @@
         </div>
     </div>
 </footer>
+<script src="{{ asset('3kare/signature.js') }}" defer></script>
 </body>
 </html>
